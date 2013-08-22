@@ -229,7 +229,33 @@ class Ho_Import_Model_Import extends Varien_Object
         return true;
     }
 
+    /**
+     * Actual importmethod
+     */
+    protected function _importCustomer()
+    {
+        $this->_applyImportOptions();
 
+        /* @var $import AvS_FastSimpleImport_Model_Import */
+        $fastsimpleimport = Mage::getSingleton('fastsimpleimport/import');
+
+        $importData = $this->getImportData();
+        foreach ($importData as $key => $value) {
+            $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
+            $fastsimpleimport->setDataUsingMethod($key, (string) $value);
+        }
+
+        $transport = new Varien_Object();
+        $transport->setData('object', $fastsimpleimport);
+        $this->_runEvent('before_import');
+
+        $errors = $this->_importData();
+
+        $transport = new Varien_Object();
+        $transport->addData(array('object' => $fastsimpleimport, 'errors' => $errors));
+        $this->_runEvent('after_import');
+        return $errors;
+    }
 
 
     /**
