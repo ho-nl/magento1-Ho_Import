@@ -135,25 +135,27 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             }
 
             $value = '';
+            //field value
             if (isset($field['@']['field'])) {
                 $fieldName = $field['@']['field'];
 
                 if (isset($line[$fieldName])) {
                     $value = $line[$fieldName];
                 }
-
-                if ($withKeys) {
-                    $parts[$fieldName] = $value;
-                } else {
-                    $parts[] = $value;
-                }
             }
 
             //value support
-            if (isset($field['@']['value'])) {
-                $parts[] = $field['@']['value'];
+            if ((isset($fieldName) && empty($value)) && isset($field['@']['value'])) {
+                $value = $field['@']['value'];
+            }
+
+            if ($withKeys && isset($fieldName)) {
+                $parts[$fieldName] = $value;
+            } else {
+                $parts[] = $value;
             }
         }
+
         return $parts;
     }
 
@@ -195,6 +197,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         foreach($multipleFields as $field => $value) {
             $results[] = $this->getFieldMap($value, $field, $mapping);
         }
+
         return $results;
     }
 
