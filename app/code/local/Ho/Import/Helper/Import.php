@@ -134,12 +134,24 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
                 continue;
             }
 
-            if (isset($line[$field[0]])) {
-                if ($withKeys) {
-                    $parts[$field[0]] = $line[$field[0]];
-                } else {
-                    $parts[] = $line[$field[0]];
+            $value = '';
+            if (isset($field['@']['field'])) {
+                $fieldName = $field['@']['field'];
+
+                if (isset($line[$fieldName])) {
+                    $value = $line[$fieldName];
                 }
+
+                if ($withKeys) {
+                    $parts[$fieldName] = $value;
+                } else {
+                    $parts[] = $value;
+                }
+            }
+
+            //value support
+            if (isset($field['@']['value'])) {
+                $parts[] = $field['@']['value'];
             }
         }
         return $parts;
