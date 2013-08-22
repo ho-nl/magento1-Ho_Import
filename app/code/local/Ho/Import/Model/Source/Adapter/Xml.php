@@ -112,7 +112,7 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
      */
     public function __construct($data)
     {
-        $source = $data['file'];
+        $source = is_string($data) ? $data : $data['file'];
         if (!is_string($source)) {
             Mage::throwException(Mage::helper('importexport')->__('Source file path must be a string'));
         }
