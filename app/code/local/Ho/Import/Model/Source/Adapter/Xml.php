@@ -151,12 +151,6 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
     public function current()
     {
         return $this->_currentRow;
-        return array_combine(
-            $this->_colNames,
-            count($this->_currentRow) != $this->_colQuantity
-                    ? array_pad($this->_currentRow, $this->_colQuantity, '')
-                    : $this->_currentRow
-        );
     }
 
     /**
