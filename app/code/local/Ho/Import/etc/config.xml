@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Ho_Import
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the H&O Commercial License
+ * that is bundled with this package in the file LICENSE_HO.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.h-o.nl/license
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@h-o.com so we can send you a copy immediately.
+ *
+ * @category    Ho
+ * @package     Ho_Import
+ * @copyright   Copyright © 2013 H&O (http://www.h-o.nl/)
+ * @license     H&O Commercial License (http://www.h-o.nl/license)
+ * @author      Paul Hachmang – H&O <info@h-o.nl>
+ *
+ * 
+ */
+-->
+
+<config>
+	<modules>
+		<Ho_Import>
+			<version>0.5.0</version>
+		</Ho_Import>
+	</modules>
+	<global>
+		<blocks>
+			<ho_import>
+				<class>Ho_Import_Block</class>
+			</ho_import>
+		</blocks>
+		<helpers>
+			<ho_import>
+				<class>Ho_Import_Helper</class>
+			</ho_import>
+		</helpers>
+		<models>
+			<ho_import>
+				<class>Ho_Import_Model</class>
+                <resourceModel>ho_import_resource</resourceModel>
+			</ho_import>
+            <ho_import_resource>
+                <class>Ho_Import_Model_Resource</class>
+                <!--<entities>-->
+                    <!--<tablename>-->
+                        <!--<table>ho_import_tablename</table>-->
+                    <!--</tablename>-->
+                <!--</entities>-->
+            </ho_import_resource>
+		</models>
+        <resources>
+            <ho_import_setup>
+                <setup>
+                    <module>Ho_Import</module>
+                    <class>Ho_Import_Model_Resource_Setup</class>
+                </setup>
+            </ho_import_setup>
+        </resources>
+
+		<!--<events>-->
+			<!--<http_response_send_before>-->
+				<!--<observers>-->
+					<!--<ho_import_head_observer>-->
+						<!--<type>singleton</type>-->
+						<!--<class>Ho_Import_Model_Observer</class>-->
+						<!--<method>check</method>-->
+					<!--</ho_import_head_observer>-->
+				<!--</observers>-->
+			<!--</http_response_send_before>-->
+		<!--</events>-->
+	</global>
+	<frontend>
+		<!--<routers>-->
+			<!--<ho_import>-->
+				<!--<use>standard</use>-->
+				<!--<args>-->
+					<!--<module>Ho_Import</module>-->
+					<!--<frontName>ho_import</frontName>-->
+				<!--</args>-->
+			<!--</ho_import>-->
+		<!--</routers>-->
+		<!--<layout>-->
+			<!--<updates>-->
+				<!--<ho_import module="ho_import">-->
+					<!--<file>ho/import.xml</file>-->
+				<!--</ho_import>-->
+			<!--</updates>-->
+		<!--</layout>-->
+        <!--<translate>-->
+            <!--<modules>-->
+                <!--<ho_import>-->
+                    <!--<files>-->
+                        <!--<default>Ho_Import.csv</default>-->
+                    <!--</files>-->
+                <!--</ho_import>-->
+            <!--</modules>-->
+        <!--</translate>-->
+	</frontend>
+    <adminhtml>
+        <!--<translate>-->
+            <!--<modules>-->
+                <!--<ho_import>-->
+                    <!--<files>-->
+                        <!--<default>Ho_Import.csv</default>-->
+                    <!--</files>-->
+                <!--</ho_import>-->
+            <!--</modules>-->
+        <!--</translate>-->
+    </adminhtml>
+    <admin>
+        <!--<routers>-->
+            <!--<adminhtml>-->
+                <!--<args>-->
+                    <!--<modules>-->
+                        <!--<Ho_Import before="Mage_Adminhtml">Ho_Import_Adminhtml</Ho_Import>-->
+                    <!--</modules>-->
+                <!--</args>-->
+            <!--</adminhtml>-->
+        <!--</routers>-->
+    </admin>
+	<default>
+		<!--<ho_import>-->
+			<!--<group>-->
+				<!--<variable>somevar</variable>-->
+			<!--</group>-->
+		<!--</ho_import>-->
+	</default>
+	<!--<crontab>-->
+		<!--<jobs>-->
+			<!--<ho_import>-->
+				<!--<schedule>-->
+					<!--<cron_expr>* * * * *</cron_expr>-->
+				<!--</schedule>-->
+				<!--<run>-->
+					<!--<model>ho_import/observer::</model>-->
+				<!--</run>-->
+			<!--</ho_import>-->
+		<!--</jobs>-->
+	<!--</crontab>-->
+</config>

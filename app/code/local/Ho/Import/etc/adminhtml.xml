@@ -1,0 +1,64 @@
+<?xml version="1.0"?><!--
+/**
+ * Ho_Import
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the H&O Commercial License
+ * that is bundled with this package in the file LICENSE_HO.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://www.h-o.nl/license
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@h-o.com so we can send you a copy immediately.
+ *
+ * @category    Ho
+ * @package     Ho_Import
+ * @copyright   Copyright © 2012 H&O (http://www.h-o.nl/)
+ * @license     H&O Commercial License (http://www.h-o.nl/license)
+ * @author      Paul Hachmang – H&O <info@h-o.nl>
+ *
+ * 
+ */
+-->
+
+<config>
+    <!--<menu>-->
+        <!--<system>-->
+            <!--<children>-->
+                <!--<ho_import translate="title"-->
+                                     <!--module="ho_import">-->
+                    <!--<title>Manage Ho_Import</title>-->
+                    <!--<children>-->
+                        <!--<rates translate="title">-->
+                            <!--<title>Rates</title>-->
+                            <!--<action>adminhtml/system_currency</action>-->
+                            <!--<sort_order>50</sort_order>-->
+                        <!--</rates>-->
+                    <!--</children>-->
+                    <!--<sort_order>50</sort_order>-->
+                <!--</ho_import>-->
+            <!--</children>-->
+        <!--</system>-->
+    <!--</menu>-->
+
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <ho_import translate="title">
+                                        <title>H&amp;O Import</title>
+                                    </ho_import>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
