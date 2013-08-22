@@ -119,6 +119,10 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
         if (!is_readable($source)) {
             Mage::throwException(Mage::helper('importexport')->__("%s file does not exists or is not readable", $source));
         }
+        if (!is_file($source)) {
+            Mage::throwException(Mage::helper('importexport')->__("%s isn't a file, probably a folder.", $source));
+        }
+
         $this->_source = $source;
 
         if (isset($data['rootNode'])) {
