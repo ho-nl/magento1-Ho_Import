@@ -657,7 +657,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
             $arguments = array();
             foreach ($source->children() as $key => $value) {
-                $arguments[$key] = $value;
+                $arguments[$key] = (string) $value;
             }
 
             if (isset($arguments['file']) && !is_readable($arguments['file'])) {
