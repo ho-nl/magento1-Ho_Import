@@ -671,6 +671,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 $arguments = $arguments['file'];
             }
 
+            $this->_getLog()->log($this->_getLog()->__('Getting source adapter %s', $source->getAttribute('model')));
             $importModel = Mage::getModel($source->getAttribute('model'), $arguments);
 
             if (! $source) {
