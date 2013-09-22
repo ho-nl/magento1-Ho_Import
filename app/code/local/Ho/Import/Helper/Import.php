@@ -33,10 +33,12 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     /**
      * Import the product to all websites, this will return all the websites.
      *
-     * @param $line
+     * @param array $line
+     * @param $limit
+     *
      * @return array|null
      */
-    public function getAllWebsites($line) {
+    public function getAllWebsites($line, $limit) {
         if ($this->_websiteIds === null) {
             $this->_websiteIds = array();
             foreach (Mage::app()->getWebsites() as $website) {
@@ -45,6 +47,11 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
                 $this->_websiteIds[] = $website->getCode();
             }
         }
+
+        if ($limit) {
+            return array_slice($this->_websiteIds, 0, $limit);
+        }
+
         return $this->_websiteIds;
     }
 
