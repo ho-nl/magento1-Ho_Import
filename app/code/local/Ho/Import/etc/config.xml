@@ -58,7 +58,6 @@
             <ho_import_setup>
                 <setup>
                     <module>Ho_Import</module>
-                    <class>Ho_Import_Model_Resource_Setup</class>
                 </setup>
             </ho_import_setup>
         </resources>
