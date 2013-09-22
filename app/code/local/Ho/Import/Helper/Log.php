@@ -105,6 +105,10 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
                         $row[$column] = json_encode($row[$column]);
                     }
 
+                    if (strpos($row[$column], "\n")) {
+                        $row[$column] = str_replace("\n",'\n',$row[$column]);
+                    }
+
                     $flippedArray[$column][] = $row[$column];
                 } else {
                     $flippedArray[$column][] = '';
