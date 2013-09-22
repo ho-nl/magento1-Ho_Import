@@ -30,6 +30,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     /** @var null */
     protected $_fileUploader = null;
 
+
     /**
      * Import the product to all websites, this will return all the websites.
      *
@@ -53,6 +54,25 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         }
 
         return $this->_websiteIds;
+    }
+
+    public function findReplace($line, $field, $findReplaces = array(), $trim = false) {
+        if (! isset($line[$field]) && empty($line[$field])) {
+            return '';
+        }
+
+        $value = $line[$field];
+        foreach ($findReplaces as $findReplace) {
+            if (strpos($value, $findReplace['@']['find']) !== false) {
+                $value = str_replace($findReplace['@']['find'], $findReplace['@']['replace'], $value);
+            }
+        }
+
+        if ($trim) {
+            return trim($value);
+        }
+
+        return $value;
     }
 
 
@@ -128,8 +148,10 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     /**
      * Get multiple rows in one field.
      *
-     * @param $line
-     * @param $fields
+     * @param      $line
+     * @param      $fields
+     *
+     * @param bool $withKeys
      *
      * @return array
      */
