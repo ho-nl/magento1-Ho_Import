@@ -723,8 +723,8 @@ class Ho_Import_Model_Import extends Varien_Object
             }
         }
 
-        $errorLines = array_slice($errorLines, 0, 3);
-        $this->_getLog()->log($this->_getLog()->__("Debugging first three error lines %s", implode(',',$errorLines)), Zend_Log::DEBUG);
+        $errorLines = array_slice($errorLines, 0, 5);
+        $this->_getLog()->log($this->_getLog()->__("Debugging first 5 error lines %s", implode(',',$errorLines)), Zend_Log::DEBUG);
 
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = Mage::getModel('importexport/import_adapter_csv', $this->_getFileName());
