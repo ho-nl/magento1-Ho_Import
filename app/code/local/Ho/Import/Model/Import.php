@@ -79,7 +79,7 @@ class Ho_Import_Model_Import extends Varien_Object
     public function mapLines($lines) {
         $this->_downloader();
 
-        $lines = $lines !== null ? explode(',',$lines) : array();
+        $lines = $lines ? explode(',',$lines) : array();
 
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();

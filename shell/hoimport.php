@@ -143,7 +143,8 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 
    	public function lineActionHelp() {
    		return "\n\t-profile profile_name"
-              ."\n\t-line 1,2,3                     Commaseparated list of lines to be checked";
+              ."\n\t-line 1,2,3                     Commaseparated list of lines to be checked"
+              ."\n\t-search sku=abd                 Alternatively you can search for a value of a field";
    	}
 }
 
