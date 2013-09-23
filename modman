@@ -1,3 +1,4 @@
 app/code/local/Ho/Import/             app/code/local/Ho/Import/
 app/etc/modules/*                     app/etc/modules/
 shell/*                               shell/
+lib/*                                 lib/

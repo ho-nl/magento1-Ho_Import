@@ -1,0 +1,3 @@
+[submodule "lib/spreadsheet-reader"]
+	path = lib/spreadsheet-reader
+	url = git@github.com:nuovo/spreadsheet-reader.git
