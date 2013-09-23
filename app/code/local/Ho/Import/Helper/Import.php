@@ -56,6 +56,15 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $this->_websiteIds;
     }
 
+
+    /**
+     * @param       $line
+     * @param       $field
+     * @param array $findReplaces
+     * @param bool  $trim
+     *
+     * @return mixed|string
+     */
     public function findReplace($line, $field, $findReplaces = array(), $trim = false) {
         if (! isset($line[$field]) && empty($line[$field])) {
             return '';
@@ -73,6 +82,19 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         }
 
         return $value;
+    }
+
+
+    /**
+     * @param string      $line
+     * @param null|string $field
+     * @param string      $allowedTags
+     *
+     * @return string
+     */
+    public function stripTags($line, $field, $allowedTags = '<p><a><br>') {
+        $content = strip_tags($line[$field], $allowedTags);
+        return $content ? $content : '<!--empty-->';
     }
 
 
@@ -174,7 +196,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             }
 
             //value support
-            if ((isset($fieldName) && empty($value)) && isset($field['@']['value'])) {
+            if (empty($value) && isset($field['@']['value'])) {
                 $value = $field['@']['value'];
             }
 
