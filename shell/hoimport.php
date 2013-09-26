@@ -115,7 +115,8 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
               ."\n\t-dropdown_attributes attr1,attr2  Comma separated list of dropdownattributes that are autofilled when importing."
               ."\n\t-rename_files 0                   Normally, when importing, images are renamed if an image exists. Set this to 0 to overwrite images"
               ."\n\t-dryrun 1                         Run a dryrun, validate all data agains the Magento validator but do not import anything"
-              ."\n\t-ignore_duplicates 1              When importing categories you can ignore the duplicates here.;";
+              ."\n\t-ignore_duplicates 1              Ignore duplicates.;"
+              ."\n\t-error_limit 10000                Set the error limit, default=100 error lines.;";
    	}
 
 

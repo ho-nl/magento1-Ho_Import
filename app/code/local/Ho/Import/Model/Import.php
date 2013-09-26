@@ -47,6 +47,10 @@ class Ho_Import_Model_Import extends Varien_Object
 
     protected $_fileName = null;
 
+    protected function _construct() {
+        ini_set('memory_limit', '2G');
+    }
+
     /**
      * @throws Exception
      * @return \Ho_Import_Model_Import
