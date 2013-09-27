@@ -228,7 +228,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $seconds = round(microtime(true) - $timer, 2);
         $rowsPerSecond = round($this->getRowCount() / $seconds, 2);
-        $this->_getLog()->log("Fieldmapping {$this->getProfile()} done in $seconds seconds, $rowsPerSecond rows/s");
+        $this->_getLog()->log("Fieldmapping {$this->getProfile()} with {$this->getRowCount()} rows (done in $seconds seconds, $rowsPerSecond rows/s)");
 
         return true;
     }
