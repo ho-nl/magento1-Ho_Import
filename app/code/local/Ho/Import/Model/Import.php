@@ -58,6 +58,10 @@ class Ho_Import_Model_Import extends Varien_Object
     public function process() {
         $this->_downloader();
 
+        if (! array_key_exists($this->getProfile(), $this->getProfiles())) {
+            Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
+        }
+
         $entity = $this->_getEntityType();
         $camel = new Zend_Filter_Word_UnderscoreToCamelCase();
         $method = '_import'.$camel->filter($entity);
