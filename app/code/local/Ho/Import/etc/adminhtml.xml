@@ -41,24 +41,23 @@
             <!--</children>-->
         <!--</system>-->
     <!--</menu>-->
-
-    <acl>
-        <resources>
-            <admin>
-                <children>
-                    <system>
-                        <children>
-                            <config>
-                                <children>
-                                    <ho_import translate="title">
-                                        <title>H&amp;O Import</title>
-                                    </ho_import>
-                                </children>
-                            </config>
-                        </children>
-                    </system>
-                </children>
-            </admin>
-        </resources>
-    </acl>
+    <!--<acl>-->
+        <!--<resources>-->
+            <!--<admin>-->
+                <!--<children>-->
+                    <!--<system>-->
+                        <!--<children>-->
+                            <!--<config>-->
+                                <!--<children>-->
+                                    <!--<ho_import translate="title">-->
+                                        <!--<title>H&amp;O Import</title>-->
+                                    <!--</ho_import>-->
+                                <!--</children>-->
+                            <!--</config>-->
+                        <!--</children>-->
+                    <!--</system>-->
+                <!--</children>-->
+            <!--</admin>-->
+        <!--</resources>-->
+    <!--</acl>-->
 </config>
