@@ -129,7 +129,7 @@ class Ho_Import_Model_Import extends Varien_Object
             $transport->setData('items', array($sourceRows[$line]));
             $this->_runEvent('source_row_fieldmap_before', $transport);
             if ($transport->getData('skip')) {
-                $this->_getLog()->log($this->_getLog()->__('This line (%s) would be skipped', $line));
+                $this->_getLog()->log($this->_getLog()->__('This line (%s) would be skipped', $line), Zend_Log::WARN);
             }
 
             $i = 0;

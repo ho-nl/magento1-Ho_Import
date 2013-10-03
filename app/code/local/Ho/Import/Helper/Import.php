@@ -253,22 +253,6 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    /**
-     * Generate an URL-key from multiple fields
-     *
-     * @param        $line
-     * @param        $fields
-     * @param string $glue
-     * @param string $suffix
-     *
-     * @return string
-     */
-    public function getUrlKey($line, $fields, $glue = '-', $suffix = '')
-    {
-        $string = $this->getFieldCombine($line, $fields, $glue, $suffix);
-        return Mage::getSingleton('catalog/category')->formatUrlKey($string).$suffix;
-    }
-
 
     /**
      * Download given file to ImportExport Tmp Dir (usually media/import)
@@ -282,7 +266,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             return;
         }
         Mage::helper('ho_import/log')->log($this->__("Downloading image %s", $url));
-
+        
         try {
             $this->_fileCache[$url] = true;
             $dir = $this->_getUploader()->getTmpDir();

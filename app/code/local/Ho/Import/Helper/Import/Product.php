@@ -20,7 +20,7 @@
  *
  *
  */
-class Ho_Import_Helper_Import_Category extends Mage_Core_Helper_Abstract
+class Ho_Import_Helper_Import_Product extends Mage_Core_Helper_Abstract
 {
     /**
      * Generate an URL-key from multiple fields
@@ -35,6 +35,6 @@ class Ho_Import_Helper_Import_Category extends Mage_Core_Helper_Abstract
     public function getUrlKey($line, $fields, $glue = '-', $suffix = '')
     {
         $string = Mage::helper('ho_import/import')->getFieldCombine($line, $fields, $glue, $suffix);
-        return Mage::getSingleton('catalog/product')->formatUrlKey($string).$suffix;
+        return Mage::getSingleton('catalog/category')->formatUrlKey($string).$suffix;
     }
 }
