@@ -107,9 +107,9 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
    	public function importActionHelp() {
         /** @var Ho_Import_Model_Import $import */
         $import = Mage::getModel('ho_import/import');
-        $profiles = implode(",",array_keys($import->getProfiles()));
+        $profiles = implode("    ",array_keys($import->getProfiles()));
 
-   		return "\n\t-profile profile_name             Available profiles: {$profiles}"
+   		return "\n\t-profile profile_name             Available profiles:    {$profiles}"
               ."\n\t-partial_indexing 1               When done importing will the imported products be indexed or will the whole system be indexed"
               ."\n\t-continue_after_errors 1          If encountered an error, will we continue, sometimes one row is corrupt, but the rest is fine"
               ."\n\t-dropdown_attributes attr1,attr2  Comma separated list of dropdownattributes that are autofilled when importing."
@@ -143,9 +143,13 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
     }
 
    	public function lineActionHelp() {
-   		return "\n\t-profile profile_name"
-              ."\n\t-line 1,2,3                     Commaseparated list of lines to be checked"
-              ."\n\t-search sku=abd                 Alternatively you can search for a value of a field";
+        /** @var Ho_Import_Model_Import $import */
+        $import = Mage::getModel('ho_import/import');
+        $profiles = implode("    ",array_keys($import->getProfiles()));
+
+   		return "\n\t-profile profile_name             Available profiles:    {$profiles}"
+              ."\n\t-line 1,2,3                       Commaseparated list of lines to be checked"
+              ."\n\t-search sku=abd                   Alternatively you can search for a value of a field";
    	}
 }
 
