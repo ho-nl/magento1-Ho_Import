@@ -128,6 +128,9 @@ class Ho_Import_Model_Import extends Varien_Object
             $sourceRows[$line] = $sourceAdapter->current();
             $transport->setData('items', array($sourceRows[$line]));
             $this->_runEvent('source_row_fieldmap_before', $transport);
+            if ($transport->getData('skip')) {
+                $this->_getLog()->log($this->_getLog()->__('This line (%s) would be skipped', $line));
+            }
 
             $i = 0;
             foreach ($transport->getData('items') as $preparedItem) {
@@ -228,6 +231,11 @@ class Ho_Import_Model_Import extends Varien_Object
             $transport = $this->_getTransport();
             $transport->setData('items', array($sourceAdapter->current()));
             $this->_runEvent('source_row_fieldmap_before', $transport);
+            if ($transport->getData('skip')) {
+                $rowCount++;
+                $sourceAdapter->next();
+                continue;
+            }
 
             foreach ($transport->getData('items') as $preparedItem) {
                 $result = $this->_fieldMapItem($preparedItem);
