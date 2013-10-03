@@ -124,7 +124,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 Mage::throwException($this->_getLog()->__("Line %s is not valid in %s", $line, $this->getProfile()));
             }
 
-            $transport = new Varien_Object();
+            $transport = $this->_getTransport();
             $sourceRows[$line] = $sourceAdapter->current();
             $transport->setData('items', array($sourceRows[$line]));
             $this->_runEvent('source_row_fieldmap_before', $transport);
@@ -162,6 +162,18 @@ class Ho_Import_Model_Import extends Varien_Object
         return true;
     }
 
+    /** @var Varien_Object  */
+    protected $_transport = NULL;
+    protected function _getTransport() {
+        if ($this->_transport === NULL) {
+            return new Varien_Object();
+        } else {
+            $this->_transport->setData(array());
+            $this->_transport->setOrigData(array());
+            $this->_transport->setDataChanges(false);
+        }
+        return $this->_transport;
+    }
 
     protected function _downloader() {
         $data = $this->getImportData();
@@ -193,7 +205,7 @@ class Ho_Import_Model_Import extends Varien_Object
         $args = array_merge($downloader->asArray());
         unset($args['@']);
 
-        $transport = new Varien_Object();
+        $transport = $this->_getTransport();
         $transport->addData($args);
 
         try {
@@ -213,7 +225,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $rowCount = 0;
         while ($sourceAdapter->valid()) {
-            $transport = new Varien_Object();
+            $transport = $this->_getTransport();
             $transport->setData('items', array($sourceAdapter->current()));
             $this->_runEvent('source_row_fieldmap_before', $transport);
 
@@ -253,13 +265,13 @@ class Ho_Import_Model_Import extends Varien_Object
             $fastsimpleimport->setDataUsingMethod($key, (string) $value);
         }
 
-        $transport = new Varien_Object();
+        $transport = $this->_getTransport();
         $transport->setData('object', $fastsimpleimport);
         $this->_runEvent('before_import');
 
         $errors = $this->_importData();
 
-        $transport = new Varien_Object();
+        $transport = $this->_getTransport();
         $transport->addData(array('object' => $fastsimpleimport, 'errors' => $errors));
         $this->_runEvent('after_import');
         return $errors;
@@ -285,13 +297,13 @@ class Ho_Import_Model_Import extends Varien_Object
             $fastsimpleimport->setDataUsingMethod($key, (string) $value);
         }
 
-        $transport = new Varien_Object();
+        $transport = $this->_getTransport();
         $transport->setData('object', $fastsimpleimport);
         $this->_runEvent('before_import');
 
         $errors = $this->_importData();
 
-        $transport = new Varien_Object();
+        $transport = $this->_getTransport();
         $transport->addData(array('object' => $fastsimpleimport, 'errors' => $errors));
         $this->_runEvent('after_import');
         return $errors;
@@ -314,13 +326,13 @@ class Ho_Import_Model_Import extends Varien_Object
             $fastsimpleimport->setAllowRenameFiles(false);
         }
 
-        $transport = new Varien_Object();
+        $transport = $this->_getTransport();
         $transport->setData('object', $fastsimpleimport);
         $this->_runEvent('before_import');
 
         $errors = $this->_importData();
 
-        $transport = new Varien_Object();
+        $transport = $this->_getTransport();
         $transport->addData(array('object' => $fastsimpleimport, 'errors' => $errors));
         $this->_runEvent('after_import');
 
@@ -350,7 +362,7 @@ class Ho_Import_Model_Import extends Varien_Object
 //            $sourceAdapter->next();
 //        }
 //
-//        $transport = new Varien_Object();
+//        $transport = $this->_getTransport();
 //        $transport->setData('categories_with_roots', $categoriesWithRoots);
 //        $this->_runEvent(self::IMPORT_CONFIG_AFTER_IMPORT, $transport);
 
@@ -399,7 +411,7 @@ class Ho_Import_Model_Import extends Varien_Object
         $args = array_merge($node->$event->asArray());
         unset($args['@']);
 
-        $transport = $transport !== null ? $transport : new Varien_Object();
+        $transport = $transport !== null ? $transport : $this->_getTransport();
         call_user_func(array($helper, $method), $transport);
         return $transport;
     }
