@@ -139,7 +139,7 @@
 	<crontab>
 		<jobs>
 			<ho_import_schedule>
-				<schedule><cron_expr>* */1 * * *</cron_expr></schedule>
+				<schedule><cron_expr>0 * * * *</cron_expr></schedule>
 				<run><model>ho_import/observer::schedule</model></run>
 			</ho_import_schedule>
 		</jobs>
