@@ -110,6 +110,8 @@ class Ho_Import_Model_Import extends Varien_Object
             }
 
             $lines = array($sourceAdapter->key());
+        } else {
+            $lines = array(1);
         }
 
         $entities = array();
@@ -493,7 +495,6 @@ class Ho_Import_Model_Import extends Varien_Object
                 if ($column->getAttribute('use')) {
                     $column = $columnData[$column->getAttribute('use')];
                 }
-
                 // get field value with a helper
                 if ($column->getAttribute('helper')) {
                     //get the helper and method
@@ -702,8 +703,8 @@ class Ho_Import_Model_Import extends Varien_Object
             $this->_getLog()->log($this->_getLog()->__('Getting source adapter %s', $source->getAttribute('model')));
             $importModel = Mage::getModel($source->getAttribute('model'), $arguments);
 
-            if (! $source) {
-                Mage::throwException($this->_getLog()->__('Import model not found for profile %s', $this->getProfile()));
+            if (! $importModel) {
+                Mage::throwException($this->_getLog()->__('Import model (%s) not found for profile %s', $source->getAttribute('model'), $this->getProfile()));
             }
 
             $this->_sourceAdapter = $importModel;
