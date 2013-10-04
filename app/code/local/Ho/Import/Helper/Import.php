@@ -92,7 +92,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function stripTags($line, $field, $allowedTags = '<p><a><br>') {
+    public function stripHtmlTags($line, $field, $allowedTags = '<p><a><br>') {
         $content = trim(strip_tags($line[$field], $allowedTags));
         return $content ? $content : '<!--empty-->';
     }

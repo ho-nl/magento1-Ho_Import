@@ -61,7 +61,6 @@
                 </setup>
             </ho_import_setup>
         </resources>
-
 		<!--<events>-->
 			<!--<http_response_send_before>-->
 				<!--<observers>-->
@@ -111,17 +110,24 @@
                 <!--</ho_import>-->
             <!--</modules>-->
         <!--</translate>-->
+        <layout>
+            <updates>
+                <ho_import module="ho_import">
+                    <file>ho/import.xml</file>
+                </ho_import>
+            </updates>
+        </layout>
     </adminhtml>
     <admin>
-        <!--<routers>-->
-            <!--<adminhtml>-->
-                <!--<args>-->
-                    <!--<modules>-->
-                        <!--<Ho_Import before="Mage_Adminhtml">Ho_Import_Adminhtml</Ho_Import>-->
-                    <!--</modules>-->
-                <!--</args>-->
-            <!--</adminhtml>-->
-        <!--</routers>-->
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <Ho_Import before="Mage_Adminhtml">Ho_Import_Adminhtml</Ho_Import>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
     </admin>
 	<default>
 		<!--<ho_import>-->
@@ -130,16 +136,12 @@
 			<!--</group>-->
 		<!--</ho_import>-->
 	</default>
-	<!--<crontab>-->
-		<!--<jobs>-->
-			<!--<ho_import>-->
-				<!--<schedule>-->
-					<!--<cron_expr>* * * * *</cron_expr>-->
-				<!--</schedule>-->
-				<!--<run>-->
-					<!--<model>ho_import/observer::</model>-->
-				<!--</run>-->
-			<!--</ho_import>-->
-		<!--</jobs>-->
-	<!--</crontab>-->
+	<crontab>
+		<jobs>
+			<ho_import_schedule>
+				<schedule><cron_expr>* */1 * * *</cron_expr></schedule>
+				<run><model>ho_import/observer::schedule</model></run>
+			</ho_import_schedule>
+		</jobs>
+	</crontab>
 </config>

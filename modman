@@ -1,4 +1,11 @@
-app/code/local/Ho/Import/             app/code/local/Ho/Import/
-app/etc/modules/*                     app/etc/modules/
-shell/*                               shell/
-lib/*                                 lib/
+# Ho_Import
+app/code/local/Ho/Import/                             app/code/local/Ho/Import/
+app/etc/modules/*                                     app/etc/modules/
+#app/design/frontend/base/default/layout/ho/*         app/design/frontend/base/default/layout/ho/
+#app/design/frontend/base/default/template/ho/*       app/design/frontend/base/default/template/ho/
+app/design/adminhtml/default/default/layout/ho/*      app/design/adminhtml/default/default/layout/ho/
+#app/design/adminhtml/default/default/template/ho/*   app/design/adminhtml/default/default/template/ho/
+#js/ho/import/*                                       js/ho/import/
+#skin/frontend/base/default/ho/*                      skin/frontend/base/default/ho/
+shell/*                                               shell/
+lib/*                                                 lib/

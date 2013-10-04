@@ -23,41 +23,38 @@
 -->
 
 <config>
-    <!--<menu>-->
-        <!--<system>-->
-            <!--<children>-->
-                <!--<ho_import translate="title"-->
-                                     <!--module="ho_import">-->
-                    <!--<title>Manage Ho_Import</title>-->
-                    <!--<children>-->
-                        <!--<rates translate="title">-->
-                            <!--<title>Rates</title>-->
-                            <!--<action>adminhtml/system_currency</action>-->
-                            <!--<sort_order>50</sort_order>-->
-                        <!--</rates>-->
-                    <!--</children>-->
-                    <!--<sort_order>50</sort_order>-->
-                <!--</ho_import>-->
-            <!--</children>-->
-        <!--</system>-->
-    <!--</menu>-->
-    <!--<acl>-->
-        <!--<resources>-->
-            <!--<admin>-->
-                <!--<children>-->
-                    <!--<system>-->
-                        <!--<children>-->
-                            <!--<config>-->
-                                <!--<children>-->
-                                    <!--<ho_import translate="title">-->
-                                        <!--<title>H&amp;O Import</title>-->
-                                    <!--</ho_import>-->
-                                <!--</children>-->
-                            <!--</config>-->
-                        <!--</children>-->
-                    <!--</system>-->
-                <!--</children>-->
-            <!--</admin>-->
-        <!--</resources>-->
-    <!--</acl>-->
+    <menu>
+        <system>
+            <children>
+                <convert>
+                    <children>
+                        <ho_import translate="title" module="ho_import">
+                            <title>H&amp;O Import</title>
+                            <action>adminhtml/ho_import</action>
+                            <sort_order>80</sort_order>
+                        </ho_import>
+                    </children>
+                </convert>
+            </children>
+        </system>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <ho_import translate="title">
+                                        <title>H&amp;O Import</title>
+                                    </ho_import>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
 </config>

@@ -203,13 +203,17 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
     /**
      * When logging to the admin notification inbox.
      */
-    public function done()
+    public function done($minLevel = Zend_Log::DEBUG)
     {
         if ($this->_mode == self::LOG_MODE_NOTIFICATION) {
             /* @var $inbox Mage_AdminNotification_Model_Inbox */
             $inbox = Mage::getModel('adminnotification/inbox');
 
             $level = array_search(min($this->_logEntries), $this->_logEntries);
+            if ($level < $minLevel) {
+                return;
+            }
+
             switch($level)
             {
                 case Zend_Log::EMERG:
@@ -217,13 +221,16 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
                 case Zend_Log::CRIT:
                 case Zend_Log::ERR:
                 case Zend_Log::WARN:
-                    $inbox->addCritical(reset(reset($this->_logEntries)), $this->getLogHtml());
+                    $firstRow = reset($this->_logEntries);
+                    $inbox->addCritical(reset($firstRow), $this->getLogHtml());
                     break;
                 case Zend_Log::DEBUG:
-                    $inbox->addNotice(reset(reset($this->_logEntries)), $this->getLogHtml());
+                    $firstRow = reset($this->_logEntries);
+                    $inbox->addNotice(reset($firstRow), $this->getLogHtml());
                     break;
                 default:
-                    $inbox->addMinor(reset(reset($this->_logEntries)), $this->getLogHtml());
+                    $firstRow = reset($this->_logEntries);
+                    $inbox->addMinor(reset($firstRow), $this->getLogHtml());
                     break;
             }
         }

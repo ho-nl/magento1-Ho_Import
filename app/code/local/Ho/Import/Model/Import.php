@@ -296,7 +296,7 @@ class Ho_Import_Model_Import extends Varien_Object
         /* @var $import AvS_FastSimpleImport_Model_Import */
         $fastsimpleimport = Mage::getSingleton('fastsimpleimport/import');
 
-        $importData = $this->getImportData();
+        $importData = (array) $this->getImportData();
         if (isset($importData['dropdown_attributes'])) {
             $importData['dropdown_attributes'] = explode(',',$importData['dropdown_attributes']);
         }

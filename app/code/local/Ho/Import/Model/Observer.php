@@ -22,4 +22,31 @@
  */
 class Ho_Import_Model_Observer
 {
+    public function schedule() {
+        $importCollection = Mage::getResourceModel('ho_import/system_import_collection');
+        $availableConfigs = array();
+        foreach ($importCollection as $import) {
+            /** @var $import Ho_Import_Model_System_Import */
+            $import->schedule(false);
+        }
+
+        Mage::getConfig()->cleanCache();
+        $importCollection->cleanupCron();
+    }
+
+    public function process(Mage_Cron_Model_Schedule $cron) {
+        $cronName = $cron->getJobCode();
+        $profile = str_replace('ho_import_', '', $cronName);
+
+        try {
+            /** @var Ho_Import_Model_Import $import */
+            $import = Mage::getModel('ho_import/import');
+            $import->setProfile($profile);
+            $import->process();
+        } catch (Mage_Core_Exception $e) {
+            Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
+        }
+
+        Mage::helper('ho_import/log')->done(Zend_Log::WARN);
+    }
 }

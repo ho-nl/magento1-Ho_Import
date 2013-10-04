@@ -40,10 +40,11 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
         /** @var Zend_Db_Adapter_Abstract $db */
         $db = new $model($config);
 
-        if ($config['limit']) {
+        if (isset($config['limit'])) {
             $query = $db->limit($query, $config['limit'], 0);
         }
-        $config['data'] = &$db->fetchAll($query);
+        $result = $db->fetchAll($query);
+        $config['data'] = &$result;
 
         return parent::__construct($config);
     }
