@@ -57,7 +57,7 @@
         <resources>
             <ho_import_setup>
                 <setup>
-                    <module>Ho_Import</module>
+                    <module>Mage_Eav_Model_Entity_Setup</module>
                 </setup>
             </ho_import_setup>
         </resources>

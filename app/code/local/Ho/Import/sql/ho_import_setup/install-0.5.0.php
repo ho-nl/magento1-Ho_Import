@@ -22,7 +22,7 @@
  */
 ?>
 <?php
-/* @var $installer Ho_Import_Model_Resource_Setup */
+/* @var $installer Mage_Eav_Model_Entity_Setup */
 $installer = $this;
 $installer->startSetup();
 
