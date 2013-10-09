@@ -31,6 +31,7 @@
                 <Mage_Core />
                 <Mage_ImportExport/>
                 <Mage_Customer/>
+                <Avs_FastSimpleImport/>
             </depends>
         </Ho_Import>
     </modules>
