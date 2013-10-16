@@ -88,6 +88,10 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
     protected function _renderCliTable($arrays, $level) {
         $maxWidth = exec('tput cols');
 
+        if (count($arrays) > 5) {
+            $arrays = array_slice($arrays, 0, 5);
+        }
+
         $columnsOrig = array();
         foreach ($arrays as $row) {
             foreach ($row as $col => $value) {
@@ -133,9 +137,7 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
             }
         }
 
-
-
-        $maxColumnWidth = ($maxWidth - reset($columns)) / (count($columns) - 1) - 4;
+        $maxColumnWidth = ($maxWidth - reset($columns)) / (count($columns) - 1) - 10;
         foreach ($columns as $col => $width) {
             if ($col == 'key') continue;
             if ($columns[$col] > $maxColumnWidth) {
