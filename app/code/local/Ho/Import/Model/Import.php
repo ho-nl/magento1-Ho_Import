@@ -110,7 +110,7 @@ class Ho_Import_Model_Import extends Varien_Object
             }
 
             $lines = array($sourceAdapter->key());
-        } else {
+        } elseif (! count($lines)) {
             $lines = array(1);
         }
 
