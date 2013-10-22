@@ -276,7 +276,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             $fileName = $dir . DS . basename($url);
             $fileHandle = fopen($fileName, 'w+');
             $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             curl_setopt($ch, CURLOPT_FILE, $fileHandle);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_exec($ch);
