@@ -29,7 +29,7 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
      */
     public function __construct(array $config)
     {
-
+        $logHelper = Mage::helper('ho_import/log');
         $model = $config['model'];
         $query = $config['query'];
         $config['readOnly'] = true;
@@ -40,9 +40,14 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
         /** @var Zend_Db_Adapter_Abstract $db */
         $db = new $model($config);
 
-        if (isset($config['limit'])) {
+        if (isset($config['limit']) || isset($condig['offset'])) {
+            $limit  = (int) $config['limit'];
+            $offset = (int) $config['offset'];
+            $logHelper->log($logHelper->__('Setting limit to %s and offset to %s', $limit, $offset), Zend_Log::WARN);
             $query = $db->limit($query, $config['limit'], 0);
         }
+
+        $logHelper->log('Fetching data...');
         $result = $db->fetchAll($query);
         $config['data'] = &$result;
 
