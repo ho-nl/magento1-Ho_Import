@@ -46,6 +46,7 @@ class Ho_Import_Block_Adminhtml_Ho_Import_Grid extends Mage_Adminhtml_Block_Widg
     protected function _prepareCollection()
     {
         if (! $this->getCollection()) {
+            /** @var Ho_Import_Model_Resource_System_Import_Collection $collection */
             $collection = Mage::getResourceModel($this->_getCollectionClass());
             $this->setCollection($collection);
         }
@@ -68,14 +69,27 @@ class Ho_Import_Block_Adminhtml_Ho_Import_Grid extends Mage_Adminhtml_Block_Widg
             'index' => 'entity_type',
         ));
 
-        $this->addColumn('schedule', array(
+        $this->addColumn('schedule_render', array(
             'header'=> Mage::helper('ho_import')->__('Schedule'),
             'width' => '1px',
             'type'  => 'text',
-            'index' => 'schedule',
+            'index' => 'schedule_render',
+            'frame_callback' => array($this, 'decorateSchedule')
         ));
 
         return parent::_prepareColumns();
+    }
+    public function decorateSchedule($value, $row, $column, $isExport) {
+        $schedule = $row->getSchedule();
+        if (! $schedule || is_string($schedule)) {
+            return $schedule;
+        }
+
+        $html = '';
+        foreach ($schedule as $key => $value) {
+            $html .= sprintf('%s: %s<br /', $key, $value);
+        }
+        return $html;
     }
 
     protected function _prepareMassaction()
@@ -85,9 +99,9 @@ class Ho_Import_Block_Adminhtml_Ho_Import_Grid extends Mage_Adminhtml_Block_Widg
 
     public function getRowUrl($row)
     {
-        if (Mage::getSingleton('admin/session')->isAllowed('system/ho_import/actions/view')) {
-           return $this->getUrl('*/*/view', array('batch_id' => $row->getId()));
-        }
+//        if (Mage::getSingleton('admin/session')->isAllowed('system/ho_import/actions/view')) {
+//           return $this->getUrl('*/*/view', array('schedule' => $row->getId()));
+//        }
         return null;
     }
 
