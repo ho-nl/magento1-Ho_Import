@@ -276,10 +276,19 @@ with the information set.
 #### before_import
 - `object`
 
+<events>
+<!--<source_row_fieldmap_before helper="ho_import/import_product::checkIfValid"/>-->
+<!--<before_import helper="ho_import/import_product::callWifeIfItIsOk"/>-->
+<!--<after_import helper="ho_import/import_product::reindexStuff"/>-->
+</events>
+
 ### Fieldmap
 This is perhaps the most interesting
 
 --- TODO ---
+#### XML-format
+#### Intergrated Helpers
+#### Customer Helpers
 
 ## License
 [OSL - Open Software Licence 3.0](http://opensource.org/licenses/osl-3.0.php)
