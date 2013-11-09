@@ -17,9 +17,8 @@
  * @copyright   Copyright © 2013 H&O (http://www.h-o.nl/)
  * @license     H&O Commercial License (http://www.h-o.nl/license)
  * @author      Paul Hachmang – H&O <info@h-o.nl>
- *
- * XML streamer based on https://github.com/prewk/XmlStreamer/blob/master/XmlStreamer.php
  */
+
 include_once 'spreadsheet-reader/php-excel-reader/excel_reader2.php';
 include_once 'spreadsheet-reader/SpreadsheetReader.php';
 

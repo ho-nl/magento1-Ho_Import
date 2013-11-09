@@ -17,8 +17,6 @@
  * @copyright   Copyright © 2013 H&O (http://www.h-o.nl/)
  * @license     H&O Commercial License (http://www.h-o.nl/license)
  * @author      Paul Hachmang – H&O <info@h-o.nl>
- *
- * XML streamer based on https://github.com/prewk/XmlStreamer/blob/master/XmlStreamer.php
  */
 class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
 {
