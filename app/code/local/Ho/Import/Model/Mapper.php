@@ -111,42 +111,44 @@ class Ho_Import_Model_Mapper
      * @return array|mixed
      */
     public function mapItem($fieldConfig) {
-        if (! $fieldConfig instanceof Mage_Core_Model_Config_Element) {
-            Mage::throwException('Can not map field, $fieldConfig must be an instance of Mage_Core_Model_Config_Element');
+        if ($fieldConfig instanceof Mage_Core_Model_Config_Element) {
+            $fieldConfig = $fieldConfig->asArray();
         }
 
         $item =& $this->getItem();
         $result = null;
+        $attributes = isset($fieldConfig['@']) ? $fieldConfig['@'] : array();
 
         //iffieldvalue
-        if ($field = $fieldConfig->getAttribute('iffieldvalue')) {
-           if (! isset($item[$field]) || empty($item[$field])) {
-               return null;
-           }
+        if (isset($attributes['iffieldvalue'])) {
+            $field = $attributes['iffieldvalue'];
+            if (! isset($item[$field]) || empty($item[$field])) {
+                return null;
+            }
         }
 
         //unlessfieldvalue
-        if ($fieldConfig->getAttribute('unlessfieldvalue') !== null) {
-            $field = $fieldConfig->getAttribute('unlessfieldvalue');
+        if (isset($attributes['unlessfieldvalue'])) {
+            $field = $attributes['unlessfieldvalue'];
             if (isset($item[$field]) && !empty($item[$field])) {
                return null;
            }
         }
 
         // use: ability to copy another field
-        if ($fieldConfig->getAttribute('use') !== null) {
-            return $this->map($fieldConfig->getAttribute('use'));
+        if (isset($attributes['use'])) {
+            return $this->map($attributes['use']);
         }
 
         // helper: get field value with a helper
-        if ($fieldConfig->getAttribute('helper') !== null) {
+        if (isset($attributes['helper'])) {
             //get the helper and method
-            $helperParts = explode('::',$fieldConfig->getAttribute('helper'));
+            $helperParts = explode('::', $attributes['helper']);
             $helper = Mage::helper($helperParts[0]);
             $method = $helperParts[1];
 
             //prepare the arguments
-            $args = $fieldConfig->asArray();
+            $args = $fieldConfig;
             unset($args['@']);
             unset($args['store_view']);
             array_unshift($args, $item);
@@ -156,8 +158,8 @@ class Ho_Import_Model_Mapper
         }
 
         // field: get the exact value of a field
-        if ($fieldConfig->getAttribute('field') !== null) {
-            $field = $fieldConfig->getAttribute('field');
+        if (isset($attributes['field'])) {
+            $field = $attributes['field'];
             //allow us to traverse an array, keys split by a slash.
             if (strpos($field, '/')) {
                 $fieldParts = explode('/',$field);
@@ -167,22 +169,20 @@ class Ho_Import_Model_Mapper
                     $value = isset($value[$part]) ? $value[$part] : null;
                 }
             } else {
-                $value = isset($item[$fieldConfig->getAttribute('field')]) ? $item[$fieldConfig->getAttribute('field')] : null;
+                $value = isset($item[$attributes['field']]) ? $item[$attributes['field']] : null;
             }
 
             $result = $value;
         }
 
         // value: get a fixed value
-        if ($fieldConfig->getAttribute('value') !== null) {
-            $result = $fieldConfig->getAttribute('value');
+        if (isset($attributes['value'])) {
+            $result = $attributes['value'];
         }
 
-
-        if ($fieldConfig->getAttribute('defaultvalue') !== null) {
-            if (empty($result)) {
-                $result = $fieldConfig->getAttribute('defaultvalue');
-            }
+        // defaultvalue
+        if (isset($attributes['defaultvalue']) && empty($result)) {
+            $result = $attributes['defaultvalue'];
         }
 
         return $result;
@@ -212,11 +212,11 @@ class Ho_Import_Model_Mapper
 
                 foreach ($stores as $storeCode) {
                     if ($column->store_view->$storeCode) {
-                        $columnsData[$storeCode][$key] = $column->store_view->$storeCode;
+                        $columnsData[$storeCode][$key] = $column->store_view->$storeCode->asArray();
                     }
                 }
 
-                $columnsData['admin'][$key] = $columns->$key;
+                $columnsData['admin'][$key] = $columns->$key->asArray();
             }
 
             $this->_fieldConfig[$fieldMapPath] = $columnsData;

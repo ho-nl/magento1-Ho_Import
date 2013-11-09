@@ -481,7 +481,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 if ($flatRow) {
                     //if a column is required we add it here.
                     foreach($allFieldConfig[$store] as $key => $column) {
-                        if (! isset($flatRow[$key]) && $column->getAttribute('required')) {
+                        if (! isset($flatRow[$key]) && isset($column['@']) && isset($column['@']['required'])) {
                             $flatRow[$key] = '';
                         }
                     }
