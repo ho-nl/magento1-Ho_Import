@@ -125,7 +125,7 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
 
         $this->_source = $source;
 
-        if (isset($data['rootNode'])) {
+        if (is_array($data) && isset($data['rootNode'])) {
             $this->_customRootNode = (string) $data['rootNode'];
         }
 
