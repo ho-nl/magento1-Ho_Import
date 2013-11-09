@@ -36,14 +36,11 @@ class Ho_Import_Model_Import extends Varien_Object
 
     const IMPORT_CONFIG_DOWNLOADER     = 'global/ho_import/%s/downloader';
     const IMPORT_CONFIG_MODEL          = 'global/ho_import/%s/source';
-    const IMPORT_CONFIG_FIELDMAP       = 'global/ho_import/%s/fieldmap';
     const IMPORT_CONFIG_ENTITY_TYPE    = 'global/ho_import/%s/entity_type';
     const IMPORT_CONFIG_EVENTS         = 'global/ho_import/%s/events';
     const IMPORT_CONFIG_IMPORT_OPTIONS = 'global/ho_import/%s/import_options';
 
     protected $_sourceAdapter = null;
-
-    protected $_fieldMap = null;
 
     protected $_fileName = null;
 
@@ -427,45 +424,8 @@ class Ho_Import_Model_Import extends Varien_Object
     }
 
 
-
     /**
-     * Get the column configuration for the current type
-     *
-     * @return array|mixed
-     */
-    protected function _getFieldMap()
-    {
-        $fieldMapPath = sprintf(self::IMPORT_CONFIG_FIELDMAP, $this->getProfile());
-        if (! isset($this->_fieldMap[$fieldMapPath]))
-        {
-            $columns = Mage::getConfig()->getNode($fieldMapPath)->children();
-            $columnsData = array();
-
-            $stores = array();
-            foreach (Mage::app()->getStores() as $store) {
-                $stores[] = $store->getCode();
-            }
-
-            /** @var $column Mage_Core_Model_Config_Element */
-            foreach ($columns as $key => $column) {
-
-                foreach ($stores as $store) {
-                    if ($column->store_view->$store) {
-                        $columnsData[$store][$key] = $column->store_view->$store;
-                    }
-                }
-
-                $columnsData['admin'][$key] = $columns->$key;
-            }
-
-            $this->_fieldMap[$fieldMapPath] = $columnsData;
-        }
-
-        return $this->_fieldMap[$fieldMapPath];
-    }
-
-    /**
-     * Expand the fields to multiple rows, and preprocess the fields using a single helperfile.
+     * Expand the fields to multiple rows
      *
      * $item = array(
      *      'admin' => array(
@@ -483,83 +443,36 @@ class Ho_Import_Model_Import extends Varien_Object
     protected function _fieldMapItem(&$item)
     {
         $itemRows = array();
-        $fieldMap = $this->_getFieldMap();
 
-        //Step 1. Get the fieldmap
-        foreach ($fieldMap as $store => $columnData)
-        {
+        $mapper = $this->_getMapper();
+        $mapper->setItem($item);
+        $mapper->setProfileName($this->getProfile());
+
+        $allFieldConfig = $mapper->getFieldConfig();
+        //Step 1: Get the values for the fields
+        foreach ($allFieldConfig as $storeCode => $fields) {
+            $mapper->setStoreCode($storeCode);
             /** @var $column Mage_Core_Model_Config_Element */
-            foreach ($columnData as $key => $column)
-            {
-                // ability to copy another field.
-                if ($column->getAttribute('use')) {
-                    $column = $columnData[$column->getAttribute('use')];
-                }
-                // get field value with a helper
-                if ($column->getAttribute('helper')) {
-                    //get the helper and method
-                    $helperParts = explode('::',$column->getAttribute('helper'));
-                    $helper = Mage::helper($helperParts[0]);
-                    $method = $helperParts[1];
+            foreach ($fields as $fieldName => $fieldConfig) {
+                $result = $this->_getMapper()->map($fieldName, $storeCode);
 
-                    //prepare the arguments
-                    $args = $column->asArray();
-                    unset($args['@']);
-                    unset($args['store_view']);
-                    array_unshift($args, $item);
-
-                    //get the results
-                    $result = call_user_func_array(array($helper, $method), $args);
-
-                    //add the values to the itemRows
-                    if (is_array($result)) {
-                        foreach ($result as $row => $value) {
-                            $itemRows[$store][$row][$key] = $value;
-                        }
-                    } elseif($result !== null) {
-                        $itemRows[$store][0][$key] = $result;
+                //add the values to the itemRows
+                if (is_array($result)) {
+                    foreach ($result as $row => $val) {
+                        $itemRows[$storeCode][$row][$fieldName] = $val;
                     }
-                }
-                // get the exact value of a field
-                elseif ($field = $column->getAttribute('field')) {
-
-                    //allow us to traverse an array, keys split by a slash.
-                    if (strpos($field, '/')) {
-                        $fieldParts = explode('/',$field);
-
-                        $value = $item;
-                        foreach ($fieldParts as $part) {
-                            $value = isset($value[$part]) ? $value[$part] : null;
-                        }
-                    } else {
-                        $value = isset($item[$column->getAttribute('field')]) ? $item[$column->getAttribute('field')] : null;
-                    }
-
-                    //add the values to the itemRows
-                    if (is_array($value)) {
-                        foreach ($value as $row => $val) {
-                            $itemRows[$store][$row][$key] = $val;
-                        }
-                    } elseif($value !== null) {
-                        $itemRows[$store][0][$key] = $value;
-                    }
-                }
-                // get a fixed value
-                elseif ($column->getAttribute('value') !== null) {
-                    $itemRows[$store][0][$key] = $column->getAttribute('value');
+                } elseif($result !== null) {
+                    $itemRows[$storeCode][0][$fieldName] = $result;
                 }
             }
         }
 
-        //Flatten all the rows.
+        //Step 2: Flatten all the rows.
         $flattenedRows = array();
-        foreach ($itemRows as $store => $storeData)
-        {
-            foreach($storeData as $storeRow)
-            {
+        foreach ($itemRows as $store => $storeData) {
+            foreach($storeData as $storeRow) {
                 $flatRow = array();
-
-                foreach($fieldMap[$store] as $key => $column) {
+                foreach($allFieldConfig[$store] as $key => $column) {
                     if (isset($storeRow[$key]) && (strlen($storeRow[$key]))) {
                         $flatRow[$key] = (string) $storeRow[$key];
                     }
@@ -567,7 +480,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
                 if ($flatRow) {
                     //if a column is required we add it here.
-                    foreach($fieldMap[$store] as $key => $column) {
+                    foreach($allFieldConfig[$store] as $key => $column) {
                         if (! isset($flatRow[$key]) && $column->getAttribute('required')) {
                             $flatRow[$key] = '';
                         }
@@ -583,6 +496,17 @@ class Ho_Import_Model_Import extends Varien_Object
 
         return $flattenedRows;
     }
+
+
+    /**
+     * Get the mapper model that has the possibily to process nodes.
+     *
+     * @return Ho_Import_Model_Mapper
+     */
+    protected function _getMapper() {
+        return Mage::getSingleton('ho_import/mapper');
+    }
+
 
     protected function _getFileName() {
         if ($this->_fileName === null) {
