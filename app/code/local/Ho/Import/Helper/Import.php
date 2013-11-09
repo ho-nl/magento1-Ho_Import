@@ -178,32 +178,17 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return array
      */
     public function getFieldMultiple($line, $fields, $withKeys = false) {
+
+        $mapper = Mage::getSingleton('ho_import/mapper');
+
         $parts = array();
-        foreach ($fields as $field) {
-            if (isset($field['@']['ifvalue'])
-                && (isset($line[$field['@']['ifvalue']]) && $line[$field['@']['ifvalue']]) == false) {
-                continue;
-            }
-
-            $value = '';
-            //field value
-            if (isset($field['@']['field'])) {
-                $fieldName = $field['@']['field'];
-
-                if (isset($line[$fieldName])) {
-                    $value = $line[$fieldName];
-                }
-            }
-
-            //value support
-            if (empty($value) && isset($field['@']['value'])) {
-                $value = $field['@']['value'];
-            }
+        foreach ($fields as $configArray) {
+            $result = $mapper->mapItem($configArray);
 
             if ($withKeys && isset($fieldName)) {
-                $parts[$fieldName] = $value;
+                $parts[$fieldName] = $result;
             } else {
-                $parts[] = $value;
+                $parts[] = $result;
             }
         }
 
