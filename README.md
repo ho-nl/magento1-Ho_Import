@@ -1,16 +1,18 @@
 # H&O Importer
 
-An extension of the [AvS_FastSimpleImport](https://github.com/avstudnitz/AvS_FastSimpleImport) that allows you to import abitrary file formats, sources and entities.
+An extension of the [AvS_FastSimpleImport][] that allows you to map fields and import abitrary file formats, sources and entities.
 
-The module consists of various downloaders (http), source adapters (csv, spreadsheets, database or xml) and supports all entities that AvS_FastSimpleImport supports (products, categories, customers) and last but not least allows you to field map all fields in from each format to the magento format.
+The module consists of various downloaders (http), source adapters (csv, spreadsheets, database or xml) and supports all entities that [AvS_FastSimpleImport][] supports (products, categories, customers) and last but not least allows you to field map all fields in from each format to the magento format.
 
 All this configuration can be done using XML. You add the config to a config.xml and you can run the profile. The idea is that you set all the configuration in the XML and that you or the cron will run it with the perfect options.
 
-Since the original target for the module was an import that could process thousands of products it is build with this in mind. It is able to process large CSV or XML files while using very little memory (think 10MB memory for processing a 1GB CSV file, *actual benchmarks required*).
+Since the original target for the module was an import that could process thousands of products it is build with this in mind. It is able to process large CSV or XML files while using very little memory (think a few MB memory increase for processing a 1GB CSV file).
+
+We have chosen to do all configuration in XML, this makes the import profile way more maintanable and adds the nessesairy structure when doing multiple imports.
 
 To increase development and debugging speed there is a extensive shell tool that allows you to easily create new fieldmaps, add a downloader and start working.
 
---- ADD SCREENSHOT ---
+![Terminal Preview](docs/images/terminal.png)
 
 Example config for a customer import (this is added to the `<config><global><ho_import>` node:
 
@@ -46,7 +48,7 @@ Example config for a customer import (this is added to the `<config><global><ho_
         <prefix field="Voorletters"/>
         <firstname helper="ho_import/import::getFieldDefault">
             <field>Voornaam</field>
-            <default>ONBEKEND</default>
+            <default>UNKNOWN</default>
         </firstname>
         <middlename field="Tussenvoegsel" />
         <lastname field="Achternaam" required="1"/>
@@ -62,91 +64,117 @@ Example config for a customer import (this is added to the `<config><global><ho_
                 <male_female from="M+V" to="male+female"/>
             </mapping>
         </gender>
-        <z_klant_id field="zKlantID"/>
-        <note field="Bijzonderheden"/>
-
-        <_address_prefix helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="Voorvoegsel"/>
-                <shipping iffieldvalue="BezAdres" field="Voorvoegsel"/>
-            </fields>
-        </_address_prefix>
-        <_address_firstname helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="Voornaam" defaultvalue="ONBEKEND"/>
-                <shipping iffieldvalue="BezAdres" field="Voornaam" defaultvalue="ONBEKEND"/>
-            </fields>
-        </_address_firstname>
-        <_address_middlename helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="Tussenvoegsel"/>
-                <shipping iffieldvalue="BezAdres" field="Tussenvoegsel"/>
-            </fields>
-        </_address_middlename>
-        <_address_lastname helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="Achternaam"/>
-                <shipping iffieldvalue="BezAdres" field="Achternaam"/>
-            </fields>
-        </_address_lastname>
-        <_address_company helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="Bedrijfsnaam"/>
-                <shipping iffieldvalue="BezAdres" field="Bedrijfsnaam"/>
-            </fields>
-        </_address_company>
-        <_address_street helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="FactAdres" defaultvalue="ONBEKEND"/>
-                <shipping iffieldvalue="BezAdres" field="BezAdres"  defaultvalue="ONBEKEND"/>
-            </fields
-
-        </_address_street>
-        <_address_postcode helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="FactPostcode" defaultvalue="ONBEKEND"/>
-                <shipping iffieldvalue="BezAdres" field="BezPostcode"  defaultvalue="ONBEKEND"/>
-            </fields>
-        </_address_postcode>
-        <_address_city helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="FactPlaats" defaultvalue="ONBEKEND"/>
-                <shipping iffieldvalue="BezAdres" field="BezPlaats"  defaultvalue="ONBEKEND"/>
-            </fields>
-        </_address_city>
-        <_address_country_id helper="ho_import/import::getFieldMultipleMap">
-            <fields>
-                <billing  iffieldvalue="FactAdres" field="FactLand"/>
-                <shipping iffieldvalue="BezAdres" field="BezLand"/>
-            </fields>
-            <mapping>
-                <empty from="" to="NL"/>
-                <belgie from="België" to="BE"/>
-            </mapping>
-        </_address_country_id>
-        <_address_telephone helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="Telefoon" value="-"/>
-                <shipping iffieldvalue="BezAdres" field="Telefoon" value="-"/>
-            </fields>
-        </_address_telephone>
-        <_address_telephone_alt helper="ho_import/import::getFieldMultiple">
-            <fields>
-                <billing iffieldvalue="FactAdres" field="Telefoon2"/>
-                <shipping iffieldvalue="BezAdres" field="Telefoon2"/>
-            </fields>
-        </_address_telephone_alt>
-        <_address_default_billing_  helper="ho_importjanselijn/import_customer::getAddressDefaultBilling"/>
-        <_address_default_shipping_ helper="ho_importjanselijn/import_customer::getAddressDefaultShipping"/>
     </fieldmap>
 </my_customer_import>
 ```
+## Installation
+You can install the module via modman:
+```
+modman clone ....
+```
+
+Or you can download it and place it in you Magento root.
+
+
+## Getting started
+
+### 1. Create a module
+The idea is that you create a very light weight module for each project or import. This module has
+all the config for that specific import.
+
+Example config:
+
+```XML
+<config>
+	<modules>
+		<Ho_ImportJanselijn>
+			<version>0.1.0</version>
+		</Ho_ImportJanselijn>
+	</modules>
+	<global>
+		<helpers>
+            <ho_importjanselijn>
+                <class>Ho_ImportJanselijn_Helper</class>
+            </ho_importjanselijn>
+        </helpers>
+
+        <!-- ... -->
+
+        <ho_import>
+            <profile_name>
+				<entity_type>customer</entity_type>
+				<!-- ... the rest of the config -->
+            </profile_name>
+        </ho_import>
+    </global>
+</config>
+```
+
+### 2. Add the default config
+_This section assumes that you place these config values in `<config><global><ho_import><my_import_name>`_
+
+Add something like the following to your profile (see chapters below for detailed configuration):
+```XML
+<entity_type>customer</entity_type>
+<downloader model="ho_import/downloader_http">
+    <url>http://google.nl/file.xml</url>
+</downloader>
+<source model="ho_import/source_adapter_xml">
+    <file>var/import/Klant.xml</file>
+    <!--<rootNode>FMPDSORESULT</rootNode>-->
+</source>
+<import_options>
+    <!--<continue_after_errors>1</continue_after_errors>-->
+    <!--<ignore_duplicates>1</ignore_duplicates>-->
+    <partial_indexing>1</partial_indexing>
+</import_options>
+```
+
+### 3. Run the line shell utility
+_Make sure you have cache disabled, because all XML is cached in Magento_
+
+```bash
+php hoimport.php -action line -profile profile_name
+```
+
+You'll see something like:
+![Terminal Preview](docs/images/firstrun.png)
+
+The first table shows the first line from the source file and the second table shows the results how they would be imported into Magento. It shows the error on each line where they are represented.
+
+### 4. Expand all the fieldmaps to your liking
+Grab an example that is most to your liking from the docs/imports folder and copy those fields to your config.
+
+Now continue to map all your fields until you are satisfied.
+
+### 5. Run the actual import
+You can now import the complete set.
+
+```bash
+php hoimport.php -action import -profile profile_name
+```
+
+You will probably run into errors the first try. When the importer runs into errors it will return the faulty row. It will return the row that is imported, won't return the source row since that row isn't know.
+
+If a specific sku, for example, is giving you trouble, you can run the line utility and do a search.
+
+```
+php hoimport.php -action line -profile profile_name -search sku=abd
+```
+
+### 6. Schedule an import
+If you are satisfied with the import you can add a schedule to it, this will add it to the cron
+scheduler and run it at your configured time:
+
+![Terminal Preview](docs/images/schedule.png)
+
+As you can see, we have a `ho_import_schedule` cron which add the imports to the the cron and cleans up the cron if imports are removed/renamed. To speed up this process, you can run it manually.
 
 ## Config documentation
-This section assumes that you place these config values in `<config><global><ho_import><my_import_name>`
+_This section assumes that you place these config values in `<config><global><ho_import><my_import_name>`_
 
 ### Supported Entity Types
-All the entities of the AvS_FastSimpleImport are supported:
+All the entities of the [AvS_FastSimpleImport][] are supported:
 
 - `catalog_product`
 - `customer`
@@ -155,6 +183,19 @@ All the entities of the AvS_FastSimpleImport are supported:
 Example Config:
 ```XML
 <entity_type>customer</entity_type>
+```
+
+### Cron schedule
+Use the same formatting as the default cron setup.
+
+Using a cron expression:
+```XML
+<schedule><cron_expr>* 2 * * *</cron_expr></schedule>
+```
+
+Using a config path:
+```XML
+<schedule><config_path>configuration/path/cron_expr</config_path></schedule>
 ```
 
 
@@ -201,6 +242,7 @@ The CSV source is an implementation of PHP's [fgetcsv](http://php.net/manual/en/
 
 #### XML Source (:white_check_mark: Low Memory)
 The XML source is loosely based on [XmlStreamer](https://github.com/prewk/XmlStreamer/blob/master/XmlStreamer.php).
+
 ```XML
 <source model="ho_import/source_adapter_xml">
     <file>var/import/products.xml</file>
@@ -248,7 +290,7 @@ The current implementation isn't low memory because it executes the query an loa
 
 ### Import Options
 
-All the options that are possible with the AvS_FastSimpleImport are possible here as well:
+All the options that are possible with the [AvS_FastSimpleImport][] are possible here as well:
 
 ```XML
 <import_options>
@@ -266,32 +308,295 @@ All the options that are possible with the AvS_FastSimpleImport are possible her
 All events work with a transport object which holds the data for that line. This a `Varien_Object`
 with the information set.
 
-#### source_row_fieldmap_before
-- `items`
-- `skip`
-
-#### after_import
-- `object`
-
-#### before_import
-- `object`
-
+```XML
 <events>
-<!--<source_row_fieldmap_before helper="ho_import/import_product::checkIfValid"/>-->
-<!--<before_import helper="ho_import/import_product::callWifeIfItIsOk"/>-->
-<!--<after_import helper="ho_import/import_product::reindexStuff"/>-->
+	<source_row_fieldmap_before helper="ho_import/import_product::checkIfValid"/>
+	<before_import helper="ho_import/import_product::callWifeIfItIsOk"/>
+	<after_import helper="ho_import/import_product::reindexStuff"/>
 </events>
+```
+
+#### Event: `before_import`
+- `object`: instance of `AvS_FastSimpleImport_Model_Import`
+
+#### Event: `source_row_fieldmap_before`
+It has one field `items` set. This can be replaced, extended etc. to manipulate the data. Optionally
+you can set the key `skip` to `1` to skip this source row all together.
+
+#### Event: `after_import`
+- `object`: instance of `AvS_FastSimpleImport_Model_Import`
+- `errors`: array of errors
+
+
 
 ### Fieldmap
-This is perhaps the most interesting
+This is where the core of the module happens. Map a random source formatting to the Magento format.
 
---- TODO ---
-#### XML-format
-#### Intergrated Helpers
-#### Customer Helpers
+The idea is that you specify the Magento format here and load the right values for each Magento
+field, manipulate the data, etc. There is a syntax to handle the most easy cases and have the
+ability to call an helper if that isn't enough.
+
+_This section assumes that you place these config values in `<config><global><ho_import><my_import_name><fieldmap>`_
+
+#### Value
+```XML
+<tax_class_id value="2"/>
+```
+
+#### Field
+```XML
+<email field="Email"/>
+```
+
+#### Helper
+Have the ability to call a helper method that generates the value. The contents of the field are the
+arguments passed to the helper.
+
+```XML
+<_website helper="ho_import/import::getAllWebsites"><limit>1</limit></_website>
+```
+
+Calls the method in the class `Ho_Import_Helper_Import` with the first argument being the line and
+the rest of the arguments being the contents in the node, in this case the limit.
+
+```PHP
+/**
+ * Import the product to all websites, this will return all the websites.
+ * @param array $line
+ * @param $limit
+ * @return array|null
+ */
+public function getAllWebsites($line, $limit) {
+    if ($this->_websiteIds === null) {
+        $this->_websiteIds = array();
+        foreach (Mage::app()->getWebsites() as $website) {
+            /** @var $website Mage_Core_Model_Website */
+
+            $this->_websiteIds[] = $website->getCode();
+        }
+    }
+
+    if ($limit) {
+        return array_slice($this->_websiteIds, 0, $limit);
+    }
+
+    return $this->_websiteIds;
+}
+```
+
+For more available helpers please see [Integrated helper methods](#integrated-helpers) and [Custom helper methods](#custom-helpers)
+
+#### Use
+Sometimes you want the same value multiple times in multiple fields. This loads the config of the
+other fields and returns the result of that.
+
+```XML
+<image_label use="name"/>
+```
+
+#### Default value
+```XML
+<firstname field="First_Name" defaultvalue="UNKNOWN"/>
+```
+
+#### If field value
+```XML
+<company iffieldvalue="Is_Company" field="Company_Name"/>
+```
+
+#### Unless field value
+The opposite of `iffieldvalue`
+
+```XML
+<firstname unlessfieldvalue="Is_Company" field="Customer_Name"/>
+```
+
+#### Required
+Some fields are always required by the importer for each row. For products it is required that you
+have the sku field always present.
+
+```XML
+<sku field="sku" required="1"/>
+```
+
+### Integrated helper methods <a name="integrated-helpers"></a>
+There are a few helper methods already defined which allows you to do some common manipulation
+without having to write your own helpers
+
+#### getAllWebsites
+```XML
+<_website helper="ho_import/import::getAllWebsites">
+	<limit>1</limit> <!-- optional -->
+</_website>
+```
+
+#### findReplace
+```XML
+<short_description helper="ho_import/import::findReplace">
+	<field>sourceField</field>
+    <findReplace>
+        <doubleat find="@@" replace="@"/>
+        <nbsp from="&nbsp;" replace=" "/>
+    </findReplace>
+    <trim>1</trim> <!-- optional -->
+</short_description>
+```
+
+#### stripHtmlTags
+```
+<description helper="ho_import/import::stripHtmlTags">
+    <field>A_Xtratxt</field>
+    <allowed><![CDATA[<p><a><br>]]></allowed>
+</description>
+```
+
+#### getHtmlComment
+Get a simple HTML comment (can't be added through XML due to XML limitations).
+
+```XML
+<description helper="ho_import/import::getHtmlComment">empty</description>
+```
+
+#### getFieldBoolean
+```XML
+<is_in_stock helper="ho_import/import::getFieldBoolean"><field>stock</field></is_in_stock>
+```
+
+#### getFieldMultiple
+Allow you to load multiple fields. Each field has the same abilities as a normal field (allows you
+to call a helper, value, field, iffieldvalue, etc.
+
+```XML
+<_address_prefix helper="ho_import/import::getFieldMultiple">
+    <fields>
+        <billing iffieldvalue="FactAdres" field="Voorvoegsel"/>
+        <shipping iffieldvalue="BezAdres" field="Voorvoegsel"/>
+    </fields>
+</_address_prefix>
+```
+
+#### getFieldCombine
+Get multiple fields and glue them together
+
+```XML
+<sku helper="ho_import/import::getFieldCombine">
+    <fields>
+        <prefix value="B"/>
+        <number field="BmNummer"/>
+    </fields>
+    <glue>-</glue> <!-- optional, defaults to a space -->
+</sku>
+```
+
+#### getFieldMap
+```XML
+<gender helper="ho_import/import::getFieldMap">
+    <field>Geslacht</field>
+    <mapping>
+        <male from="M" to="male"/>
+        <female from="V" to="female"/>
+    </mapping>
+</gender>
+```
+
+#### getFieldMultipleMap
+```XML
+<_address_country_id helper="ho_import/import::getFieldMultipleMap">
+    <fields>
+        <billing  iffieldvalue="FactAdres" field="FactLand"/>
+        <shipping iffieldvalue="BezAdres" field="BezLand"/>
+    </fields>
+    <mapping>
+        <empty from="" to="NL"/>
+        <belgie from="België" to="BE"/>
+    </mapping>
+</_address_country_id>
+```
+
+#### Product: getUrlKey
+```XML
+<url_key helper="ho_import/import_product::getUrlKey">
+    <fields>
+        <name field="Titel"/>
+    </fields>
+    <glue>-</glue>
+</url_key>
+```
+
+#### Category: getUrlKey
+```XML
+<url_key helper="ho_import/import_category::getUrlKey">
+    <fields>
+        <name field="Titel"/>
+    </fields>
+    <glue>-</glue>
+</url_key>
+```
+
+### Custom helper methods <a name="custom-helpers"></a>
+Not every situation is a simple value processing and more complex logic might have to be used. You have the ability to easily create your own helper methods for each project. Simply create your own helper class and call that class.
+
+Example: To determine if an address is a default address we create the two fields:
+
+```XML
+<_address_default_billing_  helper="ho_importjanselijn/import_customer::getAddressDefaultBilling"/>
+<_address_default_shipping_ helper="ho_importjanselijn/import_customer::getAddressDefaultShipping"/>
+```
+
+And create a helper class which with the methods:
+
+```PHP
+class Ho_ImportJanselijn_Helper_Import_Customer extends Mage_Core_Helper_Abstract
+{
+
+    public function getAddressDefaultBilling($line) {
+        if ($line['InvAddress']) { //there is a billing and shipping address
+            return array(1,0);
+        } else { //there is only a shipping address
+            return 1;
+        }
+    }
+
+    public function getAddressDefaultShipping($line) {
+        if ($line['InvAddress']) { //there is a billing and shipping address
+            return array(0,1);
+        } else { //there is only a shipping address
+            return 1;
+        }
+    }
+}
+```
+
+## Terminal/Shell Utility
+The importer comes with a shell utiliy where you'll be spending most of your time.
+
+### line
+```
+php hoimport.php  -action line
+	-profile profile_name             Available profiles:    janselijn_customers
+	-line 1,2,3                       Comma separated list of lines to be checked
+	-search sku=abd                   Alternatively you can search for a value of a field
+```
+
+### import
+```
+php hoimport.php -action import
+	-profile profile_name             Available profiles:    janselijn_customers
+	-partial_indexing 1               When done importing will the imported products be indexed or will the whole system be indexed
+	-continue_after_errors 1          If encountered an error, will we continue, sometimes one row is corrupt, but the rest is fine
+	-dropdown_attributes attr1,attr2  Comma separated list of dropdownattributes that are autofilled when importing.
+	-rename_files 0                   Normally, when importing, images are renamed if an image exists. Set this to 0 to overwrite images
+	-dryrun 1                         Run a dryrun, validate all data agains the Magento validator but do not import anything
+	-ignore_duplicates 1              Ignore duplicates.;
+	-error_limit 10000                Set the error limit, default=100 error lines.;
+```
+
+
+## Performance
+We don't have actual benchmarks at the moment, but the time spend fieldmapping is an order of maginitude smaller than the actual import its self.
 
 ## License
 [OSL - Open Software Licence 3.0](http://opensource.org/licenses/osl-3.0.php)
 
-## Author & Contributors
-Paul Hachmang - [H&O](http://www.h-o.nl/)
+
+[AvS_FastSimpleImport]: https://github.com/avstudnitz/AvS_FastSimpleImport "AvS_FastSimpleImport by @avstudnitz"

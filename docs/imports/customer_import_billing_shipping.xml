@@ -1,0 +1,144 @@
+<config>
+	<global>
+		<!-- ... -->
+        <ho_import>
+            <janselijn_customers>
+                <entity_type>customer</entity_type>
+                <!--<downloader model="ho_import/downloader_http">-->
+                    <!--<url>http://google.nl/file.xml</url>-->
+                <!--</downloader>-->
+                <source model="ho_import/source_adapter_xml">
+                    <file>var/import/Klant.xml</file>
+                    <!--<rootNode>FMPDSORESULT</rootNode>-->
+                </source>
+                <import_options>
+                    <!--<continue_after_errors>1</continue_after_errors>-->
+                    <!--<ignore_duplicates>1</ignore_duplicates>-->
+                </import_options>
+                <events>
+                    <!--<source_row_fieldmap_before helper="ho_importinktweb/product::prepareRowCategory"/>-->
+                    <!--<source_row_fieldmap_after/>-->
+                    <!--<before_import/>-->
+                    <!--<after_import/>-->
+                </events>
+                <fieldmap>
+                    <email field="Email"/>
+                    <_website helper="ho_importjanselijn/import_customer::getWebsites"/>
+                    <group_id helper="ho_import/import::getFieldMap">
+                        <field>Status</field>
+                        <mapping>
+                            <particulier from="Particulier" to="1"/>
+                            <zakelijk from="Zakelijk" to="2"/>
+                        </mapping>
+                    </group_id>
+                    <prefix field="Voorletters"/>
+                    <firstname helper="ho_import/import::getFieldDefault">
+                        <field>Voornaam</field>
+                        <default>ONBEKEND</default>
+                    </firstname>
+                    <middlename field="Tussenvoegsel" />
+                    <lastname field="Achternaam" required="1"/>
+                    <company field="Bedrijfsnaam"/>
+                    <created_in helper="ho_importjanselijn/import_customer::getCreatedIn"/>
+                    <taxvat field="BTWnummer" />
+                    <password field="cWachtWoord" />
+                    <gender helper="ho_import/import::getFieldMap">
+                        <field>Geslacht</field>
+                        <mapping>
+                            <male from="M" to="male"/>
+                            <female from="V" to="female"/>
+                            <male_female from="M+V" to="male+female"/>
+                        </mapping>
+                    </gender>
+                    <z_klant_id field="zKlantID"/>
+                    <note field="Bijzonderheden"/>
+
+                    <_address_prefix helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="Voorvoegsel"/>
+                            <shipping iffieldvalue="BezAdres" field="Voorvoegsel"/>
+                        </fields>
+                    </_address_prefix>
+                    <_address_firstname helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="Voornaam" defaultvalue="ONBEKEND"/>
+                            <shipping iffieldvalue="BezAdres" field="Voornaam" defaultvalue="ONBEKEND"/>
+                        </fields>
+                    </_address_firstname>
+                    <_address_middlename helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="Tussenvoegsel"/>
+                            <shipping iffieldvalue="BezAdres" field="Tussenvoegsel"/>
+                        </fields>
+                    </_address_middlename>
+                    <_address_lastname helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="Achternaam"/>
+                            <shipping iffieldvalue="BezAdres" field="Achternaam"/>
+                        </fields>
+                    </_address_lastname>
+                    <_address_company helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="Bedrijfsnaam"/>
+                            <shipping iffieldvalue="BezAdres" field="Bedrijfsnaam"/>
+                        </fields>
+                    </_address_company>
+                    <_address_street helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="FactAdres" defaultvalue="ONBEKEND"/>
+                            <shipping iffieldvalue="BezAdres" field="BezAdres"  defaultvalue="ONBEKEND"/>
+                        </fields>
+                    </_address_street>
+                    <_address_postcode helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="FactPostcode" defaultvalue="ONBEKEND"/>
+                            <shipping iffieldvalue="BezAdres" field="BezPostcode"  defaultvalue="ONBEKEND"/>
+                        </fields>
+                    </_address_postcode>
+                    <_address_city helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="FactPlaats" defaultvalue="ONBEKEND"/>
+                            <shipping iffieldvalue="BezAdres" field="BezPlaats"  defaultvalue="ONBEKEND"/>
+                        </fields>
+                    </_address_city>
+                    <_address_country_id helper="ho_import/import::getFieldMultipleMap">
+                        <fields>
+                            <billing  iffieldvalue="FactAdres" field="FactLand"/>
+                            <shipping iffieldvalue="BezAdres" field="BezLand"/>
+                        </fields>
+                        <mapping>
+                            <empty from="" to="NL"/>
+                            <belgie from="België" to="BE"/>
+                        </mapping>
+                    </_address_country_id>
+                    <_address_telephone helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="Telefoon" value="-"/>
+                            <shipping iffieldvalue="BezAdres" field="Telefoon" value="-"/>
+                        </fields>
+                    </_address_telephone>
+                    <_address_telephone_alt helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <billing iffieldvalue="FactAdres" field="Telefoon2"/>
+                            <shipping iffieldvalue="BezAdres" field="Telefoon2"/>
+                        </fields>
+                    </_address_telephone_alt>
+                    <_address_default_billing_  helper="ho_importjanselijn/import_customer::getAddressDefaultBilling"/>
+                    <_address_default_shipping_ helper="ho_importjanselijn/import_customer::getAddressDefaultShipping"/>
+
+                    <!--
+                    | AboBourgMail   | []                               |
+                    | AboBourgPost   | []                               |
+                    | AboWijnMail    | 1                                |
+                    | AboWijnPost    | []                               |
+
+                    | Email2         | []                               |
+                    | Naam2          | []                               |
+
+                    | @attributes    | {"MODID":"55","RECORDID":"1455"} |
+                    -->
+                </fieldmap>
+            </janselijn_customers>
+        </ho_import>
+    </global>
+</config>

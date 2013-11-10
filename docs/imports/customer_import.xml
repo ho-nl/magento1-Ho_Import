@@ -1,0 +1,146 @@
+<config>
+	<global>
+		<!-- ... -->
+        <ho_import>
+            <mai_customers>
+                <entity_type>customer</entity_type>
+                <!--<downloader model="ho_import/downloader_http">-->
+                    <!--<url>http://google.nl/file.xml</url>-->
+                <!--</downloader>-->
+                <source model="ho_import/source_adapter_db">
+                    <host><![CDATA[host]]></host>
+                    <username><![CDATA[username]]></username>
+                    <password><![CDATA[password]]></password>
+                    <dbname><![CDATA[database]]></dbname>
+                    <!--<initStatements><![CDATA[SET NAMES utf8]]></initStatements>-->
+                    <model><![CDATA[Zend_Db_Adapter_Pdo_Mssql]]></model>
+                    <pdoType>dblib</pdoType>
+                    <query><![CDATA[SELECT * FROM WKlant]]></query>
+                    <!--<limit>10</limit>-->
+                </source>
+                <import_options>
+                    <error_limit>1000</error_limit>
+                    <continue_after_errors>1</continue_after_errors>
+                    <ignore_duplicates>1</ignore_duplicates>
+                </import_options>
+                <events>
+                    <!--<source_row_fieldmap_before helper="ho_importinktweb/product::prepareRowCategory"/>-->
+                    <!--<source_row_fieldmap_after/>-->
+                    <!--<before_import/>-->
+                    <!--<after_import/>-->
+                </events>
+                <fieldmap>
+                    <!--
+                    |x WKlantID     | 28512
+                    |x KL_Mutatie   | W
+                    |✓ Klantnummer  | 64472
+                    |x KL_Inlog     |
+                    |✓ KL_WW        | welkom1234
+                    |✓ KL_Naam      | Hachmang
+                    |✓ KL_Voornaam  | Paul
+                    |✓ KL_PA        |
+                    |✓ KL_Adres     | Veenderveld 16
+                    |✓ KL_PC        | 2371 TV
+                    |✓ KL_Plaats    | Roelofarensveen
+                    |✓ WLandID      | 1
+                    |✓ KL_Tel       |
+                    |✓ KL_Email     | paul@h-o.nl
+                    |? KL_Bank      | 139005404
+                    |? KL_Credit    | 30.0000
+                    |? KL_Kort      |
+                    |? KL_PrijsType | NOR
+                    |✓ KL_BTWtype   | IN / EX
+                    |x KL_BW        | ID
+                    |✓ KL_NB        | J
+                    -->
+
+                    <email helper="ho_musicallin/import_customer::getEmail">
+                        <field>KL_Email</field>
+                        <find_replace>
+                            <email find="email " replace="" />
+                        </find_replace>
+                        <trim>1</trim>
+                    </email>
+                    <_website helper="ho_import/import::getAllWebsites"><limit>1</limit></_website>
+                    <group_id helper="ho_import/import::getFieldMap">
+                        <field>KL_BTWtype</field>
+                        <mapping>
+                            <particulier from="IN" to="1"/>
+                            <zakelijk from="EX" to="2"/>
+                        </mapping>
+                    </group_id>
+                    <!--<prefix/>-->
+                    <firstname helper="ho_import/import::getFieldDefault">
+                        <field>KL_Voornaam</field>
+                        <default>ONBEKEND</default>
+                    </firstname>
+                    <!--<middlename />-->
+                    <lastname field="KL_Naam"/>
+                    <company helper="ho_musicallin/import_customer::getCompany"/>
+                    <!--<created_in helper="ho_importjanselijn/import_customer::getCreatedIn"/>-->
+                    <!--<taxvat field="BTWnummer" />-->
+                    <password field="KL_WW" />
+                    <!--<gender helper="ho_import/import::getFieldMap">-->
+                        <!--<field>Geslacht</field>-->
+                        <!--<mapping>-->
+                            <!--<male from="M" to="male"/>-->
+                            <!--<female from="V" to="female"/>-->
+                            <!--<male_female from="M+V" to="male+female"/>-->
+                        <!--</mapping>-->
+                    <!--</gender>-->
+
+                    <!--<_address_prefix/>-->
+                    <_address_firstname helper="ho_import/import::getFieldDefault">
+                        <field>KL_Voornaam</field>
+                        <default>ONBEKEND</default>
+                    </_address_firstname>
+                    <!--<middlename />-->
+                    <_address_lastname field="KL_Naam"/>
+                    <_address_company helper="ho_musicallin/import_customer::getCompany"/>
+                    <_address_street helper="ho_musicallin/import_customer::getAddress"/>
+                    <_address_postcode helper="ho_import/import::getFieldDefault">
+                        <field>KL_PC</field>
+                        <default>ONBEKEND</default>
+                    </_address_postcode>
+                    <_address_city helper="ho_import/import::getFieldDefault">
+                        <field>KL_Plaats</field>
+                        <default>ONBEKEND</default>
+                    </_address_city>
+                    <_address_country_id helper="ho_import/import::getFieldMap">
+                        <field>WLandID</field>
+                        <mapping>
+                            <unknown from="0" to="NL"/>
+                            <empty from="" to="NL"/>
+                            <NL from="1" to="NL"/> <!--Nederland-->
+                            <BE from="2" to="BE"/> <!--Belgie-->
+                            <FR from="3" to="FR"/> <!--Frankrijk-->
+                            <DE from="4" to="DE"/> <!--Duitsland-->
+                            <IT from="5" to="IT"/> <!--Italie-->
+                            <ES from="6" to="ES"/> <!--Spanje-->
+                            <GB from="7" to="GB"/> <!--Engeland (UK)-->
+                            <LU from="8" to="LU"/> <!--Luxemburg-->
+                            <AT from="9" to="AT"/> <!--Oostenrijk-->
+                        </mapping>
+                    </_address_country_id>
+
+                    <_address_telephone helper="ho_import/import::getFieldDefault">
+                          <field>KL_Tel</field>
+                          <default>-</default>
+                    </_address_telephone>
+                    <_address_default_billing_  value="1"/>
+                    <_address_default_shipping_ value="1"/>
+
+                    <is_subscribed helper="ho_import/import::getFieldMap">
+                        <field>KL_NB</field>
+                        <mapping>
+                            <yes from="J" to="1"/>
+                            <no from="N" to="0"/>
+                        </mapping>
+                    </is_subscribed>
+
+                    <mai_customer_number field="Klantnummer"/>
+                </fieldmap>
+            </mai_customers>
+        </ho_import>
+    </global>
+</config>

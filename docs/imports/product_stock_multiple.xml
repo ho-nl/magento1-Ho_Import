@@ -1,0 +1,178 @@
+<config>
+	<global>
+		<!-- ... -->
+        <ho_import>
+            <mai_products_stock_all>
+                <entity_type>catalog_product</entity_type>
+                <schedule><cron_expr>* 2 * * *</cron_expr></schedule>
+                <source model="ho_musicallin/source_artikelen">
+                    <host><![CDATA[host]]></host>
+                    <username><![CDATA[username]]></username>
+                    <password><![CDATA[password]]></password>
+                    <dbname><![CDATA[database]]></dbname>
+                    <!--<initStatements><![CDATA[SET NAMES utf8]]></initStatements>-->
+                    <model><![CDATA[Zend_Db_Adapter_Pdo_Mssql]]></model>
+                    <pdoType>dblib</pdoType>
+                    <!--<limit>10</limit>-->
+                </source>
+                <import_options>
+                    <continue_after_errors>1</continue_after_errors>
+                    <partial_indexing>1</partial_indexing>
+                </import_options>
+
+                <events>
+                    <!--<source_row_fieldmap_before/>-->
+                    <!--<source_row_fieldmap_after/>-->
+                    <!--<before_import/>-->
+                    <!--<after_import/>-->
+                </events>
+
+                <fieldmap>
+                    <sku helper="ho_import/import::getFieldCombine">
+                        <fields>
+                            <titel value="A"/>
+                            <merk field="ArtikelNummer"/>
+                        </fields>
+                        <glue>-</glue>
+                    </sku>
+                    <_type value="simple"/>
+                <!-- PRICES -->
+                    <price field="Prijs"/>
+                    <!--<cost field="cost"/>-->
+                    <!--<minimal_price/> NOT REQUIRED -->
+
+                    <!--<special_from_date />-->
+                    <!--<special_to_date />-->
+                    <!--<special_price />-->
+
+                    <msrp field="SRP"/>
+                    <!--<msrp_display_actual_price_type/>-->
+                    <!--<msrp_enabled/>-->
+                    <!--<tax_class_id value="2"/>-->
+
+                    <!-- TIER PRICES -->
+                    <!--<_tier_price_website/>-->
+                    <!--<_tier_price_customer_group/>-->
+                    <!--<_tier_price_qty/>-->
+                    <!--<_tier_price_price/>-->
+
+                    <!-- GROUP PRICES -->
+                    <!--<_group_price_website/>-->
+                    <!--<_group_price_customer_group/>-->
+                    <!--<_group_price_price/>-->
+
+                <!-- INVENTORY -->
+                    <stock_id helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="1"/>
+                            <rotterdam value="3"/>
+                            <rijswijk  value="2"/>
+                        </fields>
+                    </stock_id>
+                    <qty helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk field="noordwijk_voorraad"/>
+                            <rotterdam field="rotterdam_voorraad"/>
+                            <rijswijk field="rijswijk_voorraad"/>
+                        </fields>
+                    </qty>
+                    <!--<min_qty/>-->
+                    <use_config_min_qty helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="1"/>
+                            <rotterdam value="1"/>
+                            <rijswijk value="1"/>
+                        </fields>
+                    </use_config_min_qty>
+                    <is_qty_decimal helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="0"/>
+                            <rotterdam value="0"/>
+                            <rijswijk value="0"/>
+                        </fields>
+                    </is_qty_decimal>
+                    <backorders helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="1"/>
+                            <rotterdam value="0"/>
+                            <rijswijk value="0"/>
+                        </fields>
+                    </backorders>
+                    <use_config_backorders helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="0"/>
+                            <rotterdam value="0"/>
+                            <rijswijk value="0"/>
+                        </fields>
+                    </use_config_backorders>
+                    <!--<min_sale_qty value="1"/>-->
+                    <use_config_min_sale_qty helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="1"/>
+                            <rotterdam value="1"/>
+                            <rijswijk value="1"/>
+                        </fields>
+                    </use_config_min_sale_qty>
+                    <!--<max_sale_qty value="10000"/>-->
+                    <use_config_max_sale_qty helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="1"/>
+                            <rotterdam value="1"/>
+                            <rijswijk value="1"/>
+                        </fields>
+                    </use_config_max_sale_qty>
+                    <is_in_stock helper="ho_musicallin/import_product::getIsInStock">
+                        <locations>
+                            <noordwijk qty="noordwijk_voorraad" minimaal="noordwijk_minimaal" backorders="1"/>
+                            <rotterdam qty="rotterdam_voorraad" minimaal="rotterdam_minimaal" backorders="0"/>
+                            <rijswijk  qty="rijswijk_voorraad"  minimaal="rijswijk_minimaal"  backorders="0"/>
+                        </locations>
+                    </is_in_stock>
+                    <notify_stock_qty helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk field="noordwijk_minimaal"/>
+                            <rotterdam field="rotterdam_minimaal"/>
+                            <rijswijk field="rijswijk_minimaal"/>
+                        </fields>
+                    </notify_stock_qty>
+                    <use_config_notify_stock_qty helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="0"/>
+                            <rotterdam value="0"/>
+                            <rijswijk value="0"/>
+                        </fields>
+                    </use_config_notify_stock_qty>
+                    <!--<manage_stock value="1"/>-->
+                    <use_config_manage_stock helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="1"/>
+                            <rotterdam value="1"/>
+                            <rijswijk value="1"/>
+                        </fields>
+                    </use_config_manage_stock>
+
+                    <!--<stock_status_changed_auto value="0"/>-->
+                    <!--<qty_increments value="1"/>-->
+                    <use_config_qty_increments helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="1"/>
+                            <rotterdam value="1"/>
+                            <rijswijk value="1"/>
+                        </fields>
+                    </use_config_qty_increments>
+
+                    <!--<enable_qty_increments value="0"/>-->
+                    <use_config_enable_qty_inc helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <noordwijk value="1"/>
+                            <rotterdam value="1"/>
+                            <rijswijk value="1"/>
+                        </fields>
+                    </use_config_enable_qty_inc>
+
+                    <!--<is_decimal_divided value="0"/>-->
+                </fieldmap>
+            </mai_products_stock_all>
+        </ho_import>
+    </global>
+</config>

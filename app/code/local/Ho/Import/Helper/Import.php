@@ -32,14 +32,11 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
 
     /**
-     * Import the product to all websites, this will return all the websites.
-     *
      * @param array $line
      * @param $limit
-     *
      * @return array|null
      */
-    public function getAllWebsites($line, $limit) {
+    public function getAllWebsites($line, $limit = null) {
         if ($this->_websiteIds === null) {
             $this->_websiteIds = array();
             foreach (Mage::app()->getWebsites() as $website) {
@@ -125,7 +122,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
     /**
      * Get the value of a field but fallback to a default if the value isn't present.
-     *
+     * @deprecated use defaultvalue attribute
      * @param $line
      * @param $field
      * @param $default

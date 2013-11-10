@@ -1,0 +1,215 @@
+<config>
+	<global>
+		<!-- ... -->
+        <ho_import>
+            <mai_products_old>
+                <entity_type>catalog_product</entity_type>
+                <source model="ho_import/source_adapter_db">
+                    <host><![CDATA[host]]></host>
+                    <username><![CDATA[username]]></username>
+                    <password><![CDATA[password]]></password>
+                    <dbname><![CDATA[database]]></dbname>
+                    <model><![CDATA[Zend_Db_Adapter_Pdo_Mssql]]></model>
+                    <pdoType>dblib</pdoType>
+                    <query><![CDATA[SELECT AW.*, WM.WM_Naam FROM MAIweb.dbo.ArtikelWeb AW JOIN MAIweb.dbo.WMerk AS WM ON AW.WMerkID = WM.WMerkID AND AW.A_Online = 1 AND AW.A_TYPE IN(1,3)]]></query>
+                    <!--<limit>100</limit>-->
+                </source>
+                <import_options>
+                    <continue_after_errors>1</continue_after_errors>
+                    <partial_indexing>1</partial_indexing>
+                    <dropdown_attributes>brand</dropdown_attributes>
+                    <allow_rename_files>0</allow_rename_files>
+                    <error_limit>10000</error_limit>
+                </import_options>
+
+                <events>
+                    <!--<source_row_fieldmap_before/>-->
+                    <!--<source_row_fieldmap_after/>-->
+                    <!--<before_import/>-->
+                    <!--<after_import/>-->
+                </events>
+
+                <fieldmap>
+                    <!--
+                    |x ArtID          | 2                                                               |
+                    |✓ A_MAIDB        | 557                                                             |
+                    |? A_WA           | A                                                               |
+                    |✓ WCCatid        | 63                                                              |
+                    |✓ WmerkID        | 1                                                               |
+                    |✓ A_Titel        | Pearl 20'' Zwart met logo tromvel Protone bassdrum Perimeter EQ |
+                    |✓ A_Beschrijving |                                                                 |
+                    |✓ A_Xtratxt      |                                                                 |
+                    |✓ A_prijs        | 24.8500                                                         |
+                    |✓ A_SRP          | 29.5715                                                         |
+                    |✓ A_BTW          | H                                                               |
+                    |? A_MKIB         | 25                                                              |
+                    |? A_MKEB         | 40                                                              |
+                    |x A_VrdTXT       | Op voorraad(1)                                                  |
+                    |? A_VrdStatus    | 9,6,1,10,4,5,2,8                                                |
+                    |x A_Verkocht     | 0                                                               |
+                    |✓ A_Afb          | \a41495.jpg                                                     |
+                    |? A_TYPE         | 3                                                               |
+                    |? A_Keuzelabel   | Kleur en maat:                                                  |
+                    |? A_Keuze        | 20'' Zwart met logo                                             |
+                    |? A_GroepID      | 41495                                                           |
+                    |✓ A_Online       | 1                                                               |
+                    |✓ WM_Naam        | Pearl                                                           |
+                    -->
+                    <sku helper="ho_import/import::getFieldCombine">
+                        <fields>
+                            <titel field="A_WA"/>
+                            <merk field="A_MAIDB"/>
+                        </fields>
+                        <glue>-</glue>
+                    </sku>
+                    <!--<_store/> field is never required, store configuration is per field -->
+                    <_attribute_set helper="ho_import/import::getFieldMap">
+                        <field>A_WA</field>
+                        <mapping>
+                            <artikelen from="A" to="Default"/>
+                            <bladmuziek from="B" to="Bladmuziek"/>
+                        </mapping>
+                    </_attribute_set>
+                    <_type value="simple"/> <!-- simple, grouped, bundle, configurable, downloadable, virtual. -->
+                    <!--<_category helper="ho_importinktweb/product::getCategories"/>-->
+                    <!--<_root_category value="2"/>-->
+                    <_product_websites helper="ho_import/import::getAllWebsites"/>
+
+                <!-- GENERAL PRODUCT INFORMATION -->
+                    <name field="A_Titel"/>
+                    <short_description helper="ho_import/import::getFieldDefault"><field>A_Beschrijving</field><default><![CDATA[<!--empty-->]]></default></short_description>
+                    <description helper="ho_import/import::stripHtmlTags">
+                        <field>A_Xtratxt</field>
+                        <allowed><![CDATA[<p><a><br>]]></allowed>
+                    </description>
+                    <status value="1"/>
+                    <url_key helper="ho_import/import_product::getUrlKey">
+                        <fields>
+                            <name field="A_Titel"/>
+                        </fields>
+                        <glue>-</glue>
+                    </url_key>
+                    <!--<url_path /> not required-->
+                    <visibility value="4"/>
+                    <weight helper="ho_import/import::getFieldDefault"><field>weight</field><default>0</default></weight>
+
+                    <!--<news_from_date />-->
+                    <!--<news_to_date />-->
+
+                    <!--<meta_description />-->
+                    <!--<meta_keyword />-->
+                    <!--<meta_title/>-->
+
+                    <!--<gift_message_available value=""/> It is possible in the backend to check the 'Use Config Settings' option. If you want to check this value, we need to make sure no value is set for the gift message -->
+                    <!--<enable_googlecheckout value="1" />-->
+
+                <!-- PRICES -->
+                    <price field="A_SRP"/>
+                    <!--<cost field="cost"/>-->
+                    <!--<minimal_price/> NOT REQUIRED -->
+
+                    <!--<special_from_date />-->
+                    <!--<special_to_date />-->
+                    <!--<special_price />-->
+
+                    <msrp field="A_SRP"/>
+                    <!--<msrp_display_actual_price_type/>-->
+                    <!--<msrp_enabled/>-->
+                    <tax_class_id helper="ho_import/import::getFieldMap">
+                        <field>A_BTW</field>
+                        <mapping>
+                            <particulier from="H" to="2"/>
+                            <zakelijk from="L" to="5"/>
+                        </mapping>
+                    </tax_class_id>
+
+                    <!-- TIER PRICES -->
+                    <!--<_tier_price_website/>-->
+                    <!--<_tier_price_customer_group/>-->
+                    <!--<_tier_price_qty/>-->
+                    <!--<_tier_price_price/>-->
+
+                    <!-- GROUP PRICES -->
+                    <!--<_group_price_website/>-->
+                    <!--<_group_price_customer_group/>-->
+                    <!--<_group_price_price/>-->
+
+                <!-- INVENTORY -->
+                    <!--<qty value="0"/>-->
+                    <!--<min_qty value="0"/>-->
+                    <!--<use_config_min_qty value="1"/>-->
+                    <!--<is_qty_decimal value="0"/>-->
+                    <!--<backorders value="1" />-->
+                    <!--<use_config_backorders value="1"/>-->
+                    <!--<min_sale_qty value="1"/>-->
+                    <!--<use_config_min_sale_qty value="1"/>-->
+                    <!--<max_sale_qty value="10000"/>-->
+                    <!--<use_config_max_sale_qty value="1"/>-->
+                    <!--<is_in_stock helper="ho_import/import::getFieldBoolean"><field>stock</field></is_in_stock>-->
+                    <!--<notify_stock_qty value=""/>-->
+                    <!--<use_config_notify_stock_qty value="1"/>-->
+                    <!--<manage_stock value="1"/>-->
+                    <!--<use_config_manage_stock value="1"/>-->
+                    <!--<stock_status_changed_auto value="0"/>-->
+                    <!--<qty_increments value="1"/>-->
+                    <!--<use_config_qty_increments value="1"/>-->
+                    <!--<enable_qty_increments value="0"/>-->
+                    <!--<use_config_enable_qty_inc value="1" />-->
+                    <!--<is_decimal_divided value="0"/>-->
+
+                <!-- PRODUCT RELATIONS -->
+                    <!--<_links_related_sku field="compatibleProductOEM" required="1" />-->
+                    <!--<_links_related_position value="1"/>-->
+                    <!--<_links_crosssell_sku />-->
+                    <!--<_links_crosssell_position />-->
+                    <!--<_links_upsell_sku helper="ho_import/import::getFieldMultiple" required="1"><field><xlProductOEM/><multipackProductOEM/></field></_links_upsell_sku>-->
+                    <!--<_links_upsell_position value="1"/>-->
+
+                <!-- GROUPED PRODUCTS -->
+                    <!--<_associated_sku>-->
+                    <!--</_associated_sku>-->
+                    <!--<_associated_default_qty>-->
+                    <!--</_associated_default_qty>-->
+                    <!--<_associated_position>-->
+                    <!--</_associated_position>-->
+
+                <!-- MEDIA FIELDS -->
+                    <_media_attribute_id helper="ho_musicallin/import_product::getMediaAttributeId"/>
+                    <_media_image helper="ho_musicallin/import_product::getMediaImage"/>
+                    <_media_lable/>
+                    <_media_position helper="ho_musicallin/import_product::getMediaPosition"/>
+                    <_media_is_disabled helper="ho_musicallin/import_product::getMediaDisabled"/>
+                    <image helper="ho_musicallin/import_product::getMediaImage"><limit>1</limit></image>
+                    <image_label use="name"/>
+                    <small_image helper="ho_musicallin/import_product::getMediaImage"><limit>1</limit></small_image>
+                    <small_image_label use="name"/>
+                    <thumbnail helper="ho_musicallin/import_product::getMediaImage"><limit>1</limit></thumbnail>
+                    <thumbnail_label use="name"/>
+                    <gallery/>
+                    <media_gallery />
+
+                <!-- DESIGN -->
+                    <custom_design />
+                    <custom_design_from />
+                    <custom_design_to />
+                    <custom_layout_update />
+                    <options_container value="blok na info-kolom"/>
+                    <page_layout/>
+
+                <!-- PRODUCT OPTIONS-->
+                    <!--<has_options /> Is automatically set, no need to fill in -->
+                    <!--<required_options /> Is automatically set, no need to fill in-->
+
+                <!-- USER DEFINED FIELDS -->
+                    <brand field="WM_Naam" required="1"/>
+                    <orig_category_id field="WCCatid"/>
+                    <!--<color field="color" required="1"/>-->
+                    <!--<product_type field="productType" required="1"/>-->
+                    <!--<product_group field="kind" required="1"/>-->
+                    <!--<pages field="pages" required="1"/>-->
+                    <!--<capacity field="inhoud" required="1"/>-->
+                </fieldmap>
+            </mai_products_old>
+        </ho_import>
+    </global>
+</config>
