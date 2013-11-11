@@ -115,6 +115,10 @@ class Ho_Import_Model_Mapper
             $fieldConfig = $fieldConfig->asArray();
         }
 
+        if ($fieldConfig === null) {
+            return null;
+        }
+
         $item =& $this->getItem();
         $result = null;
         $attributes = isset($fieldConfig['@']) ? $fieldConfig['@'] : array();

@@ -63,11 +63,11 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return mixed|string
      */
     public function findReplace($line, $field, $findReplaces = array(), $trim = false) {
-        if (! isset($line[$field]) && empty($line[$field])) {
+        $value = $this->_getMapper()->mapItem($field);
+        if (! $value) {
             return '';
         }
 
-        $value = $line[$field];
         foreach ($findReplaces as $findReplace) {
             if (strpos($value, $findReplace['@']['find']) !== false) {
                 $value = str_replace($findReplace['@']['find'], $findReplace['@']['replace'], $value);
@@ -81,6 +81,21 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $value;
     }
 
+    public function parsePrice($line, $field) {
+        $s = $this->_getMapper()->mapItem($field);
+        // convert "," to "."
+        $s = str_replace(',', '.', $s);
+
+        // remove everything except numbers and dot "."
+        $s = preg_replace("/[^0-9\.]/", "", $s);
+
+        // remove all seperators from first part and keep the end
+        $s = str_replace('.', '',substr($s, 0, -3)) . substr($s, -3);
+
+        // return float
+        return (float) $s;
+    }
+
 
     /**
      * @param string      $line
@@ -90,7 +105,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return string
      */
     public function stripHtmlTags($line, $field, $allowedTags = '<p><a><br>') {
-        $content = trim(strip_tags($line[$field], $allowedTags));
+        $value = $this->_getMapper()->mapItem($field);
+        $content = trim(strip_tags($value, $allowedTags));
         return $content ? $content : '<!--empty-->';
     }
 
@@ -105,6 +121,35 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      */
     public function getHtmlComment($line, $comment = '') {
         return '<!--'.$comment.'-->';
+    }
+
+
+    /**
+         * Allows you to format a field using vsprintf
+     *
+     * @param $line
+     * @param $format
+     * @param $fields
+     *
+     * @return string
+     */
+    public function formatField($line, $format, $fields) {
+        $values = array_map(array($this->_getMapper(), 'mapItem'), $fields);
+        $result = vsprintf($format, $values);
+        return $result;
+    }
+
+
+    /**
+     * @param        $line
+     * @param        $field
+     * @param int    $length
+     * @param string $etc
+     * @param bool   $breakWords
+     */
+    public function truncate($line, $field, $length = 80, $etc = '…', $breakWords = true) {
+        $string = $this->_getMapper()->mapItem($field);
+        return Mage::helper('core/string')->truncate($string, $length, $etc, $remainder = '', $breakWords);
     }
 
 
@@ -130,10 +175,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return mixed
      */
     public function getFieldDefault($line, $field, $default) {
-        if (isset($line[$field]) && ! empty($line[$field])) {
-            return $line[$field];
-        }
-        return $default;
+        $value = $this->_getMapper()->mapItem($field);
+        return $value ? $value : $default;
     }
 
 
@@ -160,7 +203,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return string
      */
     public function getFieldBoolean($line, $field) {
-        return isset($line[$field]) ? '1' : '0';
+        $value = $this->_getMapper()->mapItem($field);
+        return $value ? '1' : '0';
     }
 
 
@@ -176,11 +220,11 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      */
     public function getFieldMultiple($line, $fields, $withKeys = false) {
 
-        $mapper = Mage::getSingleton('ho_import/mapper');
+        $mapper = $this->_getMapper();
 
         $parts = array();
-        foreach ($fields as $configArray) {
-            $result = $mapper->mapItem($configArray);
+        foreach ($fields as $fieldConfig) {
+            $result = $mapper->mapItem($fieldConfig);
 
             if ($withKeys && isset($fieldName)) {
                 $parts[$fieldName] = $result;
@@ -202,7 +246,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return string
      */
     public function getFieldMap($line, $field, $mapping) {
-        $value = is_string($line) ? $line : $line[$field];
+        $value = $this->_getMapper()->mapItem($field);
 
         foreach($mapping as $map) {
             if ($map['@']['from'] == $value) {
@@ -213,27 +257,62 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $value;
     }
 
-
     /**
-     * Combine getFieldMultiple and getFieldMap
+     * Count another field an give it or a list or a value.
+     * @param      $line
+     * @param      $countConfig
+     * @param null $valueConfig
      *
-     * @param $line
-     * @param $fields
-     * @param $mapping
-     *
-     * @return array
+     * @internal param $countField
+     * @return array|null
      */
-    public function getFieldMultipleMap($line, $fields, $mapping) {
-        $multipleFields = $this->getFieldMultiple($line, $fields, true);
-
-        $results = array();
-        foreach($multipleFields as $field => $value) {
-            $results[] = $this->getFieldMap($value, $field, $mapping);
+    public function getFieldCounter($line, $countConfig, $valueConfig = null) {
+        $count = count($this->_getMapper()->mapItem($countConfig));
+        $value = $this->_getMapper()->mapItem($valueConfig);
+        $values = array();
+        for ($i = 0; $i < $count; $i++) {
+            $values[] = $value ? $value : $i;
         }
-
-        return $results;
+        return $values;
     }
 
+
+    protected $_mediaAttributeId = null;
+    public function getMediaAttributeId($line, $countField)
+    {
+        if ($this->_mediaAttributeId === null) {
+            $this->_mediaAttributeId = Mage::getSingleton('catalog/product')->getResource()
+                ->getAttribute('media_gallery')->getId();
+        }
+        return $this->_mediaAttributeId;
+    }
+
+
+    public function getMediaImage($line, $image, $limit = null)
+    {
+        $images = (array) $this->_getMapper()->mapItem($image);
+        if ($limit) {
+            $images = array_slice($images, 0, $limit);
+        }
+        foreach ($images as $key => $image) {
+            if (!is_file($this->_getUploader()->getTmpDir() . DS . basename($image))) {
+                $this->_copyExternalImageFile($image);
+            }
+            if (basename($image) !== $images[$key]) {
+                $images[$key] = '/'.basename($image);
+            }
+        }
+        return $images;
+    }
+
+
+    /**
+     * @return Ho_Import_Model_Mapper
+     */
+    protected function _getMapper()
+    {
+        return Mage::getSingleton('ho_import/mapper');
+    }
 
 
     /**

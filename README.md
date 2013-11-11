@@ -348,6 +348,18 @@ _This section assumes that you place these config values in `<config><global><ho
 <email field="Email"/>
 ```
 
+In multi-level files like XML you can get a deeper value with a slash
+
+```XML
+<email field="Customer/Email"/>
+```
+
+If there are attributes available, you can reach them with `@attributes`.
+
+```XML
+<sku field="@attributes/RECORDID"/>
+```
+
 #### Helper
 Have the ability to call a helper method that generates the value. The contents of the field are the
 arguments passed to the helper.
@@ -442,6 +454,35 @@ without having to write your own helpers
 </short_description>
 ```
 
+#### parsePrice
+```
+<price helper="ho_import/import::parsePrice">
+    <pricefield field="PrijsVerkoop"/>
+</price>
+```
+
+#### formatField
+Implementation of [vsprinf](http://us1.php.net/vsprintf)
+
+```
+<meta_description helper="ho_import/import::formatField">
+    <format>%s - For only €%s at Shop.com</format>
+    <fields>
+        <description field="Info"/>
+        <price field="PrijsVerkoop"/>
+    </fields>
+</meta_description>
+```
+
+#### truncate
+```
+<description helper="ho_import/import::truncate">
+    <value field="Info"/>
+    <length>125</length>
+    <etc>…</etc>
+</description>
+```
+
 #### stripHtmlTags
 ```
 <description helper="ho_import/import::stripHtmlTags">
@@ -499,18 +540,31 @@ Get multiple fields and glue them together
 </gender>
 ```
 
-#### getFieldMultipleMap
+#### getFieldCounter
 ```XML
-<_address_country_id helper="ho_import/import::getFieldMultipleMap">
-    <fields>
-        <billing  iffieldvalue="FactAdres" field="FactLand"/>
-        <shipping iffieldvalue="BezAdres" field="BezLand"/>
-    </fields>
-    <mapping>
-        <empty from="" to="NL"/>
-        <belgie from="België" to="BE"/>
-    </mapping>
-</_address_country_id>
+<_media_position helper="ho_import/import::getFieldCounter">
+    <countfield field="cImagePad"/>
+</_media_position>
+```
+
+#### getMediaAttributeId
+Usually used in combination with a counter to set the correct getMediaAttributeId
+
+```
+<_media_attribute_id helper="ho_import/import::getFieldCounter">
+    <countfield field="cImagePad"/>
+    <fieldvalue helper="ho_import/import::getMediaAttributeId"/>
+</_media_attribute_id>
+```
+
+#### getMediaImage
+Download the image from a remote URL and place it in the `media/import` folder.
+
+```XML
+<image helper="ho_import/import::getMediaImage">
+    <imagefield field="cImagePad"/>
+    <limit>1</limit>
+</image>
 ```
 
 #### Product: getUrlKey
