@@ -202,7 +202,7 @@ class Ho_Import_Model_Import extends Varien_Object
             Mage::throwException($this->_getLog()->__("Downloader model %s must be instance of Ho_Import_Model_Downloader_Abstract", $downloader->getAttribute('model')));
         }
 
-        $target = $downloader->getAttribute('target') ?: 'var/import';
+        $target = $downloader->target ?: 'var/import';
 
         $args = array_merge($downloader->asArray());
         unset($args['@']);

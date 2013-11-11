@@ -86,8 +86,11 @@ class Ho_Import_Model_Source_Adapter_Csv implements SeekableIterator
      * @param array $config
      * @return \Ho_Import_Model_Source_Adapter_Csv
      */
-    final public function __construct(array $config)
+    final public function __construct($config)
     {
+        if (is_string($config)) {
+            $config = array('file' => $config);
+        }
         if (!isset($config['file']) && !is_string($config['file'])) {
             Mage::throwException(Mage::helper('importexport')->__('File path must be a string'));
         }
@@ -106,7 +109,6 @@ class Ho_Import_Model_Source_Adapter_Csv implements SeekableIterator
             } else {
                 $this->_enclosure = chr(0);
             }
-
         }
 
         $this->_init();
@@ -119,7 +121,7 @@ class Ho_Import_Model_Source_Adapter_Csv implements SeekableIterator
                 Mage::throwException(Mage::helper('importexport')->__('Column names have duplicates'));
             }
         } else {
-            Mage::throwException(Mage::helper('importexport')->__('Column names is empty or is not an array'));
+            Mage::throwException(Mage::helper('importexport')->__('Column names is empty or is not an array, there seems to be a problem reading the source file.'));
         }
     }
 

@@ -31,10 +31,11 @@ class Ho_Import_Model_Downloader_Http extends Ho_Import_Model_Downloader_Abstrac
 
         $this->_log($this->_getLog()->__("Downloading file %s from %s, to %s", basename($url), $url, $target));
 
-        $filename = basename(parse_url($url, PHP_URL_PATH));
-        $path = $this->_getTargetPath($target, $filename);
+        $targetInfo = pathinfo($target);
+        $filename = isset($targetInfo['extension']) ? basename($target) : basename(parse_url($url, PHP_URL_PATH));
+        $path = $this->_getTargetPath(dirname($target), $filename);
 
-        $fp = fopen($path, 'w+');//This is the file where we save the    information
+        $fp = fopen($path, 'w+');//This is the file where we save the information
         $ch = curl_init($url);//Here is the file we are downloading, replace spaces with %20
         curl_setopt($ch, CURLOPT_TIMEOUT, 50);
         curl_setopt($ch, CURLOPT_FILE, $fp); // write curl response to file
