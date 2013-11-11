@@ -205,7 +205,7 @@ The only current supported downloader is HTTP. New downloaders can be easily cre
     <url>http://google.nl/file.xml</url>
 
     <!-- the downloader defaults to var/import -->
-    <!--<target>custom/download/path</target>-->
+    <!--<target>custom/download/path/filename.xml</target>-->
 </downloader>
 ```
 
