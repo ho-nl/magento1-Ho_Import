@@ -295,6 +295,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             $images = array_slice($images, 0, $limit);
         }
         foreach ($images as $key => $image) {
+            $image = str_replace(' ', '%20', $image);
             if (!is_file($this->_getUploader()->getTmpDir() . DS . basename($image))) {
                 $this->_copyExternalImageFile($image);
             }
@@ -322,9 +323,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     protected $_fileCache = array();
     protected function _copyExternalImageFile($url)
     {
-        $url = str_replace(' ', '%20', $url);
         if (isset($this->_fileCache[$url])) {
-//            Mage::helper('ho_import/log')->log($this->__("Image already processed"), Zend_Log::DEBUG);
             return;
         }
         Mage::helper('ho_import/log')->log($this->__("Downloading image %s", $url));
