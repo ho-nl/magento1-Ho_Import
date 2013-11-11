@@ -84,7 +84,12 @@ class Ho_Import_Model_Import extends Varien_Object
     public function mapLines($lines) {
         $this->_downloader();
 
-        $lines = $lines ? explode(',',$lines) : array();
+
+        if ($lines === '0') {
+            $lines = array(0);
+        } else {
+            $lines = $lines ? explode(',',$lines) : array();
+        }
 
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
@@ -711,6 +716,9 @@ class Ho_Import_Model_Import extends Varien_Object
 
     public function getProfiles() {
         $profileNodes =  Mage::getConfig()->getNode('global/ho_import');
-        return $profileNodes->asArray();
+        if ($profileNodes) {
+            return $profileNodes->asArray();
+        }
+        return array();
     }
 }
