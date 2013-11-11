@@ -39,17 +39,14 @@ Example config for a customer import (this is added to the `<config><global><ho_
         <email field="Email"/>
         <_website helper="ho_importjanselijn/import_customer::getWebsites"/>
         <group_id helper="ho_import/import::getFieldMap">
-            <field>Status</field>
+            <field field="Status"/>
             <mapping>
                 <particulier from="Particulier" to="1"/>
                 <zakelijk from="Zakelijk" to="2"/>
             </mapping>
         </group_id>
         <prefix field="Voorletters"/>
-        <firstname helper="ho_import/import::getFieldDefault">
-            <field>Voornaam</field>
-            <default>UNKNOWN</default>
-        </firstname>
+        <firstname field="Voornaam" defaultvalue="ONBEKEND"/>
         <middlename field="Tussenvoegsel" />
         <lastname field="Achternaam" required="1"/>
         <company field="Bedrijfsnaam"/>
@@ -57,7 +54,7 @@ Example config for a customer import (this is added to the `<config><global><ho_
         <taxvat field="BTWnummer" />
         <password field="cWachtWoord" />
         <gender helper="ho_import/import::getFieldMap">
-            <field>Geslacht</field>
+            <field field="Geslacht"/>
             <mapping>
                 <male from="M" to="male"/>
                 <female from="V" to="female"/>
@@ -348,7 +345,7 @@ _This section assumes that you place these config values in `<config><global><ho
 <email field="Email"/>
 ```
 
-In multi-level files like XML you can get a deeper value with a slash
+In multi-level files like XML you can get a deeper value with a `/`
 
 ```XML
 <email field="Customer/Email"/>
@@ -445,7 +442,7 @@ without having to write your own helpers
 #### findReplace
 ```XML
 <short_description helper="ho_import/import::findReplace">
-	<field>sourceField</field>
+	<value field="sourceField"/>
     <findReplace>
         <doubleat find="@@" replace="@"/>
         <nbsp from="&nbsp;" replace=" "/>
@@ -486,7 +483,7 @@ Implementation of [vsprinf](http://us1.php.net/vsprintf)
 #### stripHtmlTags
 ```
 <description helper="ho_import/import::stripHtmlTags">
-    <field>A_Xtratxt</field>
+    <value field="A_Xtratxt"/>
     <allowed><![CDATA[<p><a><br>]]></allowed>
 </description>
 ```
@@ -500,7 +497,9 @@ Get a simple HTML comment (can't be added through XML due to XML limitations).
 
 #### getFieldBoolean
 ```XML
-<is_in_stock helper="ho_import/import::getFieldBoolean"><field>stock</field></is_in_stock>
+<is_in_stock helper="ho_import/import::getFieldBoolean">
+	<value field="stock"/>
+</is_in_stock>
 ```
 
 #### getFieldMultiple
@@ -532,7 +531,7 @@ Get multiple fields and glue them together
 #### getFieldMap
 ```XML
 <gender helper="ho_import/import::getFieldMap">
-    <field>Geslacht</field>
+    <value field="Geslacht"/>
     <mapping>
         <male from="M" to="male"/>
         <female from="V" to="female"/>
