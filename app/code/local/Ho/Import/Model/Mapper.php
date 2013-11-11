@@ -202,7 +202,11 @@ class Ho_Import_Model_Mapper
 
         if (! isset($this->_fieldConfig[$fieldMapPath]))
         {
-            $columns = Mage::getConfig()->getNode($fieldMapPath)->children();
+            $fieldMapNode = Mage::getConfig()->getNode($fieldMapPath);
+            if (! $fieldMapNode) {
+                Mage::throwException(sprintf("Config path not found %s", $fieldMapPath));
+            }
+            $columns = $fieldMapNode->children();
             $columnsData = array();
 
             $stores = array();
