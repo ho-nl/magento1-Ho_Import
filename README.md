@@ -80,6 +80,8 @@ Or you can [download the latest release](https://github.com/ho-nl/Ho_Import/arch
 The idea is that you create a very light weight module for each project or import. This module has
 all the config for that specific import.
 
+_Need help creating an empty module for your installation, use a [module creator](http://www.silksoftware.com/magento-module-creator/).
+
 Example config:
 
 ```XML
