@@ -663,4 +663,6 @@ The module is written by Paul Hachmang (twitter: [@paales](https://twitter.com/p
 ## Why build it and open source it?
 After having build multiple product, category and customer imports I was never really satisfied with the available projects. After implementing a project with bare code we came to the conclusion that it was pretty difficult to create an import, make sure al the fields are correctly set for Magento to accept them, the development iteration was to slow, etc.
 
+After building this we think we made a pretty good module that has value for a lot of Magento developers, so releasing it open source was natural. And with the combined effort of other developers, we can improve it even further, fix bugs, add new features etc.
+
 [AvS_FastSimpleImport]: https://github.com/avstudnitz/AvS_FastSimpleImport "AvS_FastSimpleImport by @avstudnitz"
