@@ -1,3 +1,6 @@
+<!--
+More extensive one time customer import which imports multiple addresses
+-->
 <config>
 	<global>
 		<!-- ... -->
@@ -125,18 +128,6 @@
                     </_address_telephone_alt>
                     <_address_default_billing_  helper="ho_importjanselijn/import_customer::getAddressDefaultBilling"/>
                     <_address_default_shipping_ helper="ho_importjanselijn/import_customer::getAddressDefaultShipping"/>
-
-                    <!--
-                    | AboBourgMail   | []                               |
-                    | AboBourgPost   | []                               |
-                    | AboWijnMail    | 1                                |
-                    | AboWijnPost    | []                               |
-
-                    | Email2         | []                               |
-                    | Naam2          | []                               |
-
-                    | @attributes    | {"MODID":"55","RECORDID":"1455"} |
-                    -->
                 </fieldmap>
             </janselijn_customers>
         </ho_import>
