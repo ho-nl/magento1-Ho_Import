@@ -659,7 +659,7 @@ At the time of release we have this tool running for multiple clients, multiple 
 - Customer import [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/customer_import.xml)
 - Customer import with billing and shipping address [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/customer_import_billing_shipping.xml)
 
-# Performance
+## Performance
 We don't have actual benchmarks at the moment, but the time spend fieldmapping is an order of maginitude smaller than the actual import its self.
 
 ## License
