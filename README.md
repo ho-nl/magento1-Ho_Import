@@ -1,6 +1,6 @@
 # H&O Importer
 
-An extension of the [AvS_FastSimpleImport][] that allows you to map fields and import abitrary file formats, sources and entities.
+A Magento module and extension of the [AvS_FastSimpleImport][] module which allows you to map fields and import all sorts of file formats, data sources and data entities.
 
 The module consists of various downloaders (http), source adapters (csv, spreadsheets, database or xml) and supports all entities that [AvS_FastSimpleImport][] supports (products, categories, customers) and last but not least allows you to field map all fields in from each format to the magento format.
 
@@ -8,7 +8,7 @@ All this configuration can be done using XML. You add the config to a config.xml
 
 Since the original target for the module was an import that could process thousands of products it is build with this in mind. It is able to process large CSV or XML files while using very little memory (think a few MB memory increase for processing a 1GB CSV file).
 
-We have chosen to do all configuration in XML, this makes the import profile way more maintanable and adds the nessesairy structure when doing multiple imports.
+We have chosen to do all configuration in XML, this makes the import profile way more maintanable, especially important when doing multiple imports for a single project.
 
 To increase development and debugging speed there is a extensive shell tool that allows you to easily create new fieldmaps, add a downloader and start working.
 
@@ -65,12 +65,13 @@ Example config for a customer import (this is added to the `<config><global><ho_
 </my_customer_import>
 ```
 ## Installation
+
 You can install the module via modman:
-```
-modman clone ....
+```bash
+modman clone git@github.com:ho-nl/Ho_Import.git
 ```
 
-Or you can download it and place it in you Magento root.
+Or you can [download the latest release](https://github.com/ho-nl/Ho_Import/archive/master.zip) it and place it in you Magento root.
 
 
 ## Getting started
@@ -155,7 +156,7 @@ You will probably run into errors the first try. When the importer runs into err
 
 If a specific sku, for example, is giving you trouble, you can run the line utility and do a search.
 
-```
+```bash
 php hoimport.php -action line -profile profile_name -search sku=abd
 ```
 
@@ -452,7 +453,7 @@ without having to write your own helpers
 ```
 
 #### parsePrice
-```
+```XML
 <price helper="ho_import/import::parsePrice">
     <pricefield field="PrijsVerkoop"/>
 </price>
@@ -461,7 +462,7 @@ without having to write your own helpers
 #### formatField
 Implementation of [vsprinf](http://us1.php.net/vsprintf)
 
-```
+```XML
 <meta_description helper="ho_import/import::formatField">
     <format>%s - For only €%s at Shop.com</format>
     <fields>
@@ -472,7 +473,7 @@ Implementation of [vsprinf](http://us1.php.net/vsprintf)
 ```
 
 #### truncate
-```
+```XML
 <description helper="ho_import/import::truncate">
     <value field="Info"/>
     <length>125</length>
@@ -481,7 +482,7 @@ Implementation of [vsprinf](http://us1.php.net/vsprintf)
 ```
 
 #### stripHtmlTags
-```
+```XML
 <description helper="ho_import/import::stripHtmlTags">
     <value field="A_Xtratxt"/>
     <allowed><![CDATA[<p><a><br>]]></allowed>
@@ -549,7 +550,7 @@ Get multiple fields and glue them together
 #### getMediaAttributeId
 Usually used in combination with a counter to set the correct getMediaAttributeId
 
-```
+```XML
 <_media_attribute_id helper="ho_import/import::getFieldCounter">
     <countfield field="cImagePad"/>
     <fieldvalue helper="ho_import/import::getMediaAttributeId"/>
