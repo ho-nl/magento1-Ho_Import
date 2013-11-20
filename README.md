@@ -621,6 +621,8 @@ class Ho_ImportJanselijn_Helper_Import_Customer extends Mage_Core_Helper_Abstrac
 }
 ```
 
+As you can see it sometimes returns an array of values and sometimes just returns a value. If you helper method returns an array of values Ho_Imports [internally rewrites those multiple values to multiple import rows](https://github.com/ho-nl/Ho_Import/blob/master/app/code/local/Ho/Import/Model/Import.php#L470).
+
 ## Terminal/Shell Utility
 The importer comes with a shell utiliy where you'll be spending most of your time.
 
