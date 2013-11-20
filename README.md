@@ -654,5 +654,13 @@ We don't have actual benchmarks at the moment, but the time spend fieldmapping i
 ## License
 [OSL - Open Software Licence 3.0](http://opensource.org/licenses/osl-3.0.php)
 
+## Support
+If you need help with the module, create an issue in the [GitHub issue tracker](https://github.com/ho-nl/Ho_Import/issues).
+
+## Author
+The module is written by Paul Hachmang (twitter: [@paales](https://twitter.com/paales), email: paul@h-o.nl) build for H&O (website: <http://www.h-o.nl/>, email: <info@h-o.nl>, twitter: [@ho_nl](https://twitter.com/ho_nl)).
+
+## Why build it and open source it?
+After having build multiple product, category and customer imports I was never really satisfied with the available projects. After implementing a project with bare code we came to the conclusion that it was pretty difficult to create an import, make sure al the fields are correctly set for Magento to accept them, the development iteration was to slow, etc.
 
 [AvS_FastSimpleImport]: https://github.com/avstudnitz/AvS_FastSimpleImport "AvS_FastSimpleImport by @avstudnitz"
