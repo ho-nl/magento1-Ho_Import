@@ -269,7 +269,7 @@ The Spreadsheet Source is an implementation of [spreadsheet-reader](https://gith
 
 
 #### Database Source
-The Database source is an implementation of `Zend_Db_Table_Rowset` and allows all implentation of `Zend_Db_Adapter_Abstract` as a source. For all possible supported databases take a look in `/lib/Zend/Db/Adapter`.
+The Database source is an implementation of `Zend_Db_Table_Rowset` and allows all implentation of `Zend_Db_Adapter_Abstract` as a source. It supports MSSQL, MySQL, PostgreSQL, SQLite and many others. For all possible supported databases take a look in `/lib/Zend/Db/Adapter`.
 
 The current implementation isn't low memory because it executes the query an loads everything in memory.
 
@@ -660,7 +660,7 @@ At the time of release we have this tool running for multiple clients, multiple 
 - Customer import with billing and shipping address [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/customer_import_billing_shipping.xml)
 
 ## Performance
-We don't have actual benchmarks at the moment, but the time spend fieldmapping is an order of maginitude smaller than the actual import its self.
+We don't have actual benchmarks at the moment, but the time spend fieldmapping is an order of magnitude faster than the actual import its self.
 
 ## License
 [OSL - Open Software Licence 3.0](http://opensource.org/licenses/osl-3.0.php)
