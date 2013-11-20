@@ -649,7 +649,7 @@ php hoimport.php -action import
 	-error_limit 10000                Set the error limit, default=100 error lines.;
 ```
 
-#Use cases
+## Use cases
 At the time of release we have this tool running for multiple clients, multiple types of imports:
 - One time product / category imports from an old datasource [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/old_products.xml)
 - 15 minute inventory only updates
@@ -662,16 +662,16 @@ At the time of release we have this tool running for multiple clients, multiple 
 # Performance
 We don't have actual benchmarks at the moment, but the time spend fieldmapping is an order of maginitude smaller than the actual import its self.
 
-# License
+## License
 [OSL - Open Software Licence 3.0](http://opensource.org/licenses/osl-3.0.php)
 
-# Support
+## Support
 If you need help with the module, create an issue in the [GitHub issue tracker](https://github.com/ho-nl/Ho_Import/issues).
 
-# Author
+## Author
 The module is written by Paul Hachmang (twitter: [@paales](https://twitter.com/paales), email: paul@h-o.nl) build for H&O (website: <http://www.h-o.nl/>, email: <info@h-o.nl>, twitter: [@ho_nl](https://twitter.com/ho_nl)).
 
-# Why build it and open source it?
+## Why build it and open source it?
 After having build multiple product, category and customer imports I was never really satisfied with the available projects. After implementing a project with bare code we came to the conclusion that it was pretty difficult to create an import, make sure al the fields are correctly set for Magento to accept them, the development iteration was to slow, etc.
 
 After building this we think we made a pretty good module that has value for a lot of Magento developers, so releasing it open source was natural. And with the combined effort of other developers, we can improve it even further, fix bugs, add new features etc.
