@@ -152,7 +152,7 @@ You can now import the complete set.
 php hoimport.php -action import -profile profile_name
 ```
 
-You will probably run into errors the first try. When the importer runs into errors it will return the faulty row. It will return the row that is imported, won't return the source row since that row isn't know.
+You will probably run into errors the first try. When the importer runs into errors it will return the faulty row. It will return the row that is imported (unfortunatly it won't return the source row since that row isn't know at this point of the import).
 
 If a specific sku, for example, is giving you trouble, you can run the line utility and do a search.
 
@@ -269,7 +269,7 @@ The Spreadsheet Source is an implementation of [spreadsheet-reader](https://gith
 #### Database Source
 The Database source is an implementation of `Zend_Db_Table_Rowset` and allows all implentation of `Zend_Db_Adapter_Abstract` as a source. For all possible supported databases take a look in `/lib/Zend/Db/Adapter`.
 
-The current implementation isn't low memory because it executes the query an loads everything in memory. In a low memory implementation it would work with pages of lets say a 1000.
+The current implementation isn't low memory because it executes the query an loads everything in memory.
 
 ```XML
 <source model="ho_import/source_adapter_db">
@@ -422,7 +422,7 @@ The opposite of `iffieldvalue`
 ```
 
 #### Required
-Some fields are always required by the importer for each row. For products it is required that you
+Some fields are always required by the importer for each row. For example for products it is required that you
 have the sku field always present.
 
 ```XML
