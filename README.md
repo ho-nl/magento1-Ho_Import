@@ -1,14 +1,14 @@
 # H&O Importer
 
-An extension of the [AvS_FastSimpleImport][] that allows you to map fields and import abitrary file formats, sources and entities.
+A Magento module and extension of the [AvS_FastSimpleImport][] module which allows you to map fields and import all sorts of file formats, data sources and data entities.
 
 The module consists of various downloaders (http), source adapters (csv, spreadsheets, database or xml) and supports all entities that [AvS_FastSimpleImport][] supports (products, categories, customers) and last but not least allows you to field map all fields in from each format to the magento format.
 
 All this configuration can be done using XML. You add the config to a config.xml and you can run the profile. The idea is that you set all the configuration in the XML and that you or the cron will run it with the perfect options.
 
-Since the original target for the module was an import that could process thousands of products it is build with this in mind. It is able to process large CSV or XML files while using very little memory (think a few MB memory increase for processing a 1GB CSV file).
+Since the original target for the module was an import that could process thousands of products it is build with this in mind. It is able to process large CSV or XML files while using very little memory (think a few MB memory increase for processing a 1GB CSV file). See [Use cases](#use-cases)
 
-We have chosen to do all configuration in XML, this makes the import profile way more maintanable and adds the nessesairy structure when doing multiple imports.
+We have chosen to do all configuration in XML, this makes the import profile way more maintanable, especially important when doing multiple imports for a single project.
 
 To increase development and debugging speed there is a extensive shell tool that allows you to easily create new fieldmaps, add a downloader and start working.
 
@@ -65,12 +65,13 @@ Example config for a customer import (this is added to the `<config><global><ho_
 </my_customer_import>
 ```
 ## Installation
+
 You can install the module via modman:
-```
-modman clone ....
+```bash
+modman clone git@github.com:ho-nl/Ho_Import.git
 ```
 
-Or you can download it and place it in you Magento root.
+Or you can [download the latest release](https://github.com/ho-nl/Ho_Import/archive/master.zip) it and place it in you Magento root.
 
 
 ## Getting started
@@ -78,6 +79,8 @@ Or you can download it and place it in you Magento root.
 ### 1. Create a module
 The idea is that you create a very light weight module for each project or import. This module has
 all the config for that specific import.
+
+_Need help creating an empty module for your installation, use a [module creator](http://www.silksoftware.com/magento-module-creator/).
 
 Example config:
 
@@ -151,11 +154,11 @@ You can now import the complete set.
 php hoimport.php -action import -profile profile_name
 ```
 
-You will probably run into errors the first try. When the importer runs into errors it will return the faulty row. It will return the row that is imported, won't return the source row since that row isn't know.
+You will probably run into errors the first try. When the importer runs into errors it will return the faulty row. It will return the row that is imported (unfortunatly it won't return the source row since that row isn't know at this point of the import).
 
 If a specific sku, for example, is giving you trouble, you can run the line utility and do a search.
 
-```
+```bash
 php hoimport.php -action line -profile profile_name -search sku=abd
 ```
 
@@ -266,9 +269,9 @@ The Spreadsheet Source is an implementation of [spreadsheet-reader](https://gith
 
 
 #### Database Source
-The Database source is an implementation of `Zend_Db_Table_Rowset` and allows all implentation of `Zend_Db_Adapter_Abstract` as a source. For all possible supported databases take a look in `/lib/Zend/Db/Adapter`.
+The Database source is an implementation of `Zend_Db_Table_Rowset` and allows all implentation of `Zend_Db_Adapter_Abstract` as a source. It supports MSSQL, MySQL, PostgreSQL, SQLite and many others. For all possible supported databases take a look in `/lib/Zend/Db/Adapter`.
 
-The current implementation isn't low memory because it executes the query an loads everything in memory. In a low memory implementation it would work with pages of lets say a 1000.
+The current implementation isn't low memory because it executes the query an loads everything in memory.
 
 ```XML
 <source model="ho_import/source_adapter_db">
@@ -421,7 +424,7 @@ The opposite of `iffieldvalue`
 ```
 
 #### Required
-Some fields are always required by the importer for each row. For products it is required that you
+Some fields are always required by the importer for each row. For example for products it is required that you
 have the sku field always present.
 
 ```XML
@@ -452,7 +455,7 @@ without having to write your own helpers
 ```
 
 #### parsePrice
-```
+```XML
 <price helper="ho_import/import::parsePrice">
     <pricefield field="PrijsVerkoop"/>
 </price>
@@ -461,7 +464,7 @@ without having to write your own helpers
 #### formatField
 Implementation of [vsprinf](http://us1.php.net/vsprintf)
 
-```
+```XML
 <meta_description helper="ho_import/import::formatField">
     <format>%s - For only €%s at Shop.com</format>
     <fields>
@@ -472,7 +475,7 @@ Implementation of [vsprinf](http://us1.php.net/vsprintf)
 ```
 
 #### truncate
-```
+```XML
 <description helper="ho_import/import::truncate">
     <value field="Info"/>
     <length>125</length>
@@ -481,7 +484,7 @@ Implementation of [vsprinf](http://us1.php.net/vsprintf)
 ```
 
 #### stripHtmlTags
-```
+```XML
 <description helper="ho_import/import::stripHtmlTags">
     <value field="A_Xtratxt"/>
     <allowed><![CDATA[<p><a><br>]]></allowed>
@@ -549,7 +552,7 @@ Get multiple fields and glue them together
 #### getMediaAttributeId
 Usually used in combination with a counter to set the correct getMediaAttributeId
 
-```
+```XML
 <_media_attribute_id helper="ho_import/import::getFieldCounter">
     <countfield field="cImagePad"/>
     <fieldvalue helper="ho_import/import::getMediaAttributeId"/>
@@ -620,6 +623,8 @@ class Ho_ImportJanselijn_Helper_Import_Customer extends Mage_Core_Helper_Abstrac
 }
 ```
 
+As you can see it sometimes returns an array of values and sometimes just returns a value. If you helper method returns an array of values Ho_Imports [internally rewrites those multiple values to multiple import rows](https://github.com/ho-nl/Ho_Import/blob/master/app/code/local/Ho/Import/Model/Import.php#L470).
+
 ## Terminal/Shell Utility
 The importer comes with a shell utiliy where you'll be spending most of your time.
 
@@ -644,12 +649,31 @@ php hoimport.php -action import
 	-error_limit 10000                Set the error limit, default=100 error lines.;
 ```
 
+## Use cases
+At the time of release we have this tool running for multiple clients, multiple types of imports:
+- One time product / category imports from an old datasource [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/old_products.xml)
+- 15 minute inventory only updates
+- Nightly complete inventory updates [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/product_stock_multiple.xml)
+- Nightly price updates
+- Incremental category/product updates from ERP systems
+- Customer import [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/customer_import.xml)
+- Customer import with billing and shipping address [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/customer_import_billing_shipping.xml)
 
 ## Performance
-We don't have actual benchmarks at the moment, but the time spend fieldmapping is an order of maginitude smaller than the actual import its self.
+We don't have actual benchmarks at the moment, but the time spend fieldmapping is an order of magnitude faster than the actual import its self.
 
 ## License
 [OSL - Open Software Licence 3.0](http://opensource.org/licenses/osl-3.0.php)
 
+## Support
+If you need help with the module, create an issue in the [GitHub issue tracker](https://github.com/ho-nl/Ho_Import/issues).
+
+## Author
+The module is written by Paul Hachmang (twitter: [@paales](https://twitter.com/paales), email: paul@h-o.nl) build for H&O (website: <http://www.h-o.nl/>, email: <info@h-o.nl>, twitter: [@ho_nl](https://twitter.com/ho_nl)).
+
+## Why build it and open source it?
+After having build multiple product, category and customer imports I was never really satisfied with the available projects. After implementing a project with bare code we came to the conclusion that it was pretty difficult to create an import, make sure al the fields are correctly set for Magento to accept them, the development iteration was to slow, etc.
+
+After building this we think we made a pretty good module that has value for a lot of Magento developers, so releasing it open source was natural. And with the combined effort of other developers, we can improve it even further, fix bugs, add new features etc.
 
 [AvS_FastSimpleImport]: https://github.com/avstudnitz/AvS_FastSimpleImport "AvS_FastSimpleImport by @avstudnitz"

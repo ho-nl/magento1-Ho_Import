@@ -1,3 +1,6 @@
+<!--
+Importing products from an old database with image downloading
+-->
 <config>
 	<global>
 		<!-- ... -->

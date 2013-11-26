@@ -1,3 +1,7 @@
+<!--
+Daily stock import which imports into multiple stock locations (module used is
+Innoexts_Multiwarehouse)
+-->
 <config>
 	<global>
 		<!-- ... -->
@@ -10,7 +14,6 @@
                     <username><![CDATA[username]]></username>
                     <password><![CDATA[password]]></password>
                     <dbname><![CDATA[database]]></dbname>
-                    <!--<initStatements><![CDATA[SET NAMES utf8]]></initStatements>-->
                     <model><![CDATA[Zend_Db_Adapter_Pdo_Mssql]]></model>
                     <pdoType>dblib</pdoType>
                     <!--<limit>10</limit>-->
