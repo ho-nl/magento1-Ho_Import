@@ -151,6 +151,10 @@ class Ho_Import_Model_Mapper
             $helper = Mage::helper($helperParts[0]);
             $method = $helperParts[1];
 
+            if (! method_exists($helper, $method)) {
+                Mage::throwException(Mage::helper('ho_import')->__('Method %s could not be found for helper %s', $method, $helperParts[0]));
+            }
+
             //prepare the arguments
             $args = $fieldConfig;
             unset($args['@']);
