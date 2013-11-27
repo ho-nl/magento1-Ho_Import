@@ -425,7 +425,6 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $mapper = $this->_getMapper();
         $mapper->setItem($item);
-        $mapper->setProfileName($this->getProfile());
 
         $allFieldConfig = $mapper->getFieldConfig();
         //Step 1: Get the values for the fields
@@ -680,5 +679,10 @@ class Ho_Import_Model_Import extends Varien_Object
             return $profileNodes->asArray();
         }
         return array();
+    }
+
+    public function setProfile($profile) {
+        $this->_getMapper()->setProfileName($profile);
+        return parent::setProfile($profile);
     }
 }
