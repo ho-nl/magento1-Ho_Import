@@ -346,36 +346,6 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $transport = $this->_getTransport();
         $transport->addData(array('object' => $fastsimpleimport, 'errors' => $errors));
-
-
-//        /**
-//         * CLEANUP START
-//         */
-//        /** @var AvS_FastSimpleImport_Model_Import_Entity_Category $adapter */
-//        $adapter = $fastsimpleimport->getEntityAdapter();
-//        $categoriesWithRoots = $adapter->getCategoriesWithRoots();
-//
-//        /** @var SeekableIterator $sourceAdapter */
-//        $this->_sourceAdapter = null;
-//        $sourceAdapter = $this->getSourceAdapter();
-//
-//        $rowCount = 0;
-//        while ($sourceAdapter->valid()) {
-//            $preparedItems = $this->_prepareItem($sourceAdapter->current());
-//            foreach ($preparedItems as $preparedItem) {
-//                $result = $this->_fieldMapItem($preparedItem);
-//                foreach ($result as $item) {
-//                    unset($categoriesWithRoots[$item['_root']][$item['_category']]);
-//                }
-//            }
-//
-//            $rowCount++;
-//            $sourceAdapter->next();
-//        }
-//
-//        $transport = $this->_getTransport();
-//        $transport->setData('categories_with_roots', $categoriesWithRoots);
-//        $this->_runEvent(self::IMPORT_CONFIG_AFTER_IMPORT, $transport);
         $this->_runEvent('import_after');
 
         return $errors;
@@ -698,20 +668,6 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $this->_getLog()->log($logData, Zend_Log::DEBUG);
-
-//        while ($sourceAdapter->valid()) {
-//            $result = $this->_fieldMapItem($sourceAdapter->current());
-//            foreach ($result as $row) {
-//                $exportAdapter->writeRow($row);
-//            }
-//            $rowCount++;
-//            $sourceAdapter->next();
-//        }
-//        $this->setRowCount($rowCount);
-
-//
-//        $this->_sourceAdapter = null;
-//        $this->mapLines($errorLines);
     }
 
     public function getProfiles() {
