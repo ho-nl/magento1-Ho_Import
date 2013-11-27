@@ -668,13 +668,14 @@ php hoimport.php -action import
 
 ## Use cases
 At the time of release we have this tool running for multiple clients, multiple types of imports:
-- One time product / category imports from an old datasource [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/old_products.xml)
+- One time product / category imports from an old datasource [Example config](docs/imports/old_products.xml)
+- Periodic category import with values for multiple store views [Example config](docs/imports/categories_with_store_view_data.xml)
 - 15 minute inventory only updates
-- Nightly complete inventory updates [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/product_stock_multiple.xml)
+- Nightly complete inventory updates [Example config](docs/imports/product_stock_multiple.xml)
 - Nightly price updates
 - Incremental category/product updates from ERP systems
-- Customer import [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/customer_import.xml)
-- Customer import with billing and shipping address [Example config](https://github.com/ho-nl/Ho_Import/blob/master/docs/imports/customer_import_billing_shipping.xml)
+- Customer import [Example config](docs/imports/customer_import.xml)
+- Customer import with billing and shipping address [Example config](docs/imports/customer_import_billing_shipping.xml)
 
 ## Performance
 We don't have actual benchmarks at the moment, but the time spend fieldmapping is an order of magnitude faster than the actual import its self.

@@ -1,0 +1,119 @@
+<!--
+Category import with store view specific data.
+
+- Import is scheduled to run every hour
+- Data is directly read from the ERP-system.
+- Before importing a table is updated in the old database with custom code
+- Category data is imported with different data for each store view.
+- URL keys are created for compability with the EcomDev_UrlRewrite
+-->
+
+<config>
+	<global>
+		<!-- ... -->
+        <ho_import>
+            <postbeeld_categories>
+                <entity_type>catalog_category</entity_type>
+                <schedule><cron_expr>0 * * * *</cron_expr></schedule>
+                <source model="ho_import/source_adapter_db">
+                    <host><![CDATA[hostname.com]]></host>
+                    <username><![CDATA[username]]></username>
+                    <password><![CDATA[password]]></password>
+                    <dbname><![CDATA[databasename]]></dbname>
+                    <model><![CDATA[Zend_Db_Adapter_Mysqli]]></model>
+                    <type><![CDATA[pdo_mysql]]></type>
+                    <pdoType><![CDATA[]]></pdoType>
+                    <query><![CDATA[
+                        SELECT
+                            `main_table`.`cat_id`,
+                            `main_table`.`text_path`,
+                            `main_table`.`cat_order`,
+                            `category_data`.`field_id_15` AS `description_de`,
+                            `category_data`.`field_id_16` AS `description_en`,
+                            `category_data`.`field_id_17` AS `description_es`,
+                            `category_data`.`field_id_18` AS `description_fr`,
+                            `category_data`.`field_id_19` AS `description_nl`,
+                            `category_data`.`field_id_22` AS `description_it`,
+                            IF(field_id_1 > '',field_id_1,field_id_10) AS `title_de`,
+                            IF(field_id_6 > '',field_id_6,field_id_11) AS `title_en`,
+                            IF(field_id_8 > '',field_id_8,field_id_13) AS `title_fr`,
+                            IF(field_id_9 > '',field_id_9,field_id_14) AS `title_nl`,
+                            IF(field_id_7 > '',field_id_7,field_id_12) AS `title_es`,
+                            IF(field_id_20 > '',field_id_20,field_id_21) AS `title_it`
+                        FROM `exp_category_flat` AS `main_table`
+                            LEFT JOIN `exp_category_field_data` AS `category_data`
+                                ON `main_table`.`cat_id` = `category_data`.`cat_id`
+                        ORDER BY text_path ASC
+                        ]]></query>
+                </source>
+                <events>
+                    <process_before helper="ho_postbeeldproduct/import_category::updateFlat"/>
+                </events>
+                <fieldmap>
+                    <!--<_store/>-->
+                    <_root value="Root"/>
+                    <_category field="text_path"/>
+                    <!--<available_sort_by/>-->
+                    <custom_apply_to_products value="No"/>
+                    <!--<custom_design/>-->
+                    <!--<custom_design_from/>-->
+                    <!--<custom_design_to/>-->
+                    <!--<custom_layout_update/>-->
+                    <custom_use_parent_settings value="Yes"/>
+                    <!--<default_sort_by/>-->
+                    <description field="description_en">
+                        <store_view>
+                            <pb_de field="description_de"/>
+                            <pb_es field="description_es"/>
+                            <pb_fr field="description_fr"/>
+                            <pb_it field="description_it"/>
+                            <pb_nl field="description_nl"/>
+                        </store_view>
+                    </description>
+                    <display_mode value="Products Only"/>
+                    <!--<filter_price_range/>-->
+                    <image/> <!-- TODO -->
+                    <include_in_menu value="Yes"/>
+                    <is_active value="Yes"/>
+                    <is_anchor value="Yes"/>
+                    <!--<landing_page/>-->
+                    <meta_description/>
+                    <meta_keywords/>
+                    <meta_title/>
+                    <name>
+                        <store_view>
+                            <pb_de field="title_de"/>
+                            <pb_en field="title_en"/>
+                            <pb_es field="title_es"/>
+                            <pb_fr field="title_fr"/>
+                            <pb_it field="title_it"/>
+                            <pb_nl field="title_nl"/>
+                        </store_view>
+                    </name>
+                    <!--<page_layout/>-->
+                    <position field="cat_order"/>
+                    <url_key helper="ho_import/import_category::getUrlKey">
+                        <fields><title field="title_en"/></fields>
+                        <store_view>
+                            <pb_de helper="ho_import/import_category::getUrlKey">
+                                <fields><title field="title_de"/></fields>
+                            </pb_de>
+                            <pb_es helper="ho_import/import_category::getUrlKey">
+                                <fields><title field="title_es"/></fields>
+                            </pb_es>
+                            <pb_fr helper="ho_import/import_category::getUrlKey">
+                                <fields><title field="title_fr"/></fields>
+                            </pb_fr>
+                            <pb_it helper="ho_import/import_category::getUrlKey">
+                                <fields><title field="title_it"/></fields>
+                            </pb_it>
+                            <pb_nl helper="ho_import/import_category::getUrlKey">
+                                <fields><title field="title_nl"/></fields>
+                            </pb_nl>
+                        </store_view>
+                    </url_key>
+                </fieldmap>
+            </postbeeld_categories>
+        </ho_import>
+    </global>
+</config>
