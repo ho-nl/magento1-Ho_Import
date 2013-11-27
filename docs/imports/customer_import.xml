@@ -29,8 +29,8 @@ A simple one-time customer import
                 <events>
                     <!--<source_row_fieldmap_before helper="ho_importinktweb/product::prepareRowCategory"/>-->
                     <!--<source_row_fieldmap_after/>-->
-                    <!--<before_import/>-->
-                    <!--<after_import/>-->
+                    <!--<import_before/>-->
+                    <!--<import_after/>-->
                 </events>
                 <fieldmap>
                     <!--

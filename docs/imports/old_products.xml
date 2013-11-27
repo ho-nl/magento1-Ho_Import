@@ -28,8 +28,8 @@ Importing products from an old database with image downloading
                 <events>
                     <!--<source_row_fieldmap_before/>-->
                     <!--<source_row_fieldmap_after/>-->
-                    <!--<before_import/>-->
-                    <!--<after_import/>-->
+                    <!--<import_before/>-->
+                    <!--<import_after/>-->
                 </events>
 
                 <fieldmap>

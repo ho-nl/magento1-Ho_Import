@@ -32,8 +32,8 @@ Example config for a customer import (this is added to the `<config><global><ho_
     </import_options>
     <events>
         <!--<source_row_fieldmap_before helper="ho_importinktweb/product::prepareRowCategory"/>-->
-        <!--<before_import/>-->
-        <!--<after_import/>-->
+        <!--<import_before/>-->
+        <!--<import_after/>-->
     </events>
     <fieldmap>
         <email field="Email"/>
@@ -311,19 +311,19 @@ with the information set.
 ```XML
 <events>
 	<source_row_fieldmap_before helper="ho_import/import_product::checkIfValid"/>
-	<before_import helper="ho_import/import_product::callWifeIfItIsOk"/>
-	<after_import helper="ho_import/import_product::reindexStuff"/>
+	<import_before helper="ho_import/import_product::callWifeIfItIsOk"/>
+	<import_after helper="ho_import/import_product::reindexStuff"/>
 </events>
 ```
 
-#### Event: `before_import`
+#### Event: `import_before`
 - `object`: instance of `AvS_FastSimpleImport_Model_Import`
 
 #### Event: `source_row_fieldmap_before`
 It has one field `items` set. This can be replaced, extended etc. to manipulate the data. Optionally
 you can set the key `skip` to `1` to skip this source row all together.
 
-#### Event: `after_import`
+#### Event: `import_after`
 - `object`: instance of `AvS_FastSimpleImport_Model_Import`
 - `errors`: array of errors
 
