@@ -162,8 +162,8 @@ If a specific sku, for example, is giving you trouble, you can run the line util
 php hoimport.php -action line -profile profile_name -search sku=abd
 ```
 
-### 6. Schedule an import
-If you are satisfied with the import you can add a schedule to it, this will add it to the cron
+### 6. Schedule an import (cronjob)
+If you are satisfied with the import you can [add a schedule to it](#cron-schedule), this will add it to the cron
 scheduler and run it at your configured time:
 
 ![Terminal Preview](docs/images/schedule.png)
@@ -190,7 +190,7 @@ Use the same formatting as the default cron setup.
 
 Using a cron expression:
 ```XML
-<schedule><cron_expr>* 2 * * *</cron_expr></schedule>
+<schedule><cron_expr>0 2 * * *</cron_expr></schedule>
 ```
 
 Using a config path:
@@ -431,6 +431,21 @@ have the sku field always present.
 
 ```XML
 <sku field="sku" required="1"/>
+```
+
+### Setting store view specific data
+With simple additions to the config it is possible to set store view specific data. You have the exact same abilities as with normal fields, you only have to provide the `<store_view>` element with the fields for each storeview.
+
+```XML
+<description field="description_en">
+    <store_view>
+        <pb_de field="description_de"/>
+        <pb_es field="description_es"/>
+        <pb_fr field="description_fr"/>
+        <pb_it field="description_it"/>
+        <pb_nl field="description_nl"/>
+    </store_view>
+</description>
 ```
 
 ### Integrated helper methods <a name="integrated-helpers"></a>

@@ -8,7 +8,7 @@ Innoexts_Multiwarehouse)
         <ho_import>
             <mai_products_stock_all>
                 <entity_type>catalog_product</entity_type>
-                <schedule><cron_expr>* 2 * * *</cron_expr></schedule>
+                <schedule><cron_expr>0 2 * * *</cron_expr></schedule>
                 <source model="ho_musicallin/source_artikelen">
                     <host><![CDATA[host]]></host>
                     <username><![CDATA[username]]></username>
