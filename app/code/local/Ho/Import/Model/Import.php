@@ -53,6 +53,8 @@ class Ho_Import_Model_Import extends Varien_Object
      * @return \Ho_Import_Model_Import
      */
     public function process() {
+        $this->_runEvent('process_before');
+
         $this->_downloader();
 
         if (! array_key_exists($this->getProfile(), $this->getProfiles())) {
@@ -76,6 +78,8 @@ class Ho_Import_Model_Import extends Varien_Object
             $this->_getLog()->log($this->_getLog()->__('Importing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
             $errors = $this->$method();
         }
+
+        $this->_runEvent('process_after');
 
         $this->_logErrors($errors);
         $this->_debugErrors($errors);
