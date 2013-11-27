@@ -238,6 +238,23 @@ class Ho_Import_Model_Mapper
         }
 
         return $this->_fieldConfig[$fieldMapPath];
+    }
 
+    public function getFieldNames($profile = null) {
+        if (is_null($profile)) {
+            $profile = $this->getProfileName();
+        }
+
+        $fieldMapPath = sprintf(self::IMPORT_FIELD_CONFIG_PATH, $profile);
+        $fieldMapNode = Mage::getConfig()->getNode($fieldMapPath);
+        if (! $fieldMapNode) {
+            Mage::throwException(sprintf("Config path not found %s", $fieldMapPath));
+        }
+        $columns = $fieldMapNode->children();
+        $columnNames = array('_store' => '_store');
+        foreach ($columns as $columnName => $columnData) {
+            $columnNames[$columnName] = '';
+        }
+        return $columnNames;
     }
 }

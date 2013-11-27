@@ -233,6 +233,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
         $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getFileName());
+        $fieldNames = $this->_getMapper()->getFieldNames();
 
         $rowCount = 0;
         while ($sourceAdapter->valid()) {
@@ -249,7 +250,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 $result = $this->_fieldMapItem($preparedItem);
 
                 foreach ($result as $row) {
-                    $exportAdapter->writeRow($row);
+                    $exportAdapter->writeRow(array_merge($fieldNames, $row));
                 }
             }
 
