@@ -606,6 +606,20 @@ Download the image from a remote URL and place it in the `media/import` folder.
 </url_key>
 ```
 
+#### Customer: mapCountryIso3ToIso2
+```XML
+<billing helper="ho_import/import_customer::mapCountryIso3ToIso2">
+    <field field="billing_country_code"/>
+</billing>
+```
+
+#### Customer: mapCountryIso2ToIso3
+```XML
+<billing helper="ho_import/import_customer::mapCountryIso2ToIso3">
+    <field field="billing_country_code"/>
+</billing>
+```
+
 ### Custom helper methods <a name="custom-helpers"></a>
 Not every situation is a simple value processing and more complex logic might have to be used. You have the ability to easily create your own helper methods for each project. Simply create your own helper class and call that class.
 
