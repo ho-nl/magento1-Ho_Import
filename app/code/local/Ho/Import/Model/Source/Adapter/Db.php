@@ -42,11 +42,12 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
             $limit  = (int) isset($config['limit']) ? $config['limit'] : 0;
             $offset = (int) isset($config['offset']) ? $config['offset'] : 0;
             $logHelper->log($logHelper->__('Setting limit to %s and offset to %s', $limit, $offset), Zend_Log::WARN);
-            $query = $db->limit($query, $config['limit'], 0);
+            $query = $db->limit($query, $config['limit'], $offset);
         }
 
         $logHelper->log('Fetching data...');
         $result = $db->fetchAll($query);
+        $logHelper->log('Done');
         $config['data'] = &$result;
 
         return parent::__construct($config);
