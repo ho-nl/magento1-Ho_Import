@@ -190,6 +190,28 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return string
      */
     public function getFieldCombine($line, $fields, $glue = ' ') {
+
+        switch ($glue) {
+            case '\n': //linefeed (LF or 0x0A (10) in ASCII)
+                $glue = "\n";
+                break;
+            case '\r': //carriage return (CR or 0x0D (13) in ASCII)
+                $glue = "\n";
+                break;
+            case '\t': //horizontal tab (HT or 0x09 (9) in ASCII)
+                $glue = "\n";
+                break;
+            case '\v': //vertical tab (VT or 0x0B (11) in ASCII) (since PHP 5.2.5)
+                $glue = "\n";
+                break;
+            case '\e': //escape (ESC or 0x1B (27) in ASCII) (since PHP 5.4.0)
+                $glue = "\n";
+                break;
+            case '\f': //form feed (FF or 0x0C (12) in ASCII) (since PHP 5.2.5)
+                $glue = "\n";
+                break;
+        }
+
         return implode($glue, $this->getFieldMultiple($line, $fields));
     }
 
