@@ -353,6 +353,20 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $images;
     }
 
+    /** @var Zend_Date */
+    protected $_dateObject = null;
+    public function timestampToDate($line, $field, $offset) {
+        $value = (array) $this->_getMapper()->mapItem($field);
+        if ($this->_dateObject === null) {
+            $this->_dateObject = new Zend_Date();
+        }
+
+        $offset = !empty($offset) ? $offset : 0;
+        $this->_dateObject->setTimestamp(reset($value) + $offset);
+
+        return $this->_dateObject->toString(Zend_Date::ISO_8601);
+    }
+
 
     /**
      * @return Ho_Import_Model_Mapper

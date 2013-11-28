@@ -604,6 +604,16 @@ Download the image from a remote URL and place it in the `media/import` folder.
 </image>
 ```
 
+
+#### timestampToDate
+
+```
+<created_at helper="ho_import/import::timestampToDate">
+    <field field="join_date"/>
+    <!-- <offset/> -->
+</created_at>
+```
+
 #### Product: getUrlKey
 ```XML
 <url_key helper="ho_import/import_product::getUrlKey">
