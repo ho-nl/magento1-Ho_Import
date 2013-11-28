@@ -19,7 +19,6 @@
  * @author      Paul Hachmang – H&O <info@h-o.nl>
  */
 /**
- * @method Ho_Import_Model_Import setProfile(string $profile)
  * @method string getProfile()
  * @method Ho_Import_Model_Import setImportData(array $importData)
  * @method array getImportData()
@@ -163,6 +162,10 @@ class Ho_Import_Model_Import extends Varien_Object
             $errors[$e->getMessage()] = $lines;
         }
         foreach ($errors as $error => $lines) {
+            if (strlen($error) > 80) {
+                $error = substr($error, 0, 77).' ..';
+            }
+
             foreach ($lines as $line) {
                 $key = $line - 1;
                 $logEntities[$entityMap[$key]][$error] = '__ERROR__';
