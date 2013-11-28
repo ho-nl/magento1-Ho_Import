@@ -298,6 +298,31 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $values;
     }
 
+    public function ifFieldsValue($line, $fields, $valueField) {
+        $values = $this->getFieldMultiple($line, $fields);
+        $valid = true;
+        foreach ($values as $value) {
+            if (is_array($value)) {
+                foreach ($value as $valueItem) {
+                    if (empty($valueItem)) {
+                        $valid = false;
+                        break 2;
+                    }
+                }
+            } else {
+                if (empty($value)) {
+                    $valid = false;
+                    break;
+                }
+            }
+        }
+
+        if ($valid) {
+            return $this->_getMapper()->mapItem($valueField);
+        }
+        return null;
+    }
+
 
     protected $_mediaAttributeId = null;
     public function getMediaAttributeId($line, $countField)

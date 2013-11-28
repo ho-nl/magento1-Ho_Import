@@ -568,6 +568,22 @@ Get multiple fields and glue them together
 </_media_position>
 ```
 
+### ifFieldsValue
+You can normally define `iffieldvalue='fieldname'` to do simple value checking. Something you need
+to check multiple fields.
+```
+<billing_first_name helper="ho_postbeeldproduct/import_customer::ifFieldsValue">
+    <fields>
+        <billing_first_name field="billing_first_name"/>
+        <billing_last_name field="billing_last_name"/>
+        <billing_address field="billing_address"/>
+        <billing_city field="billing_city"/>
+        <billing_country_code field="billing_country_code"/>
+    </fields>
+    <billing field="billing_first_name"/>
+</billing_first_name>
+```
+
 #### getMediaAttributeId
 Usually used in combination with a counter to set the correct getMediaAttributeId
 
