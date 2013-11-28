@@ -151,8 +151,10 @@ Now continue to map all your fields until you are satisfied.
 You can now import the complete set.
 
 ```bash
-php hoimport.php -action import -profile profile_name
+php hoimport.php -action import -profile profile_name -druRun 1
 ```
+
+*To just test if the import would run, add `-dryRun 1` to the command*
 
 You will probably run into errors the first try. When the importer runs into errors it will return the faulty row. It will return the row that is imported (unfortunatly it won't return the source row since that row isn't know at this point of the import).
 
