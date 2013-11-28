@@ -20,7 +20,7 @@
  *
  *
  */
-class Ho_Import_Helper_Import_Product extends Mage_Core_Helper_Abstract
+class Ho_Import_Helper_Import_Product extends Ho_Import_Helper_Import
 {
     /**
      * Generate an URL-key from multiple fields
