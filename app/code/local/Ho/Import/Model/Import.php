@@ -54,8 +54,6 @@ class Ho_Import_Model_Import extends Varien_Object
      * @return \Ho_Import_Model_Import
      */
     public function process() {
-        $this->_runEvent('process_before');
-
         if (! array_key_exists($this->getProfile(), $this->getProfiles())) {
             Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
         }
@@ -87,6 +85,10 @@ class Ho_Import_Model_Import extends Varien_Object
     }
 
     public function mapLines($lines) {
+        if (! array_key_exists($this->getProfile(), $this->getProfiles())) {
+            Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
+        }
+
         $this->_downloader();
 
 
@@ -98,6 +100,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
+        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($sourceAdapter));
 
         //search a line instead on specifying the line.
         $importData = $this->getImportData();
@@ -141,6 +144,8 @@ class Ho_Import_Model_Import extends Varien_Object
                 $this->_getLog()->log($this->_getLog()->__('This line (%s) would be skipped', $line), Zend_Log::WARN);
             }
 
+            $this->_getLog()->log($transport->getData('items'), Zend_Log::DEBUG);
+
             $i = 0;
             foreach ($transport->getData('items') as $preparedItem) {
                 $results = $this->_fieldMapItem($preparedItem);
@@ -155,7 +160,7 @@ class Ho_Import_Model_Import extends Varien_Object
             }
         }
 
-        $this->_getLog()->log($sourceRows, Zend_Log::DEBUG);
+        $this->_runEvent('process_after');
 
         $errors = array();
         try {
@@ -234,6 +239,7 @@ class Ho_Import_Model_Import extends Varien_Object
     protected function _createImportCsv() {
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
+        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($sourceAdapter));
         $timer = microtime(true);
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
