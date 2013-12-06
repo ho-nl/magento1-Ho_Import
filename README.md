@@ -578,10 +578,11 @@ Split a field into multiple pieces
 </_media_position>
 ```
 
-### ifFieldsValue
+#### ifFieldsValue
 You can normally define `iffieldvalue='fieldname'` to do simple value checking. Something you need
 to check multiple fields.
-```
+
+```XML
 <billing_first_name helper="ho_postbeeldproduct/import_customer::ifFieldsValue">
     <fields>
         <billing_first_name field="billing_first_name"/>
