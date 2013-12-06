@@ -355,7 +355,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
     /** @var Zend_Date */
     protected $_dateObject = null;
-    public function timestampToDate($line, $field, $offset) {
+    public function timestampToDate($line, $field, $offset = null) {
         $value = (array) $this->_getMapper()->mapItem($field);
         if ($this->_dateObject === null) {
             $this->_dateObject = new Zend_Date();

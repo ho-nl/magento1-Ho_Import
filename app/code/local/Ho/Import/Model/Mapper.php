@@ -75,10 +75,10 @@ class Ho_Import_Model_Mapper
 
 
     /**
-     * @param array $storeCode
+     * @param string $storeCode
      * @return $this
      */
-    public function setStoreCode(array $storeCode) {
+    public function setStoreCode($storeCode) {
         $this->_storeCode = $storeCode;
         return $this;
     }
@@ -119,7 +119,7 @@ class Ho_Import_Model_Mapper
             return null;
         }
 
-        $item =& $this->getItem();
+        $item = $this->getItem();
         $result = null;
         $attributes = isset($fieldConfig['@']) ? $fieldConfig['@'] : array();
 

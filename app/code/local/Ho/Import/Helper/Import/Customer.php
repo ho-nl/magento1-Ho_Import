@@ -25,7 +25,7 @@ class Ho_Import_Helper_Import_Customer extends Ho_Import_Helper_Import
     public $_mapCountryIso2ToIso3 = null;
     public $_mapCountryIso3ToIso2 = null;
 
-    public function mapCountryIso2ToIso3($line, $field, $fallback) {
+    public function mapCountryIso2ToIso3($line, $field) {
         $value = $this->_getMapper()->mapItem($field);
 
         if ($this->_mapCountryIso2ToIso3 === null) {
@@ -38,7 +38,7 @@ class Ho_Import_Helper_Import_Customer extends Ho_Import_Helper_Import
         return null;
     }
 
-    public function mapCountryIso3ToIso2($line, $field, $fallback) {
+    public function mapCountryIso3ToIso2($line, $field) {
         $value = $this->_getMapper()->mapItem($field);
 
         if ($this->_mapCountryIso3ToIso2 === null) {
