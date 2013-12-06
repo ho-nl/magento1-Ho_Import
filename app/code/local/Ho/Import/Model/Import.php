@@ -26,6 +26,8 @@
  * @method int getRowCount()
  * @method Ho_Import_Model_Import setDryrun(bool $drurun)
  * @method int getDryrun()
+ * @method Ho_Import_Model_Import setSourceOptions(array $sourceOptions)
+ * @method null|array getSourceOptions()
  */
 class Ho_Import_Model_Import extends Varien_Object
 {
@@ -280,9 +282,11 @@ class Ho_Import_Model_Import extends Varien_Object
         $fastsimpleimport = Mage::getSingleton('fastsimpleimport/import');
 
         $importData = $this->getImportData();
+        if (is_array($importData)) {
         foreach ($importData as $key => $value) {
             $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
             $fastsimpleimport->setDataUsingMethod($key, (string) $value);
+        }
         }
 
         $transport = $this->_getTransport();
@@ -595,6 +599,12 @@ class Ho_Import_Model_Import extends Varien_Object
                 $arguments[$key] = (string) $value;
             }
 
+            if ($this->getSourceOptions() && is_array($this->getSourceOptions())) {
+                foreach ($this->getSourceOptions() as $key => $value) {
+                    $arguments[$key] = (string) $value;
+                }
+            }
+
             if (isset($arguments['file']) && !is_readable($arguments['file'])) {
                 $arguments['file'] = Mage::getBaseDir() .DS. (string) $source->file;
                 if (!is_readable($arguments['file'])) {
@@ -685,6 +695,11 @@ class Ho_Import_Model_Import extends Varien_Object
         return array();
     }
 
+
+    /**
+     * @param $profile
+     * @return $this
+     */
     public function setProfile($profile) {
         $this->_getMapper()->setProfileName($profile);
         return parent::setProfile($profile);
