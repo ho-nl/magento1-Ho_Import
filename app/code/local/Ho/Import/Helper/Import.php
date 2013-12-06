@@ -365,18 +365,17 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $images;
     }
 
-    /** @var Zend_Date */
-    protected $_dateObject = null;
-    public function timestampToDate($line, $field, $offset = null) {
-        $value = (array) $this->_getMapper()->mapItem($field);
-        if ($this->_dateObject === null) {
-            $this->_dateObject = new Zend_Date();
+
+    public function timestampToDate($line, $field, $timezoneFrom = null) {
+        $value = $this->_getMapper()->mapItem($field);
+
+        if ($timezoneFrom) {
+            $timezoneFrom = new DateTimeZone($timezoneFrom);
         }
+        $datetime = new DateTime('@'.$value, $timezoneFrom);
+        $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
-        $offset = !empty($offset) ? $offset : 0;
-        $this->_dateObject->setTimestamp(reset($value) + $offset);
-
-        return $this->_dateObject->toString(Zend_Date::ISO_8601);
+        return $datetime->format('c');
     }
 
 
