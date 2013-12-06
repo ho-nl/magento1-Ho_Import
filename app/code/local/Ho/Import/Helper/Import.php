@@ -217,6 +217,18 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
 
     /**
+     * @param array $line
+     * @param array $field
+     * @param string $split
+     * @return array
+     */
+    public function getFieldSplit($line, $field, $split = ' ')
+    {
+        return explode($split, $this->_getMapper()->mapItem($field));
+    }
+
+
+    /**
      * Checks if a field has a value
      *
      * @param $line

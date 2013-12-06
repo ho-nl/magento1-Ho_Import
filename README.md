@@ -550,6 +550,16 @@ Get multiple fields and glue them together
 </sku>
 ```
 
+#### getFieldSplit
+Split a field into multiple pieces
+
+```XML
+<_category helper="ho_import/import::getFieldSplit">
+    <field field="category"/>
+    <split>***</split>
+</_category>
+```
+
 #### getFieldMap
 ```XML
 <gender helper="ho_import/import::getFieldMap">
