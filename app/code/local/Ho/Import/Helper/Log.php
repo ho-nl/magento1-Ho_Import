@@ -85,9 +85,8 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
         }
     }
 
-    protected function _renderCliTable($arrays, $level) {
-        $maxWidth = exec('tput cols');
-
+    protected function _renderCliTable($arrays, $level = Zend_Log::INFO) {
+        $maxWidth = exec('tput cols') ?: 200;
         if (count($arrays) > 5) {
             $arrays = array_slice($arrays, 0, 5);
         }
@@ -212,7 +211,7 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
             $inbox = Mage::getModel('adminnotification/inbox');
 
             $level = array_search(min($this->_logEntries), $this->_logEntries);
-            if ($level < $minLevel) {
+            if ($level > $minLevel) {
                 return;
             }
 
@@ -236,6 +235,8 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
                     break;
             }
         }
+
+        $this->_logEntries = array();
     }
 
 
@@ -268,7 +269,11 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
         {
             foreach ($entries as $entry)
             {
-                $html .= $level.' - '.$entry."<br />\n";
+                if (is_array($entry)) {
+                    $html .= sprintf("%s:<br/>\n <pre>%s</pre><br/>\n", $level, $this->_renderCliTable($entry));
+                } else {
+                    $html .= sprintf("%s - %s<br/>\n", $level, $entry);
+                }
             }
 
         }
