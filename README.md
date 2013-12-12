@@ -617,12 +617,14 @@ Download the image from a remote URL and place it in the `media/import` folder.
 
 
 #### timestampToDate
+Parse a timestamp and output in the Magento running format, just specify in which timezone the  current date is. Add an offset with one of the [Relative Formats](http://am1.php.net/manual/en/datetime.formats.relative.php).
 
-```
-<created_at helper="ho_import/import::timestampToDate">
-    <field field="join_date"/>
-    <!-- <offset/> -->
-</created_at>
+```XML
+<news_to_date helper="ho_import/import::timestampToDate">
+    <field field="entry_date"/>
+    <timezoneFrom>Europe/Amsterdam</timezoneFrom>
+    <offset>3 day</offset>
+</news_to_date>
 ```
 
 #### Product: getUrlKey

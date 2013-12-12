@@ -366,7 +366,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    public function timestampToDate($line, $field, $timezoneFrom = null) {
+    public function timestampToDate($line, $field, $timezoneFrom = null, $offset = null) {
         $value = $this->_getMapper()->mapItem($field);
 
         if ($timezoneFrom) {
@@ -374,6 +374,12 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         }
         $datetime = new DateTime('@'.$value, $timezoneFrom);
         $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+
+        if ($offset) {
+            $dateInterval = DateInterval::createFromDateString($offset);
+            $datetime->add($dateInterval);
+        }
+
 
         return $datetime->format('c');
     }
