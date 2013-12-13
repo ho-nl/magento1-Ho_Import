@@ -81,6 +81,14 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $value;
     }
 
+
+    public function callUserFunc($line, $func, $args) {
+        foreach ($args as $key => $arg) {
+            $args[$key] = $this->_getMapper()->mapItem($arg);
+        }
+        return call_user_func_array($func, $args);
+    }
+
     public function parsePrice($line, $field) {
         $s = $this->_getMapper()->mapItem($field);
         // convert "," to "."
