@@ -297,13 +297,13 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $transport = $this->_getTransport();
         $transport->setData('object', $fastsimpleimport);
-        $this->_runEvent('import_before');
+        $this->_runEvent('import_before', $transport);
 
         $errors = $this->_importData();
 
         $transport = $this->_getTransport();
         $transport->addData(array('object' => $fastsimpleimport, 'errors' => $errors));
-        $this->_runEvent('import_after');
+        $this->_runEvent('import_after', $transport);
         return $errors;
     }
 
@@ -329,13 +329,13 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $transport = $this->_getTransport();
         $transport->setData('object', $fastsimpleimport);
-        $this->_runEvent('import_before');
+        $this->_runEvent('import_before', $transport);
 
         $errors = $this->_importData();
 
         $transport = $this->_getTransport();
         $transport->addData(array('object' => $fastsimpleimport, 'errors' => $errors));
-        $this->_runEvent('import_after');
+        $this->_runEvent('import_after', $transport);
         return $errors;
     }
 
@@ -358,13 +358,13 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $transport = $this->_getTransport();
         $transport->setData('object', $fastsimpleimport);
-        $this->_runEvent('import_before');
+        $this->_runEvent('import_before', $transport);
 
         $errors = $this->_importData();
 
         $transport = $this->_getTransport();
         $transport->addData(array('object' => $fastsimpleimport, 'errors' => $errors));
-        $this->_runEvent('import_after');
+        $this->_runEvent('import_after', $transport);
 
         return $errors;
     }
