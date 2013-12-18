@@ -35,8 +35,11 @@ class Ho_Import_Model_Observer
     }
 
     public function process(Mage_Cron_Model_Schedule $cron) {
-        $appEmulation = Mage::getSingleton('core/app_emulation');
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation(0, Mage_Core_Model_App_Area::AREA_ADMINHTML);
+        //initialize the translations so that we are able to translate things.
+        Mage::app()->loadAreaPart(
+            Mage_Core_Model_App_Area::AREA_ADMINHTML,
+            Mage_Core_Model_App_Area::PART_TRANSLATE
+        );
 
         $cronName = $cron->getJobCode();
         $profile = str_replace('ho_import_', '', $cronName);
@@ -51,7 +54,5 @@ class Ho_Import_Model_Observer
         }
 
         Mage::helper('ho_import/log')->done(Zend_Log::WARN);
-
-        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
     }
 }
