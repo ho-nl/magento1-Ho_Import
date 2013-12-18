@@ -650,7 +650,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 $this->_getLog()->log($this->_getLog()->__("%s on lines %s",$type, implode(',',$errorLines)), Zend_Log::ERR);
             }
         } else {
-            $this->_getLog()->log($this->_getLog()->__('No errors found in %s rows',$this->getRowCount()));
+            $this->_getLog()->log($this->_getLog()->__('No errors found in %s rows',$this->getRowCount()), Ho_Import_Helper_Log::LOG_SUCCESS);
         }
     }
 

@@ -23,6 +23,8 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
     const LOG_MODE_CLI = 'cli';
     const LOG_MODE_NOTIFICATION = 'notification';
 
+    const LOG_SUCCESS = 8;
+
     protected $_logfile = 'ho_import.log';
 
     protected $_mode = self::LOG_MODE_NOTIFICATION;
@@ -36,7 +38,7 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
      *
      * @return $this
      */
-    public function log($message, $level = Zend_Log::INFO)
+    public function log($message, $level = Zend_Log::DEBUG)
     {
         if (empty($message)) {
             return $this;
@@ -73,14 +75,17 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
             case Zend_Log::WARN:
                 return "\033[31m";
                 break;
-            case Zend_Log::DEBUG:
-                return "\033[36m";
+            case Zend_Log::NOTICE:
+                return "\033[33m";
                 break;
             case Zend_Log::INFO:
-                return "\033[37m";
+                return "\033[36m";
+                break;
+            case Ho_Import_Helper_Log::LOG_SUCCESS:
+                return "\033[32m";
                 break;
             default:
-                return "\033[32m";
+                return "\033[37m";
                 break;
         }
     }
