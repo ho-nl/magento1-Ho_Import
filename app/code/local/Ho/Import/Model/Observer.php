@@ -35,6 +35,12 @@ class Ho_Import_Model_Observer
     }
 
     public function process(Mage_Cron_Model_Schedule $cron) {
+        //initialize the translations so that we are able to translate things.
+        Mage::app()->loadAreaPart(
+            Mage_Core_Model_App_Area::AREA_ADMINHTML,
+            Mage_Core_Model_App_Area::PART_TRANSLATE
+        );
+
         $cronName = $cron->getJobCode();
         $profile = str_replace('ho_import_', '', $cronName);
 
