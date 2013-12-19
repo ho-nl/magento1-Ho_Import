@@ -40,6 +40,7 @@ class Ho_Import_Model_Import extends Varien_Object
     const IMPORT_CONFIG_ENTITY_TYPE    = 'global/ho_import/%s/entity_type';
     const IMPORT_CONFIG_EVENTS         = 'global/ho_import/%s/events';
     const IMPORT_CONFIG_IMPORT_OPTIONS = 'global/ho_import/%s/import_options';
+    const IMPORT_CONFIG_LOG_LEVEL      = 'global/ho_import/%s/log_level';
 
     protected $_sourceAdapter = null;
 
@@ -54,6 +55,10 @@ class Ho_Import_Model_Import extends Varien_Object
      * @return \Ho_Import_Model_Import
      */
     public function process() {
+        if ($level = $this->getLogLevel()) {
+            $this->_getLog()->setMinLogLevel($level);
+        }
+
         if (! array_key_exists($this->getProfile(), $this->getProfiles())) {
             Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
         }
@@ -636,14 +641,40 @@ class Ho_Import_Model_Import extends Varien_Object
     }
 
 
+    /**
+     * @return Mage_Core_Model_Config_Element
+     */
     protected function _getEntityType() {
         return $this->_getConfigNode(self::IMPORT_CONFIG_ENTITY_TYPE);
     }
 
+
+    /**
+     * @param string $path Enter a %s to substitute with the current profile.
+     * @return Mage_Core_Model_Config_Element
+     */
     protected function _getConfigNode($path) {
         return Mage::getConfig()->getNode(sprintf($path, $this->getProfile()));
     }
 
+
+    /**
+     * @return int
+     */
+    protected function getLogLevel() {
+        if ($level = (int) $this->_getConfigNode(self::IMPORT_CONFIG_LOG_LEVEL)) {
+            return $level;
+        }
+        return Ho_Import_Helper_Log::LOG_SUCCESS;
+    }
+
+
+    /**
+     * Format the errors and pass them to the logger
+     *
+     * @param $errors
+     * @return $this
+     */
     protected function _logErrors($errors) {
         if ($errors) {
             foreach ($errors as $type => $errorLines) {
@@ -652,8 +683,17 @@ class Ho_Import_Model_Import extends Varien_Object
         } else {
             $this->_getLog()->log($this->_getLog()->__('No errors found in %s rows',$this->getRowCount()), Ho_Import_Helper_Log::LOG_SUCCESS);
         }
+        return $this;
     }
 
+
+    /**
+     * When an error occurs, try and to find the row where it occured and print that row with the
+     * errors below.
+     *
+     * @param array $errors
+     * @return $this
+     */
     protected function _debugErrors($errors) {
         if (! count($errors)) {
             return;
@@ -691,8 +731,14 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $this->_getLog()->log($logData, Zend_Log::DEBUG);
+        return $this;
     }
 
+
+    /**
+     * Get an array of all the available profiles.
+     * @return array
+     */
     public function getProfiles() {
         $profileNodes =  Mage::getConfig()->getNode('global/ho_import');
         if ($profileNodes) {
@@ -703,7 +749,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
 
     /**
-     * @param $profile
+     * @param string $profile
      * @return $this
      */
     public function setProfile($profile) {

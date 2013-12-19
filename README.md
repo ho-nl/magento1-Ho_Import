@@ -697,7 +697,7 @@ class Ho_ImportJanselijn_Helper_Import_Customer extends Mage_Core_Helper_Abstrac
 
 As you can see it sometimes returns an array of values and sometimes just returns a value. If you helper method returns an array of values Ho_Imports [internally rewrites those multiple values to multiple import rows](https://github.com/ho-nl/Ho_Import/blob/master/app/code/local/Ho/Import/Model/Import.php#L470).
 
-## Terminal/Shell Utility
+## CLI / Shell Utility
 The importer comes with a shell utiliy where you'll be spending most of your time.
 
 ### line
@@ -720,6 +720,40 @@ php hoimport.php -action import
 	-ignore_duplicates 1              Ignore duplicates.;
 	-error_limit 10000                Set the error limit, default=100 error lines.;
 ```
+
+## Logging
+There are two logging modes: CLI and cron mode. In the CLI mode it always logs to the CLI and tries
+to add nice colors, etc. In the cron-mode it will log to the the log files and can also log to the
+messages inbox in the admin panel.
+
+### File logging
+Every import run by the cron is saved in `var/ho_import.log`.
+
+### Admin Panel notification
+
+
+Sometimes you want to put a message in the Admin panel if an error pops up. By default the system
+only creates an admin panel message if there is a warning.
+
+```PHP
+EMERG   = 0;  // Emergency: system is unusable
+ALERT   = 1;  // Alert: action must be taken immediately
+CRIT    = 2;  // Critical: critical conditions
+ERR     = 3;  // Error: error conditions
+WARN    = 4;  // Warning: warning conditions
+NOTICE  = 5;  // Notice: normal but significant condition
+INFO    = 6;  // Informational: informational messages
+DEBUG   = 7;  // Debug: debug messages
+SUCCESS = 8;  // Success: When everything is going well.
+```
+
+Place these config values in `<config><global><ho_import><my_import_name>` to change the level when
+and admin panel message will be added.
+
+```XML
+<log_level>6</log_level>
+```
+
 
 ## Use cases
 At the time of release we have this tool running for multiple clients, multiple types of imports:

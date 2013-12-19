@@ -27,10 +27,23 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
 
     protected $_logfile = 'ho_import.log';
 
+    protected $_minLogLevel = self::LOG_SUCCESS;
+
     protected $_mode = self::LOG_MODE_NOTIFICATION;
 
     protected $_logEntries = array();
 
+    public function setMinLogLevel($level) {
+        if (! is_numeric($level)) {
+            Mage::throwException($this->__('The min log level should be numeric, %s given', $level));
+        }
+
+        if ($level > self::LOG_SUCCESS) {
+            Mage::throwException($this->__('The log leven can be %s maximum, %s given', self::LOG_SUCCESS, $level));
+        }
+
+        $this->_minLogLevel = (int) $level;
+    }
 
     /**
      * @param     $message
@@ -38,7 +51,7 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
      *
      * @return $this
      */
-    public function log($message, $level = Zend_Log::DEBUG)
+    public function log($message, $level = Zend_Log::INFO)
     {
         if (empty($message)) {
             return $this;
@@ -46,7 +59,6 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
 
         if ($this->_mode == self::LOG_MODE_CLI) {
             $date = date("Y-m-d H:i:s", Mage::getModel('core/date')->timestamp(time()));
-
 
             if (is_array($message) && is_array(reset($message))) {
                 $message = $this->_renderCliTable($message, $level);
@@ -209,14 +221,14 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
     /**
      * When logging to the admin notification inbox.
      */
-    public function done($minLevel = Zend_Log::DEBUG)
+    public function done()
     {
         if ($this->_mode == self::LOG_MODE_NOTIFICATION) {
             /* @var $inbox Mage_AdminNotification_Model_Inbox */
             $inbox = Mage::getModel('adminnotification/inbox');
 
             $level = array_search(min($this->_logEntries), $this->_logEntries);
-            if ($level >= $minLevel) {
+            if ($level >= $this->_minLogLevel) {
                 return;
             }
 
