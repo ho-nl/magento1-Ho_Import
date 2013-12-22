@@ -227,12 +227,12 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
             /* @var $inbox Mage_AdminNotification_Model_Inbox */
             $inbox = Mage::getModel('adminnotification/inbox');
 
-            $level = array_search(min($this->_logEntries), $this->_logEntries);
-            if ($level >= $this->_minLogLevel) {
+            $lowestLevel = array_search(min($this->_logEntries), $this->_logEntries);
+            if ($lowestLevel > $this->_minLogLevel) {
                 return;
             }
 
-            switch($level)
+            switch($lowestLevel)
             {
                 case Zend_Log::EMERG:
                 case Zend_Log::ALERT:
