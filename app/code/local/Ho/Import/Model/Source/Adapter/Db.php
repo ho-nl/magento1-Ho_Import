@@ -43,6 +43,7 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
             $offset = (int) isset($config['offset']) ? $config['offset'] : 0;
             $logHelper->log($logHelper->__('Setting limit to %s and offset to %s', $limit, $offset), Zend_Log::NOTICE);
             $query = $db->limit($query, $config['limit'], $offset);
+            $logHelper->log($query, Zend_Log::DEBUG);
         }
 
         $logHelper->log('Fetching data...');
