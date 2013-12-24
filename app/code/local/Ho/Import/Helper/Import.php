@@ -204,19 +204,19 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
                 $glue = "\n";
                 break;
             case '\r': //carriage return (CR or 0x0D (13) in ASCII)
-                $glue = "\n";
+                $glue = "\r";
                 break;
             case '\t': //horizontal tab (HT or 0x09 (9) in ASCII)
-                $glue = "\n";
+                $glue = "\t";
                 break;
             case '\v': //vertical tab (VT or 0x0B (11) in ASCII) (since PHP 5.2.5)
-                $glue = "\n";
+                $glue = "\v";
                 break;
             case '\e': //escape (ESC or 0x1B (27) in ASCII) (since PHP 5.4.0)
-                $glue = "\n";
+                $glue = "\e";
                 break;
             case '\f': //form feed (FF or 0x0C (12) in ASCII) (since PHP 5.2.5)
-                $glue = "\n";
+                $glue = "\f";
                 break;
         }
 
@@ -232,6 +232,26 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      */
     public function getFieldSplit($line, $field, $split = ' ')
     {
+        switch ($split) {
+            case '\n': //linefeed (LF or 0x0A (10) in ASCII)
+                $split = "\n";
+                break;
+            case '\r': //carriage return (CR or 0x0D (13) in ASCII)
+                $split = "\r";
+                break;
+            case '\t': //horizontal tab (HT or 0x09 (9) in ASCII)
+                $split = "\t";
+                break;
+            case '\v': //vertical tab (VT or 0x0B (11) in ASCII) (since PHP 5.2.5)
+                $split = "\v";
+                break;
+            case '\e': //escape (ESC or 0x1B (27) in ASCII) (since PHP 5.4.0)
+                $split = "\e";
+                break;
+            case '\f': //form feed (FF or 0x0C (12) in ASCII) (since PHP 5.2.5)
+                $split = "\f";
+                break;
+        }
         return explode($split, $this->_getMapper()->mapItem($field));
     }
 
