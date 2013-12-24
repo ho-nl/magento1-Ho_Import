@@ -395,21 +395,28 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
 
     public function timestampToDate($line, $field, $timezoneFrom = null, $offset = null) {
-        $value = $this->_getMapper()->mapItem($field);
+        $values = $this->_getMapper()->mapItem($field);
+        if (! is_array($values)) {
+            $values = array($values);
+        }
 
         if ($timezoneFrom) {
             $timezoneFrom = new DateTimeZone($timezoneFrom);
         }
-        $datetime = new DateTime('@'.$value, $timezoneFrom);
-        $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
-        if ($offset) {
-            $dateInterval = DateInterval::createFromDateString($offset);
-            $datetime->add($dateInterval);
+        foreach ($values as $key => $value) {
+            $datetime = new DateTime('@'.$value, $timezoneFrom);
+            $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+
+            if ($offset) {
+                $dateInterval = DateInterval::createFromDateString($offset);
+                $datetime->add($dateInterval);
+            }
+
+            $values[$key] = $datetime->format('c');
         }
 
-
-        return $datetime->format('c');
+        return $values;
     }
 
 
