@@ -24,7 +24,6 @@ class Ho_Import_Model_Observer
 {
     public function schedule() {
         $importCollection = Mage::getResourceModel('ho_import/system_import_collection');
-        $availableConfigs = array();
         foreach ($importCollection as $import) {
             /** @var $import Ho_Import_Model_System_Import */
             $import->schedule(false);
@@ -55,5 +54,13 @@ class Ho_Import_Model_Observer
         }
 
         Mage::helper('ho_import/log')->done();
+    }
+
+    public function progressLog(Varien_Event_Observer $event) {
+        $name = str_replace('fastsimpleimport_', '', $event->getEvent()->getName());
+        $name = str_replace('before_', '', $name);
+        $name = ucfirst(str_replace('_',' ',$name));
+
+        Mage::helper('ho_import/log')->log($name);
     }
 }
