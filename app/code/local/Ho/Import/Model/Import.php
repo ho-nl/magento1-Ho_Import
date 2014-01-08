@@ -382,12 +382,9 @@ class Ho_Import_Model_Import extends Varien_Object
         $options = $this->_getConfigNode(self::IMPORT_CONFIG_IMPORT_OPTIONS);
         if ($options) {
             foreach ($options->children() as $key => $value) {
-                $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
-                if ($key == 'dropdown_attributes') {
-                    $fastsimpleimport->setDataUsingMethod($key, explode(',',$value));
-                } else {
-                    $fastsimpleimport->setDataUsingMethod($key, (string) $value);
-                }
+                $value = $value->asArray();
+                $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, implode(',', $value)));
+                $fastsimpleimport->setDataUsingMethod($key, $value);
             }
         }
 

@@ -297,12 +297,18 @@ All the options that are possible with the [AvS_FastSimpleImport][] are possible
 ```XML
 <import_options>
 	<error_limit>10000</error_limit>
-	<continue_after_errors>1</continue_after_errors>
-	<ignore_duplicates>1</ignore_duplicates>
-	<dropdown_attributes>one,two,three</dropdown_attributes>
-	<multiselect_attributes>four,five</multiselect_attributes>
-	<allow_rename_files>0</allow_rename_files>
-	<partial_indexing>1</partial_indexing>
+    <continue_after_errors>1</continue_after_errors>
+    <ignore_duplicates>1</ignore_duplicates>
+    <allow_rename_files>0</allow_rename_files>
+    <partial_indexing>1</partial_indexing>
+    <dropdown_attributes>
+        <country>country</country>
+    </dropdown_attributes>
+    <multiselect_attributes>
+        <show_in_collection>show_in_collection</show_in_collection>
+        <condition>condition</condition>
+        <condition_label>condition_label</condition_label>
+    </multiselect_attributes>
 </import_options>
 ```
 
