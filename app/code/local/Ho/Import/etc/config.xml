@@ -143,6 +143,24 @@
                     </ho_import_fastsimpleimport_reindex_products_before>
                 </observers>
             </fastsimpleimport_reindex_products_after>
+            <fastsimpleimport_reindex_products_delete_before>
+                <observers>
+                    <ho_import_fastsimpleimport_reindex_products_delete_before>
+                        <type>singleton</type>
+                        <class>Ho_Import_Model_Observer</class>
+                        <method>progressLog</method>
+                    </ho_import_fastsimpleimport_reindex_products_delete_before>
+                </observers>
+            </fastsimpleimport_reindex_products_delete_before>
+            <fastsimpleimport_reindex_products_delete_after>
+                <observers>
+                    <ho_import_fastsimpleimport_reindex_products_delete_after>
+                        <type>singleton</type>
+                        <class>Ho_Import_Model_Observer</class>
+                        <method>progressLog</method>
+                    </ho_import_fastsimpleimport_reindex_products_delete_after>
+                </observers>
+            </fastsimpleimport_reindex_products_delete_after>
 		</events>
 	</global>
 	<frontend>
