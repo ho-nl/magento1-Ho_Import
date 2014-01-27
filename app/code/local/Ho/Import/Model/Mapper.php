@@ -39,6 +39,7 @@ class Ho_Import_Model_Mapper
 
 
     /**
+     * Set the item, array of xml-config.
      * @param array $item
      * @return $this
      */
@@ -49,6 +50,7 @@ class Ho_Import_Model_Mapper
 
 
     /**
+     * Get the item, which is the xml-config array
      * @return null|array
      */
     public function getItem() {
@@ -57,6 +59,7 @@ class Ho_Import_Model_Mapper
 
 
     /**
+     * Set the profile_name
      * @param string $profileName
      * @return $this
      */
@@ -67,6 +70,7 @@ class Ho_Import_Model_Mapper
 
 
     /**
+     * Get the profile_name that is currently set.
      * @return null|string
      */
     public function getProfileName() {
@@ -75,6 +79,7 @@ class Ho_Import_Model_Mapper
 
 
     /**
+     * Set the store_code
      * @param string $storeCode
      * @return $this
      */
@@ -85,6 +90,7 @@ class Ho_Import_Model_Mapper
 
 
     /**
+     * Get the store_code that is currently set.
      * @return null|string
      */
     public function getStoreCode() {
@@ -93,10 +99,10 @@ class Ho_Import_Model_Mapper
 
 
     /**
-     * High level method to get the values of a single field, for more details take a look at the
-     * map method.
+     * Higher level method to get the values of a single field, for more details take a look at the
+     * mapItem method.
      *
-     * @param string $fieldName
+     * @param string $fieldName name of the field to be mapped
      * @return array|mixed
      */
     public function map($fieldName) {
@@ -139,7 +145,7 @@ class Ho_Import_Model_Mapper
            }
         }
 
-        // use: ability to copy another field
+        // use: ability to copy another field's value
         if (isset($attributes['use'])) {
             return $this->map($attributes['use']);
         }
@@ -147,6 +153,8 @@ class Ho_Import_Model_Mapper
         // helper: get field value with a helper
         if (isset($attributes['helper'])) {
             //get the helper and method
+            //@todo add helper caching, usually there are about 3-4 helpers in total, which makes it
+            //a bit unnecessary to load them each time.
             $helperParts = explode('::', $attributes['helper']);
             $helper = Mage::helper($helperParts[0]);
             $method = $helperParts[1];
@@ -165,6 +173,23 @@ class Ho_Import_Model_Mapper
             $result = call_user_func_array(array($helper, $method), $args);
         }
 
+        /*
+         * @todo sometimes there might be multiple elements, don't get properly loaded right now
+         * 'images/image/src' should result in an array of two elements, currently just returns
+         * one element.
+         *  <product>
+         *      <images>
+         *          <image>
+         *              <alt>alt text1</alt>
+         *              <src>http://someurl.jpg</src>
+         *          </image>
+         *          <image>
+         *              <alt>alt text1</alt>
+         *              <src>http://someurl.jpg</src>
+         *          </image>
+         *      </images>
+         *  </product>
+         */
         // field: get the exact value of a field
         if (isset($attributes['field'])) {
             $field = $attributes['field'];
@@ -197,6 +222,13 @@ class Ho_Import_Model_Mapper
     }
 
 
+    /**
+     * Get the config for a specific field or the config for all the fields.
+     * @param null $fieldName
+     * @param null $profile
+     *
+     * @return mixed
+     */
     public function getFieldConfig($fieldName = null, $profile = null) {
         if (is_null($profile)) {
             $profile = $this->getProfileName();
@@ -244,6 +276,15 @@ class Ho_Import_Model_Mapper
         return $this->_fieldConfig[$fieldMapPath];
     }
 
+
+    /**
+     * Get an array of all the fields including the store view specific fields
+     * We use this to generate the column headers of the imported CSV.
+     *
+     * @param null $profile
+     *
+     * @return array
+     */
     public function getFieldNames($profile = null) {
         if (is_null($profile)) {
             $profile = $this->getProfileName();
