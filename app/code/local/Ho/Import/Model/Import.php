@@ -76,10 +76,11 @@ class Ho_Import_Model_Import extends Varien_Object
         $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
         $this->_createImportCsv();
 
+        $this->_applyImportOptions();
         if ($this->getDryrun()) {
             $errors = $this->_dryRun();
         } else {
-            $this->_getLog()->log($this->_getLog()->__('Importing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+            $this->_getLog()->log($this->_getLog()->__('Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
             $errors = $this->$method();
         }
 
@@ -169,6 +170,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $errors = array();
         try {
+            $this->_applyImportOptions();
             $errors = $this->_dryRun($entities);
         } catch (Exception $e) {
             $errors[$e->getMessage()] = $lines;
@@ -276,7 +278,7 @@ class Ho_Import_Model_Import extends Varien_Object
         $this->setRowCount($rowCount);
 
         $seconds = round(microtime(true) - $timer, 2);
-        $rowsPerSecond = round($this->getRowCount() / $seconds, 2);
+        $rowsPerSecond = $seconds ? round($this->getRowCount() / $seconds, 2) : $this->getRowCount();
         $this->_getLog()->log("Fieldmapping {$this->getProfile()} with {$this->getRowCount()} rows (done in $seconds seconds, $rowsPerSecond rows/s)");
 
         return true;
@@ -287,17 +289,15 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _importCustomer()
     {
-        $this->_applyImportOptions();
-
         /* @var $import AvS_FastSimpleImport_Model_Import */
         $fastsimpleimport = Mage::getSingleton('fastsimpleimport/import');
 
         $importData = $this->getImportData();
         if (is_array($importData)) {
-        foreach ($importData as $key => $value) {
-            $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
-            $fastsimpleimport->setDataUsingMethod($key, (string) $value);
-        }
+            foreach ($importData as $key => $value) {
+                $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
+                $fastsimpleimport->setDataUsingMethod($key, (string) $value);
+            }
         }
 
         $transport = $this->_getTransport();
@@ -318,8 +318,6 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _importCatalogProduct()
     {
-        $this->_applyImportOptions();
-
         /* @var $import AvS_FastSimpleImport_Model_Import */
         $fastsimpleimport = Mage::getSingleton('fastsimpleimport/import');
 
@@ -346,8 +344,6 @@ class Ho_Import_Model_Import extends Varien_Object
 
     protected function _importCatalogCategory()
     {
-        $this->_applyImportOptions();
-
         /* @var $import AvS_FastSimpleImport_Model_Import */
         $fastsimpleimport = Mage::getSingleton('fastsimpleimport/import');
         $importData = $this->getImportData();
@@ -383,7 +379,8 @@ class Ho_Import_Model_Import extends Varien_Object
         if ($options) {
             foreach ($options->children() as $key => $value) {
                 $value = $value->asArray();
-                $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, implode(',', $value)));
+                $printValue = is_array($value) ? implode(',', $value) : $value;
+                $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $printValue));
                 $fastsimpleimport->setDataUsingMethod($key, $value);
             }
         }
@@ -566,7 +563,7 @@ class Ho_Import_Model_Import extends Varien_Object
         }
         //importing
         /* @var $fastsimpleimport AvS_FastSimpleImport_Model_Import */
-        $fastsimpleimport = Mage::getModel('fastsimpleimport/import');
+        $fastsimpleimport = Mage::getSingleton('fastsimpleimport/import');
 
         switch ($this->_getEntityType())
         {
