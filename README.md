@@ -151,7 +151,7 @@ Now continue to map all your fields until you are satisfied.
 You can now import the complete set.
 
 ```bash
-php hoimport.php -action import -profile profile_name -druRun 1
+php hoimport.php -action import -profile profile_name -dryRun 1
 ```
 
 *To just test if the import would run, add `-dryRun 1` to the command*
