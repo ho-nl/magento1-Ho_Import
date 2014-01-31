@@ -8,7 +8,7 @@ All this configuration can be done using XML. You add the config to a config.xml
 
 Since the original target for the module was an import that could process thousands of products it is build with this in mind. It is able to process large CSV or XML files while using very little memory (think a few MB memory increase for processing a 1GB CSV file). See [Use cases](#use-cases)
 
-We have chosen to do all configuration in XML, this makes the import profile way more maintanable, especially important when doing multiple imports for a single project.
+We have chosen to do all configuration in XML, this makes the import profile way more maintainable, especially important when doing multiple imports for a single project.
 
 To increase development and debugging speed there is a extensive shell tool that allows you to easily create new fieldmaps, add a downloader and start working.
 
@@ -151,12 +151,12 @@ Now continue to map all your fields until you are satisfied.
 You can now import the complete set.
 
 ```bash
-php hoimport.php -action import -profile profile_name -dryRun 1
+php hoimport.php -action import -profile profile_name -dryrun 1
 ```
 
-*To just test if the import would run, add `-dryRun 1` to the command*
+*To just test if the import would run, add `-dryrun 1` to the command*
 
-You will probably run into errors the first try. When the importer runs into errors it will return the faulty row. It will return the row that is imported (unfortunatly it won't return the source row since that row isn't know at this point of the import).
+You will probably run into errors the first try. When the importer runs into errors it will return the faulty row. It will return the row that is imported (unfortunately it won't return the source row since that row isn't know at this point of the import).
 
 If a specific sku, for example, is giving you trouble, you can run the line utility and do a search.
 

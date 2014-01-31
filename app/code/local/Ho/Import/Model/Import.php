@@ -78,6 +78,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $this->_applyImportOptions();
         if ($this->getDryrun()) {
+            $this->_getLog()->log($this->_getLog()->__('Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
             $errors = $this->_dryRun();
         } else {
             $this->_getLog()->log($this->_getLog()->__('Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
