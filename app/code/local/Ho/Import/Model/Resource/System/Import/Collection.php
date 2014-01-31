@@ -77,6 +77,9 @@ class Ho_Import_Model_Resource_System_Import_Collection extends Varien_Data_Coll
 
     public function getData() {
         $profileNodes =  Mage::getConfig()->getNode('global/ho_import');
+        if ($profileNodes === false) {
+            return array();
+        }
         return $profileNodes->asArray();
     }
 
