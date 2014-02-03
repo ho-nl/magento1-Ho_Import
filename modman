@@ -1,5 +1,5 @@
 # Ho_Import
-app/code/local/Ho/Import/                             app/code/local/Ho/Import/
+app/code/community/Ho/Import/                         app/code/community/Ho/Import/
 app/etc/modules/*                                     app/etc/modules/
 #app/design/frontend/base/default/layout/ho/*         app/design/frontend/base/default/layout/ho/
 #app/design/frontend/base/default/template/ho/*       app/design/frontend/base/default/template/ho/
