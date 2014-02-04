@@ -30,7 +30,6 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
         $logHelper = Mage::helper('ho_import/log');
         $model = $config['model'];
         $query = $config['query'];
-        $config['readOnly'] = true;
 
         unset($config['model']);
         unset($config['query']);
