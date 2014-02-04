@@ -67,7 +67,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $entity = $this->_getEntityType();
         $camel = new Zend_Filter_Word_UnderscoreToCamelCase();
-        $method = '_import'.$camel->filter($entity);
+        $method = '_import'.Mage::helper('ho_import')->underscoreToCamelCase($entity);
 
         if (! method_exists($this, $method)) {
             Mage::throwException($this->_getLog()->__("Entity %s not supported", $entity));
