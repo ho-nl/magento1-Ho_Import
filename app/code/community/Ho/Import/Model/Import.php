@@ -66,7 +66,6 @@ class Ho_Import_Model_Import extends Varien_Object
         $this->_downloader();
 
         $entity = $this->_getEntityType();
-        $camel = new Zend_Filter_Word_UnderscoreToCamelCase();
         $method = '_import'.Mage::helper('ho_import')->underscoreToCamelCase($entity);
 
         if (! method_exists($this, $method)) {
