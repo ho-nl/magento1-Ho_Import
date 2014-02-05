@@ -304,17 +304,32 @@ class Ho_Import_Model_Import extends Varien_Object
     }
 
     /**
-     * Actual importmethod
+     * @param $type
+     *
      * @return Ho_Import_Model_Import
      */
-    protected function _importCustomer()
+    protected function _importMain($type = '')
     {
-
         $importData = $this->getImportData();
         if (is_array($importData)) {
-            foreach ($importData as $key => $value) {
-                $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
-                $this->_fastSimpleImport->setDataUsingMethod($key, (string)$value);
+            if (isset($importData['dropdown_attributes'])) {
+                $importData['dropdown_attributes'] = explode(',', $importData['dropdown_attributes']);
+            }
+
+            if ($type !== self::IMPORT_TYPE_CATEGORY) { // @SchumacherFM I'm not sure if that is needed
+                foreach ($importData as $key => $value) {
+                    $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
+                    $this->_fastSimpleImport->setDataUsingMethod($key, (string)$value);
+                }
+            }
+
+            if (isset($importData['ignoreErrors']) && (int)$importData['ignoreErrors'] === 1) {
+                $this->_getLog()->log('Continue after errors enabled');
+                $this->_fastSimpleImport->setContinueAfterErrors($importData['ignoreErrors']);
+            }
+
+            if (isset($importData['renameFiles']) && (int)$importData['renameFiles'] === 0) {
+                $this->_fastSimpleImport->setAllowRenameFiles(FALSE);
             }
         }
 
@@ -331,31 +346,21 @@ class Ho_Import_Model_Import extends Varien_Object
     }
 
     /**
+     * Actual importmethod
+     * @return Ho_Import_Model_Import
+     */
+    protected function _importCustomer()
+    {
+        return $this->_importMain(self::IMPORT_TYPE_CUSTOMER);
+    }
+
+    /**
      * Actual import method
      * @return Ho_Import_Model_Import
      */
     protected function _importCatalogProduct()
     {
-
-        $importData = (array)$this->getImportData();
-        if (isset($importData['dropdown_attributes'])) {
-            $importData['dropdown_attributes'] = explode(',', $importData['dropdown_attributes']);
-        }
-        foreach ($importData as $key => $value) {
-            $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
-            $this->_fastSimpleImport->setDataUsingMethod($key, (string)$value);
-        }
-
-        $transport = $this->_getTransport();
-        $transport->setData('object', $this->_fastSimpleImport);
-        $this->_runEvent('import_before', $transport);
-
-        $errors = $this->_importData();
-
-        $transport = $this->_getTransport();
-        $transport->addData(array('object' => $this->_fastSimpleImport, 'errors' => $errors));
-        $this->_runEvent('import_after', $transport);
-        return $errors;
+        return $this->_importMain(self::IMPORT_TYPE_PRODUCT);
     }
 
     /**
@@ -364,28 +369,7 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _importCatalogCategory()
     {
-        $importData       = $this->getImportData();
-
-        if (isset($importData['ignoreErrors']) && $importData['ignoreErrors'] == 1) {
-            $this->_getLog()->log('Continue after errors enabled');
-            $this->_fastSimpleImport->setContinueAfterErrors($importData['ignoreErrors']);
-        }
-
-        if (isset($importData['renameFiles']) && $importData['renameFiles'] == 0) {
-            $this->_fastSimpleImport->setAllowRenameFiles(FALSE);
-        }
-
-        $transport = $this->_getTransport();
-        $transport->setData('object', $this->_fastSimpleImport);
-        $this->_runEvent('import_before', $transport);
-
-        $errors = $this->_importData();
-
-        $transport = $this->_getTransport();
-        $transport->addData(array('object' => $this->_fastSimpleImport, 'errors' => $errors));
-        $this->_runEvent('import_after', $transport);
-
-        return $errors;
+        return $this->_importMain(self::IMPORT_TYPE_CATEGORY);
     }
 
     /**
@@ -394,28 +378,7 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _importCatalogCategoryProduct()
     {
-        $importData       = $this->getImportData();
-
-        if (isset($importData['ignoreErrors']) && $importData['ignoreErrors'] == 1) {
-            $this->_getLog()->log('Continue after errors enabled');
-            $this->_fastSimpleImport->setContinueAfterErrors($importData['ignoreErrors']);
-        }
-
-        if (isset($importData['renameFiles']) && $importData['renameFiles'] == 0) {
-            $this->_fastSimpleImport->setAllowRenameFiles(FALSE);
-        }
-
-        $transport = $this->_getTransport();
-        $transport->setData('object', $this->_fastSimpleImport);
-        $this->_runEvent('import_before', $transport);
-
-        $errors = $this->_importData();
-
-        $transport = $this->_getTransport();
-        $transport->addData(array('object' => $this->_fastSimpleImport, 'errors' => $errors));
-        $this->_runEvent('import_after', $transport);
-
-        return $errors;
+        return $this->_importMain(self::IMPORT_TYPE_CATEGORY_PRODUCT);
     }
 
     protected function _applyImportOptions()
@@ -569,8 +532,8 @@ class Ho_Import_Model_Import extends Varien_Object
         $timer = microtime(TRUE);
 
         //importing
-        $entityType       = (string)$this->_getEntityType();
-        $importMethods    = array(
+        $entityType    = (string)$this->_getEntityType();
+        $importMethods = array(
             self::IMPORT_TYPE_PRODUCT          => 'processProductImport',
             self::IMPORT_TYPE_CATEGORY         => 'processCategoryImport',
             self::IMPORT_TYPE_CUSTOMER         => 'processCustomerImport',
@@ -607,8 +570,8 @@ class Ho_Import_Model_Import extends Varien_Object
             $data = $this->_getFileName();
         }
         //importing
-        $entityType       = (string)$this->_getEntityType();
-        $importMethods    = array(
+        $entityType    = (string)$this->_getEntityType();
+        $importMethods = array(
             self::IMPORT_TYPE_PRODUCT          => 'dryrunProductImport',
             self::IMPORT_TYPE_CATEGORY         => 'dryrunCategoryImport',
             self::IMPORT_TYPE_CUSTOMER         => 'dryrunCustomerImport',
