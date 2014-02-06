@@ -1,0 +1,44 @@
+<!--
+Category Product import
+
+- Import is scheduled to run at 3am 35min
+- Data is directly read from the ERP-system.
+- Category will be cleaned to remove slashes
+-->
+
+<config>
+	<global>
+		<!-- ... -->
+        <ho_import>
+            <zk_cat_prod>
+
+                <log_level>0</log_level>
+                <schedule>
+                    <cron_expr>35 3 * * *</cron_expr>
+                </schedule>
+                <entity_type>catalog_category_product</entity_type>
+                <source model="ho_import/source_adapter_db">
+                    <sslmode>require</sslmode>
+                    <host><![CDATA[localhost]]></host>
+                    <port>4711</port>
+                    <username><![CDATA[root]]></username>
+                    <password><![CDATA[haveibeenpwned]]></password>
+                    <dbname><![CDATA[databse]]></dbname>
+                    <model><![CDATA[Zend_Db_Adapter_Pdo_Pgsql]]></model>
+                    <query><![CDATA[SELECT textpath,isbn from table ORDER BY isbn,text_path]]></query>
+                </source>
+                <import_options>
+                    <partial_indexing>1</partial_indexing>
+                </import_options>
+                <fieldmap>
+                    <_root value="Australia"/>
+                    <_category helper="zookalimporter/data::cleanCategoryPath">
+                        <field field="text_path"/>
+                    </_category>
+                    <_sku field="isbn"/>
+                    <position value="0"/>
+                </fieldmap>
+            </zk_cat_prod>
+        </ho_import>
+    </global>
+</config>

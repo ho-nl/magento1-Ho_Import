@@ -181,6 +181,7 @@ All the entities of the [AvS_FastSimpleImport][] are supported:
 - `catalog_product`
 - `customer`
 - `catalog_category`
+- `catalog_category_product`
 
 Example Config:
 ```XML
@@ -273,7 +274,7 @@ The Spreadsheet Source is an implementation of [spreadsheet-reader](https://gith
 #### Database Source
 The Database source is an implementation of `Zend_Db_Table_Rowset` and allows all implentation of `Zend_Db_Adapter_Abstract` as a source. It supports MSSQL, MySQL, PostgreSQL, SQLite and many others. For all possible supported databases take a look in `/lib/Zend/Db/Adapter`.
 
-The current implementation isn't low memory because it executes the query an loads everything in memory.
+The current implementation isn't low memory because it executes the query and loads everything in memory.
 
 ```XML
 <source model="ho_import/source_adapter_db">
@@ -281,7 +282,7 @@ The current implementation isn't low memory because it executes the query an loa
     <username><![CDATA[username]]></username>
     <password><![CDATA[password]]></password>
     <dbname><![CDATA[database]]></dbname>
-    <model><![CDATA[Zend_Db_Adapter_Pdo_Mssql]]></model>
+    <model><![CDATA[Zend_Db_Adapter_Pdo_YourFavoriteDatabase]]></model>
     <pdoType>dblib</pdoType>
     <query><![CDATA[SELECT * FROM Customer]]></query>
     <!--<limit>10</limit>-->
@@ -289,6 +290,7 @@ The current implementation isn't low memory because it executes the query an loa
 </source>
 ```
 
+If your PDO driver doesn't support `pdoType` then simply remove that node. If you wish to pass more config parameters to the PDO driver then add more nodes like for PGSQL: `<sslmode>require</sslmode>`
 
 ### Import Options
 
