@@ -39,7 +39,7 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
         }
 
         if ($level > self::LOG_SUCCESS) {
-            Mage::throwException($this->__('The log leven can be %s maximum, %s given', self::LOG_SUCCESS, $level));
+            Mage::throwException($this->__('The log level can be %s maximum, %s given', self::LOG_SUCCESS, $level));
         }
 
         $this->_minLogLevel = (int) $level;

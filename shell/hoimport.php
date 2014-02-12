@@ -29,6 +29,9 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 		} else {
             Varien_Profiler::start("shell-productimport".$this->getArg('action'));
 
+            //disable the inline translator for the cli, breaks the import if it is enabled.
+            Mage::getConfig()->setNode('stores/admin/dev/translate_inline/active', 0);
+
             //initialize the translations so that we are able to translate things.
             Mage::app()->loadAreaPart(
                 Mage_Core_Model_App_Area::AREA_ADMINHTML,
