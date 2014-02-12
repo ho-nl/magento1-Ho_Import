@@ -16,7 +16,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 
 	/**
 	 * Run script
-	 * 
+	 *
 	 * @return void
 	 */
 	public function run() {
