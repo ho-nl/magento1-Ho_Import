@@ -37,7 +37,7 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
         /** @var Zend_Db_Adapter_Abstract $db */
         $db = new $model($config);
 
-        if (isset($config['limit']) || isset($condig['offset'])) {
+        if (isset($config['limit']) || isset($config['offset'])) {
             $limit  = (int) isset($config['limit']) ? $config['limit'] : 0;
             $offset = (int) isset($config['offset']) ? $config['offset'] : 0;
             $logHelper->log($logHelper->__('Setting limit to %s and offset to %s', $limit, $offset), Zend_Log::NOTICE);
