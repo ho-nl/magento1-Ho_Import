@@ -262,7 +262,7 @@ The XML source is loosely based on [XmlStreamer](https://github.com/prewk/XmlStr
 
 ##### Example:
 
-If you have the following XML file and you want to retrieve all the <ARTICLE> nodes:
+If you have the following XML file and you want to retrieve all the `<ARTICLE>` nodes:
 
 ```XML
 <?xml version="1.0" encoding="utf-8"?>
