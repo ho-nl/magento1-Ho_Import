@@ -4,6 +4,13 @@
     "description": "A Magento Module that allows you to map fields and import all sorts of file formats, sources and entities. Fast and Low Memory.",
     "homepage": "https://github.com/ho-nl/Ho_Import",
     "require": {
-        "magento-hackathon/magento-composer-installer": "dev-master"
+        "magento-hackathon/magento-composer-installer": "dev-master",
+        "avstudnitz/fast-simple-import": "dev-master"
     }
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://packages.firegento.com"
+        }
+    ]
 }
