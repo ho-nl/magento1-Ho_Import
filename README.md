@@ -253,7 +253,7 @@ The XML source is loosely based on [XmlStreamer](https://github.com/prewk/XmlStr
     <!-- If there is only one type of entity in the XML the custom rootNode isn't required. -->
     <rootNode>customRootNode</rootNode>
 
-    <-- You have the ability to define a custom childNode if the childNode isn't the direct ascendent of the rootNode -->
+    <!-- You have the ability to define a custom childNode if the childNode isn't the direct ascendent of the rootNode -->
 	<childNode>customChildNode</childNode>
 </source>
 ```
@@ -294,7 +294,8 @@ If you have the following XML file and you want to retrieve all the <ARTICLE> no
 ```
 
 This would result in the following configuration:
-```
+
+```XML
 <source model="ho_import/source_adapter_xml">
     <file>path/to/you/file.xml</file>
     <rootNode>BODY</rootNode>
