@@ -103,6 +103,9 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
     protected $_customRootNode;
 
 
+    protected $_customChildNode;
+
+
     /**
      * Adapter object constructor.
      *
@@ -127,6 +130,10 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
 
         if (is_array($data) && isset($data['rootNode'])) {
             $this->_customRootNode = (string) $data['rootNode'];
+        }
+
+        if (is_array($data) && isset($data['childNode'])) {
+            $this->_customChildNode = (string) $data['childNode'];
         }
 
         $this->_init();
@@ -432,17 +439,17 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
                     $readFromChunkPos = $customRootNodePos + $closer + 1;
 
                     // Custom child node?
-//                    if (isset($this->_customChildNode)) {
-//                        // Find it in the chunk
-//                        $customChildNodePos = strpos(substr($this->_chunk, $readFromChunkPos), "<{$this->_customChildNode}");
-//                        if ($customChildNodePos !== false) {
-//                            // Found it!
-//                            $readFromChunkPos = $readFromChunkPos + $customChildNodePos;
-//                        } else {
-//                            // Didn't find it - read a larger chunk and do everything again
-//                            Mage::throwException(Mage::helper('ho_import')->__("Couldn't find child node in first chunk (chunk size %s)" , $this->_chunkSize));
-//                        }
-//                    }
+                    if (isset($this->_customChildNode)) {
+                        // Find it in the chunk
+                        $customChildNodePos = strpos(substr($this->_chunk, $readFromChunkPos), "<{$this->_customChildNode}");
+                        if ($customChildNodePos !== false) {
+                            // Found it!
+                            $readFromChunkPos = $readFromChunkPos + $customChildNodePos;
+                        } else {
+                            // Didn't find it - read a larger chunk and do everything again
+                            Mage::throwException(Mage::helper('ho_import')->__("Couldn't find child node in first chunk (chunk size %s)" , $this->_chunkSize));
+                        }
+                    }
 
                     $this->_rootNode = $this->_customRootNode;
                     $this->_readFromChunkPos = $readFromChunkPos;

@@ -250,8 +250,54 @@ The XML source is loosely based on [XmlStreamer](https://github.com/prewk/XmlStr
 <source model="ho_import/source_adapter_xml">
     <file>var/import/products.xml</file>
 
-    <!-- If there is only one type of entity in the XML the custom rootnode isn't required -->
-    <!-- <rootNode>customRootNode</rootNode> -->
+    <!-- If there is only one type of entity in the XML the custom rootNode isn't required. -->
+    <rootNode>customRootNode</rootNode>
+
+    <-- You have the ability to define a custom childNode if the childNode isn't the direct ascendent of the rootNode -->
+	<childNode>customChildNode</childNode>
+</source>
+```
+
+*Note: It isn't tested if the childNode/rootNode is way down the document. The code is in place, but isn't tested. If you get the chance to test this please create an issue and let us know what you found.*
+
+##### Example:
+
+If you have the following XML file and you want to retrieve all the <ARTICLE> nodes:
+```
+<?xml version="1.0" encoding="utf-8"?>
+<ARTICLES>
+	<BODY>
+		<COMPANY-NR>
+			<COMPANY>10</COMPANY>
+			<SHOP>
+				<SHOPNR>2</SHOPNR>
+				<ARTICLE>
+					<!-- ... -->
+				</ARTICLE>
+				<ARTICLE>
+                    <!-- ... -->
+                </ARTICLE>
+			</SHOP>
+		</COMPANY-NR>
+		<COMPANY-NR>
+			<COMPANY>10</COMPANY>
+            <SHOP>
+                <SHOPNR>3</SHOPNR>
+                <ARTICLE>
+                    <!-- ... -->
+                </ARTICLE>
+            </SHOP>
+		</COMPANY-NR>
+	</BODY>
+</ARTICLES>
+```
+
+This would result in the following configuration:
+```
+<source model="ho_import/source_adapter_xml">
+    <file>path/to/you/file.xml</file>
+    <rootNode>BODY</rootNode>
+	<rootNode>ARTICLE</rootNode>
 </source>
 ```
 
