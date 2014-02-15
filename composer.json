@@ -6,7 +6,7 @@
     "require": {
         "magento-hackathon/magento-composer-installer": "dev-master",
         "avstudnitz/fast-simple-import": "dev-master"
-    }
+    },
     "repositories": [
         {
             "type": "composer",
