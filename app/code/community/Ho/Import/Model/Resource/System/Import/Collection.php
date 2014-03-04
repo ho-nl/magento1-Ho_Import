@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ho_Import
  *
@@ -18,16 +19,17 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  * @author      Paul Hachmang – H&O <info@h-o.nl>
  *
- * 
+ *
  */
-
 class Ho_Import_Model_Resource_System_Import_Collection extends Varien_Data_Collection
 {
-    public function __construct() {
+    public function __construct()
+    {
         $this->setItemObjectClass('ho_import/system_import');
     }
 
     protected $_data = null;
+
     /**
      * Load data
      *
@@ -43,8 +45,8 @@ class Ho_Import_Model_Resource_System_Import_Collection extends Varien_Data_Coll
         }
 
         $this->_renderFilters()
-             ->_renderOrders()
-             ->_renderLimit();
+            ->_renderOrders()
+            ->_renderLimit();
 
         $data = $this->getData();
         $this->resetData();
@@ -52,7 +54,7 @@ class Ho_Import_Model_Resource_System_Import_Collection extends Varien_Data_Coll
         if (is_array($data)) {
             foreach ($data as $key => $row) {
                 $row['id'] = $key;
-                $item = $this->getNewEmptyItem();
+                $item      = $this->getNewEmptyItem();
                 $item->setIdFieldName('id');
                 $item->addData($row);
                 $this->addItem($item);
@@ -75,27 +77,35 @@ class Ho_Import_Model_Resource_System_Import_Collection extends Varien_Data_Coll
         return $this;
     }
 
-    public function getData() {
-        $profileNodes =  Mage::getConfig()->getNode('global/ho_import');
+    public function getData()
+    {
+        $profileNodes = Mage::getConfig()->getNode('global/ho_import');
         if ($profileNodes === false) {
             return array();
         }
         return $profileNodes->asArray();
     }
 
-
-    public function cleanupCron() {
+    /**
+     * @return $this
+     */
+    public function cleanupCron()
+    {
         $availableConfigs = array();
         foreach ($this as $import) {
             /** @var $import Ho_Import_Model_System_Import */
-
             if ($import->getSchedule()) {
                 $availableConfigs[] = str_replace('crontab/jobs/', '', $import->getConfigPath());
             }
         }
 
-        foreach (Mage::getConfig()->getNode('default/crontab/jobs')->children() as $cron => $data) {
-            if (! in_array($cron, $availableConfigs)) {
+        $jobsNode = Mage::getConfig()->getNode('default/crontab/jobs');
+        if (false === $jobsNode) {
+            return $this;
+        }
+
+        foreach ($jobsNode->children() as $cron => $data) {
+            if (!in_array($cron, $availableConfigs)) {
                 /** @var Mage_Core_Model_Resource_Config $resource */
                 $resource = Mage::getConfig()->getResourceModel();
                 /** @var Varien_Db_Adapter_Pdo_Mysql $select */
@@ -104,5 +114,6 @@ class Ho_Import_Model_Resource_System_Import_Collection extends Varien_Data_Coll
                 $select->delete($resource->getMainTable(), "path LIKE 'crontab/jobs/{$cron}%'");
             }
         }
+        return $this;
     }
 }
