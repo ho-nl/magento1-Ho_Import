@@ -308,15 +308,18 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return string
      */
     public function getFieldMap($line, $field, $mapping) {
-        $value = $this->_getMapper()->mapItem($field);
+        $values = $this->_getMapper()->mapItem($field);
+        if (is_string($values)) { $values = array($values); }
 
-        foreach($mapping as $map) {
-            if ($map['@']['from'] == $value) {
-                $value = $map['@']['to'];
+        foreach ($values as $key => $value) {
+            foreach($mapping as $map) {
+                if ($map['@']['from'] == $value) {
+                    $values[$key] = $map['@']['to'];
+                }
             }
         }
 
-        return $value;
+        return $values;
     }
 
     /**
