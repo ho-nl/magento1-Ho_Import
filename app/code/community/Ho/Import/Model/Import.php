@@ -393,6 +393,9 @@ class Ho_Import_Model_Import extends Varien_Object
             }
         }
 
+        //always disable the image preprocessor, this tries to write back to the source, which isn't supported.
+        $this->_fastSimpleImport->setDisablePreprocessImageData(true);
+
         return $this;
     }
 
