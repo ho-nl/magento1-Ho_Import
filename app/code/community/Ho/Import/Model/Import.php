@@ -527,7 +527,9 @@ class Ho_Import_Model_Import extends Varien_Object
         return Mage::helper('ho_import/log');
     }
 
+
     /**
+     * @throws Exception
      * @return \Ho_Import_Model_Import
      */
     protected function _importData()
@@ -551,7 +553,10 @@ class Ho_Import_Model_Import extends Varien_Object
                 $this->_getLog()->log($this->_getLog()->__('Type %s not found', $entityType));
             }
         } catch (Exception $e) {
-            $this->_getLog()->log($e->getMessage(), Zend_Log::ERR);
+            $seconds  = round(microtime(TRUE) - $timer, 2);
+            $this->_getLog()->log("Exception while running profile  {$this->getProfile()}, ran for $seconds seconds.", Zend_Log::CRIT);
+            Mage::printException($e);
+            exit;
         }
 
         $seconds           = round(microtime(TRUE) - $timer, 2);

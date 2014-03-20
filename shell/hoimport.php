@@ -9,6 +9,8 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
     {
         parent::__construct();
 
+        Mage::setIsDeveloperMode(true); //always enable developer mode when run through the shell.
+
         if ($this->getArg('profiler') == '1') {
             Varien_Profiler::enable();
         }
