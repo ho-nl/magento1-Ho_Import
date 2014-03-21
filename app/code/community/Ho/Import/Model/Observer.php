@@ -59,7 +59,7 @@ class Ho_Import_Model_Observer
     public function progressLog(Varien_Event_Observer $event) {
         $name = str_replace('fastsimpleimport_', '', $event->getEvent()->getName());
         $name = str_replace('before_', '', $name);
-        $name = ucfirst(str_replace('_',' ',$name));
+        $name = ucfirst(str_replace('_',' ',$name)).'...';
 
         Mage::helper('ho_import/log')->log($name);
     }
