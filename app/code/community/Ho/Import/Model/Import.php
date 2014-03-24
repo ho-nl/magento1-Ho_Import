@@ -162,21 +162,23 @@ class Ho_Import_Model_Import extends Varien_Object
             $transport->setData('items', array($sourceRows[$line]));
             $this->_runEvent('source_row_fieldmap_before', $transport);
             if ($transport->getData('skip')) {
-                $this->_getLog()->log($this->_getLog()->__('This line (%s) would be skipped', $line), Zend_Log::WARN);
-            }
+                $this->_getLog()->log($this->_getLog()->__('Skip flag is set for line (%s) in event source_row_fieldmap_before', $line), Zend_Log::WARN);
+                $this->_getLog()->log($transport->getData('items'), Zend_Log::DEBUG);
+                return;
+            } else {
+                $this->_getLog()->log($transport->getData('items'), Zend_Log::DEBUG);
 
-            $this->_getLog()->log($transport->getData('items'), Zend_Log::DEBUG);
+                $i = 0;
+                foreach ($transport->getData('items') as $preparedItem) {
+                    $results = $this->_fieldMapItem($preparedItem);
 
-            $i = 0;
-            foreach ($transport->getData('items') as $preparedItem) {
-                $results = $this->_fieldMapItem($preparedItem);
+                    foreach ($results as $result) {
+                        $i++;
 
-                foreach ($results as $result) {
-                    $i++;
-
-                    $entities[]                    = $result;
-                    $logEntities[$line . ':' . $i] = $result;
-                    $entityMap[]                   = $line . ':' . $i;
+                        $entities[]                    = $result;
+                        $logEntities[$line . ':' . $i] = $result;
+                        $entityMap[]                   = $line . ':' . $i;
+                    }
                 }
             }
         }
