@@ -307,6 +307,6 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
     public function convert($size)
     {
         $unit=array('B','KB','MB','GB','TB','PB');
-        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).$unit[$i];
+        return @round($size/pow(1024,($i=floor(log($size,1024))))).$unit[$i];
     }
 }
