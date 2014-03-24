@@ -782,6 +782,22 @@ There are two logging modes: CLI and cron mode. In the CLI mode it always logs t
 to add nice colors, etc. In the cron-mode it will log to the the log files and can also log to the
 messages inbox in the admin panel.
 
+## Calling importer in your code
+This is pretty easy to do:
+
+```PHP
+protected function _importCustomers($memberIds) {
+    Mage::getModel('ho_import/import')
+        ->setProfile('postbeeld_customers')
+        ->setSourceOptions(array('member_id' => implode(',', $memberIds)))
+        ->process();
+
+    Mage::helper('ho_import/log')->done();
+    return $this;
+}
+```
+
+
 ### File logging
 Every import run by the cron is saved in `var/ho_import.log`.
 
