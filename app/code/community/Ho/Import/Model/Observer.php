@@ -48,7 +48,7 @@ class Ho_Import_Model_Observer
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->process();
-        } catch (Mage_Core_Exception $e) {
+        } catch (Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
             Mage::helper('ho_import/log')->log($e->getTraceAsString(), Zend_Log::CRIT);
         }
