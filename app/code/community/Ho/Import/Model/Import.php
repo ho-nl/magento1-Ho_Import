@@ -83,7 +83,11 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
-        $this->_createImportCsv();
+        $hasRows = $this->_createImportCsv();
+        if (! $hasRows) {
+            $this->_runEvent('process_after');
+            return;
+        }
 
         $this->_applyImportOptions();
         if ($this->getDryrun()) {
@@ -302,7 +306,11 @@ class Ho_Import_Model_Import extends Varien_Object
         $rowsPerSecond = $seconds ? round($this->getRowCount() / $seconds, 2) : $this->getRowCount();
         $this->_getLog()->log("Fieldmapping {$this->getProfile()} with {$this->getRowCount()} rows (done in $seconds seconds, $rowsPerSecond rows/s)");
 
-        return TRUE;
+        if ($this->getRowCount()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
