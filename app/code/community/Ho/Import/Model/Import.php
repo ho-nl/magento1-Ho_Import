@@ -203,7 +203,9 @@ class Ho_Import_Model_Import extends Varien_Object
 
             foreach ($lines as $line) {
                 $key                                   = $line - 1;
-                $logEntities[$entityMap[$key]][$error] = '__ERROR__';
+                if (isset($entityMap[$key])) {
+                    $logEntities[$entityMap[$key]][$error] = '__ERROR__';
+                }
             }
         }
         $this->_getLog()->log($logEntities, Zend_Log::DEBUG);
