@@ -286,12 +286,15 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
         $parts = array();
         foreach ($fields as $fieldConfig) {
-            $result = $mapper->mapItem($fieldConfig);
+            $values = $mapper->mapItem($fieldConfig);
+            if (! is_array($values)) { $values = array($values); }
 
-            if ($withKeys && isset($fieldName)) {
-                $parts[$fieldName] = $result;
-            } else {
-                $parts[] = $result;
+            foreach ($values as $value) {
+                if ($withKeys && isset($fieldName)) {
+                    $parts[$fieldName] = $value;
+                } else {
+                    $parts[] = $value;
+                }
             }
         }
 
