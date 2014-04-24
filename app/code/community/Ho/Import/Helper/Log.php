@@ -33,6 +33,10 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
 
     protected $_logEntries = array();
 
+    function __construct() {
+        mb_internal_encoding('UTF-8');
+    }
+
     public function setMinLogLevel($level) {
         if (! is_numeric($level)) {
             Mage::throwException($this->__('The min log level should be numeric, %s given', $level));
@@ -143,12 +147,12 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
                     $columns[$col] = 0;
                 }
 
-                if (strlen($col) > $columns[$col]) {
-                    $columns[$col] = strlen($col);
+                if (mb_strlen($col) > $columns[$col]) {
+                    $columns[$col] = mb_strlen($col);
                 }
 
-                if (strlen($value) > $columns[$col]) {
-                    $columns[$col] = strlen($value);
+                if (mb_strlen($value) > $columns[$col]) {
+                    $columns[$col] = mb_strlen($value);
                 }
             }
         }
@@ -163,8 +167,8 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
 
         $lines = "\n";
 
-        $line  = '| '.str_pad('key', $columns[0]).' |';
-        $lineTwo = '+-'.str_pad('-', $columns[0], '-').'-+';
+        $line  = '| '.$this->_mb_str_pad('key', $columns[0]).' |';
+        $lineTwo = '+-'.$this->_mb_str_pad('-', $columns[0], '-').'-+';
         $i = 0;
         array_shift($arrays);
         foreach($arrays as $key => $array) {
@@ -172,18 +176,18 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
 
             $search = preg_match_all('/__.*?__/', $key, $matches);
             if ($search) {
-                $str = str_pad($key, $columns[$i]);
+                $str = $this->_mb_str_pad($key, $columns[$i]);
                 foreach ($matches[0] as $match) {
                     $str = str_replace($match, "\033[31m".str_replace('__','', $match).$this->_getCliColor($level), $str);
                 }
                 $padding = count($matches[0]) * 4;
-                $str = str_pad($str, strlen($str) + $padding);
+                $str = $this->_mb_str_pad($str, mb_strlen($str) + $padding);
             } else {
-                $str = str_pad($key, $columns[$i]);
+                $str = $this->_mb_str_pad($key, $columns[$i]);
             }
             $line .= ' '.$str.' |';
 
-            $lineTwo.= '-'.str_pad('-', $columns[$i], '-').'-+';
+            $lineTwo.= '-'.$this->_mb_str_pad('-', $columns[$i], '-').'-+';
         }
         $lines.= $lineTwo . "\n";
         $lines.= $line . "\n";
@@ -197,14 +201,14 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
                     $search = preg_match_all('/__.*?__/', $row[$column], $matches);
 
                     if ($search) {
-                        $str = str_pad($row[$column], $length);
+                        $str = $this->_mb_str_pad($row[$column], $length);
                         foreach ($matches[0] as $match) {
                             $str = str_replace($match, "\033[31m".str_replace('__','', $match).$this->_getCliColor($level), $str);
                         }
                         $padding = count($matches[0]) * 4;
-                        $str = str_pad($str, strlen($str) + $padding);
+                        $str = $this->_mb_str_pad($str, mb_strlen($str) + $padding);
                     } else {
-                        $str = str_pad($row[$column], $length);
+                        $str = $this->_mb_str_pad($row[$column], $length);
                     }
 
                     $line .= ' '.$str.' |';
@@ -217,6 +221,10 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
         return $lines;
     }
 
+    protected function _mb_str_pad( $input, $pad_length, $pad_string = ' ', $pad_type = STR_PAD_RIGHT) {
+        $diff = strlen($input) - mb_strlen($input);
+        return str_pad($input, $pad_length + $diff, $pad_string, $pad_type);
+    }
 
     /**
      * When logging to the admin notification inbox.

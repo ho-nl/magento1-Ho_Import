@@ -197,10 +197,6 @@ class Ho_Import_Model_Import extends Varien_Object
             $errors[$e->getMessage()] = $lines;
         }
         foreach ($errors as $error => $lines) {
-            if (strlen($error) > 80) {
-                $error = substr($error, 0, 77) . ' ..';
-            }
-
             foreach ($lines as $line) {
                 $key                                   = $line - 1;
                 if (isset($entityMap[$key])) {
@@ -718,11 +714,6 @@ class Ho_Import_Model_Import extends Varien_Object
         $errorLines    = array();
         $errorsPerLine = array();
         foreach ($errors as $error => $lines) {
-
-            if (strlen($error) > 80) {
-                $error = substr($error, 0, 77) . ' ..';
-            }
-
             $errorLines = array_merge($errorLines, $lines);
             foreach ($lines as $line) {
 
