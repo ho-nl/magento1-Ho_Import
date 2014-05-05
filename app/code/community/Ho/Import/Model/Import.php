@@ -291,11 +291,11 @@ class Ho_Import_Model_Import extends Varien_Object
                 $result = $this->_fieldMapItem($preparedItem);
 
                 foreach ($result as $row) {
+                    $rowCount++;
                     $exportAdapter->writeRow(array_merge($fieldNames, $row));
                 }
             }
 
-            $rowCount++;
             $sourceAdapter->next();
         }
         $this->setRowCount($rowCount);
