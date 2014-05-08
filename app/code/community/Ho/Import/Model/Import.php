@@ -458,6 +458,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $mapper = $this->_getMapper();
         $mapper->setItem($item);
+        $symbolForClearField = Mage::getStoreConfig('fastsimpleimport/general/symbol_for_clear_field');
 
         $allFieldConfig = $mapper->getFieldConfig();
         //Step 1: Get the values for the fields
@@ -474,6 +475,11 @@ class Ho_Import_Model_Import extends Varien_Object
                     }
                 } elseif ($result !== NULL) {
                     $itemRows[$storeCode][0][$fieldName] = $result;
+                }
+
+                if ($symbolForClearField && $storeCode == 'admin'
+                    && (!isset($itemRows[$storeCode][0][$fieldName]) || !$itemRows[$storeCode][0][$fieldName])) {
+                    $itemRows[$storeCode][0][$fieldName] = $symbolForClearField;
                 }
             }
         }
