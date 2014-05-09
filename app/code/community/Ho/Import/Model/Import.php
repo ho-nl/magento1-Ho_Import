@@ -73,6 +73,7 @@ class Ho_Import_Model_Import extends Varien_Object
             Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
         }
 
+        $this->_applyImportOptions();
         $this->_downloader();
 
         $entity = (string)$this->_getEntityType();
@@ -89,7 +90,6 @@ class Ho_Import_Model_Import extends Varien_Object
             return;
         }
 
-        $this->_applyImportOptions();
         if ($this->getDryrun()) {
             $this->_getLog()->log($this->_getLog()->__('Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
             $errors = $this->_dryRun();
@@ -126,6 +126,7 @@ class Ho_Import_Model_Import extends Varien_Object
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
         $this->_runEvent('process_before', $this->_getTransport()->setAdapter($sourceAdapter));
+        $this->_applyImportOptions();
 
         //search a line instead on specifying the line.
         $importData = $this->getImportData();
@@ -191,7 +192,6 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $errors = array();
         try {
-            $this->_applyImportOptions();
             $errors = $this->_dryRun($entities);
         } catch (Exception $e) {
             $errors[$e->getMessage()] = $lines;
@@ -458,7 +458,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $mapper = $this->_getMapper();
         $mapper->setItem($item);
-        $symbolForClearField = Mage::getStoreConfig('fastsimpleimport/general/symbol_for_clear_field');
+        $symbolForClearField = $this->_fastSimpleImport->getSymbolEmptyFields();
 
         $allFieldConfig = $mapper->getFieldConfig();
         //Step 1: Get the values for the fields
