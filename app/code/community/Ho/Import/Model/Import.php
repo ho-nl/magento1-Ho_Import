@@ -477,7 +477,7 @@ class Ho_Import_Model_Import extends Varien_Object
                     $itemRows[$storeCode][0][$fieldName] = $result;
                 }
 
-                if ($symbolForClearField && $storeCode == 'admin'
+                if ($symbolForClearField && isset($fieldConfig['@'])
                     && (!isset($itemRows[$storeCode][0][$fieldName]) || !$itemRows[$storeCode][0][$fieldName])) {
                     $itemRows[$storeCode][0][$fieldName] = $symbolForClearField;
                 }
