@@ -36,12 +36,41 @@ class Ho_Import_Model_Downloader_Http extends Ho_Import_Model_Downloader_Abstrac
         $path = $this->_getTargetPath(dirname($target), $filename);
 
         $fp = fopen($path, 'w+');//This is the file where we save the information
+
+        $cookie = tempnam ("/tmp", "CURLCOOKIE");
         $ch = curl_init($url);//Here is the file we are downloading, replace spaces with %20
-        curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+        curl_setopt( $ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
+        curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie );
+        curl_setopt( $ch, CURLOPT_ENCODING, "" );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
         curl_setopt($ch, CURLOPT_FILE, $fp); // write curl response to file
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_exec($ch); // get curl response
-        curl_close($ch);
+        $content = curl_exec($ch);
+        $response = curl_getinfo($ch);
+        curl_close ($ch);
         fclose($fp);
+
+        if ($response['http_code'] == 301 || $response['http_code'] == 302) {
+            ini_set("user_agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1");
+
+            if ($headers = get_headers($response['url'])) {
+                foreach( $headers as $value ) {
+                    if (substr(strtolower($value), 0, 9) == "location:")
+                        return get_url(trim(substr($value, 9, strlen($value))));
+                }
+            }
+        }
+        $i = 0;
+        if ((preg_match("/>[[:space:]]+window\.location\.replace\('(.*)'\)/i", $content, $value) ||
+                preg_match("/>[[:space:]]+window\.location\=\"(.*)\"/i", $content, $value)) &&
+            $i < 5 ) {
+            return get_url($value[1], $i+1);
+        }
+        else {
+            return array($content, $response);
+        }
     }
 }
