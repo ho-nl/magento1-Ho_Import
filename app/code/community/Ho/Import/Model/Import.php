@@ -475,7 +475,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 }
 
                 if ($symbolForClearField && isset($fieldConfig['@'])
-                    && (!isset($itemRows[$storeCode][0][$fieldName]) || !$itemRows[$storeCode][0][$fieldName])) {
+                    && (!isset($itemRows[$storeCode][0][$fieldName]) || $itemRows[$storeCode][0][$fieldName] === NULL)) {
                     $itemRows[$storeCode][0][$fieldName] = $symbolForClearField;
                 }
             }
