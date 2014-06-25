@@ -1,6 +1,6 @@
 {
     "name": "ho-nl/ho_import",
-    "license": "GPL-3.0"
+    "license": "OSL"
     "type": "magento-module",
     "description": "A Magento Module that allows you to map fields and import all sorts of file formats, sources and entities. Fast and Low Memory.",
     "homepage": "https://github.com/ho-nl/Ho_Import",
