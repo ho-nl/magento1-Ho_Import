@@ -81,11 +81,48 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
+        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($this->getSourceAdapter()));
         $hasRows = $this->_createImportCsv();
         if (! $hasRows) {
             $this->_runEvent('process_after');
             return;
         }
+
+        if ($this->getDryrun()) {
+            $this->_getLog()->log($this->_getLog()->__('Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+            $errors = $this->_dryRun();
+        } else {
+            $this->_getLog()->log($this->_getLog()->__('Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+            $errors = $this->$method();
+        }
+
+        $this->_runEvent('process_after');
+
+        $this->_logErrors($errors);
+        $this->_debugErrors($errors);
+    }
+
+    public function importCsv()
+    {
+        if ($level = $this->getLogLevel()) {
+            $this->_getLog()->setMinLogLevel($level);
+        }
+
+        if (!array_key_exists($this->getProfile(), $this->getProfiles())) {
+            Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
+        }
+
+        $this->_applyImportOptions();
+
+        $entity = (string)$this->_getEntityType();
+        $method = '_import' . ucfirst(Mage::helper('ho_import')->underscoreToCamelCase($entity));
+
+        if (FALSE === method_exists($this, $method)) {
+            Mage::throwException($this->_getLog()->__("Entity %s not supported", $entity));
+        }
+
+        $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
+        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($this->getSourceAdapter()));
 
         if ($this->getDryrun()) {
             $this->_getLog()->log($this->_getLog()->__('Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
@@ -266,7 +303,6 @@ class Ho_Import_Model_Import extends Varien_Object
     {
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
-        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($sourceAdapter));
         $timer = microtime(TRUE);
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */

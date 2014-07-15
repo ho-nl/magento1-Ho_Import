@@ -156,6 +156,48 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
               ."\n\t-line 1,2,3                       Commaseparated list of lines to be checked"
               ."\n\t-search sku=abd                   Alternatively you can search for a value of a field";
    	}
+
+
+    /**
+     *
+     */
+    public function csvAction() {
+        if (! $profile = $this->getArg('profile')) {
+            echo $this->importActionHelp();
+            return;
+        }
+
+        try {
+            /** @var Ho_Import_Model_Import $import */
+            $import = Mage::getModel('ho_import/import');
+            $import->setProfile($profile);
+            $import->setImportData($this->_args);
+            $import->setDryrun($this->getArg('dryrun'));
+            $import->importCsv();
+        } catch (Mage_Core_Exception $e) {
+            Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
+        } catch (Exception $e) {
+            Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::WARN);
+        }
+
+   		Mage::helper('ho_import/log')->log('Done');
+    }
+
+   	public function csvActionHelp() {
+        /** @var Ho_Import_Model_Import $import */
+        $import = Mage::getModel('ho_import/import');
+        $profiles = implode("    ",array_keys($import->getProfiles()));
+
+   		return "\n\tDebug method: doesn't fieldmap, only imports the current csv"
+   		      ."\n\t-profile profile_name             Available profiles:    {$profiles}"
+              ."\n\t-partial_indexing 1               When done importing will the imported products be indexed or will the whole system be indexed"
+              ."\n\t-continue_after_errors 1          If encountered an error, will we continue, sometimes one row is corrupt, but the rest is fine"
+              ."\n\t-dropdown_attributes attr1,attr2  Comma separated list of dropdownattributes that are autofilled when importing."
+              ."\n\t-rename_files 0                   Normally, when importing, images are renamed if an image exists. Set this to 0 to overwrite images"
+              ."\n\t-dryrun 1                         Run a dryrun, validate all data agains the Magento validator but do not import anything"
+              ."\n\t-ignore_duplicates 1              Ignore duplicates.;"
+              ."\n\t-error_limit 10000                Set the error limit, default=100 error lines.;";
+   	}
 }
 
 $shell = new Ho_Import_Shell_Productimport();
