@@ -287,7 +287,9 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
 
 
     protected function _processNode($xmlString) {
-
+        if (! strlen($xmlString)) {
+            return null;
+        }
         $doc = new DOMDocument();
         $doc->loadXML($xmlString);
 
@@ -353,7 +355,7 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
             //                      Unicode characters even Chinese and Cyrillic.
             //                      see:
             //                      http://en.wikipedia.org/wiki/XML#International_use
-            preg_match('/<([^>]+)>/', $fromChunkPos, $matches);
+            preg_match('/<([^>\/]+)>/', $fromChunkPos, $matches);
             //  --$$
             if (isset($matches[1])) {
                 // Found element
