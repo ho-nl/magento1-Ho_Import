@@ -445,7 +445,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         if (isset($this->_fileCache[$url])) {
             return;
         }
-        Mage::helper('ho_import/log')->log($this->__("Downloading image %s", $url));
+//        Mage::helper('ho_import/log')->log($this->__("Downloading image %s", $url));
         
         try {
             $this->_fileCache[$url] = true;
