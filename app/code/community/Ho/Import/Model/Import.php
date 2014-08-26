@@ -81,7 +81,6 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
-        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($this->getSourceAdapter()));
         $hasRows = $this->_createImportCsv();
         if (! $hasRows) {
             $this->_runEvent('process_after');
@@ -303,6 +302,7 @@ class Ho_Import_Model_Import extends Varien_Object
     {
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
+        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($sourceAdapter));
         $timer = microtime(TRUE);
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
