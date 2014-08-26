@@ -231,36 +231,6 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
      */
     public function done()
     {
-        if ($this->_mode == self::LOG_MODE_NOTIFICATION) {
-            /* @var $inbox Mage_AdminNotification_Model_Inbox */
-            $inbox = Mage::getModel('adminnotification/inbox');
-
-            $lowestLevel = array_search(min($this->_logEntries), $this->_logEntries);
-            if ($lowestLevel > $this->_minLogLevel) {
-                return;
-            }
-
-            switch($lowestLevel)
-            {
-                case Zend_Log::EMERG:
-                case Zend_Log::ALERT:
-                case Zend_Log::CRIT:
-                case Zend_Log::ERR:
-                case Zend_Log::WARN:
-                    $firstRow = reset($this->_logEntries);
-                    $inbox->addCritical(reset($firstRow), $this->getLogHtml());
-                    break;
-                case Zend_Log::DEBUG:
-                    $firstRow = reset($this->_logEntries);
-                    $inbox->addNotice(reset($firstRow), $this->getLogHtml());
-                    break;
-                default:
-                    $firstRow = reset($this->_logEntries);
-                    $inbox->addMinor(reset($firstRow), $this->getLogHtml());
-                    break;
-            }
-        }
-
         $this->_logEntries = array();
     }
 
