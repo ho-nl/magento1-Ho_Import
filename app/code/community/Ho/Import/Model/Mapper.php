@@ -242,6 +242,16 @@ class Ho_Import_Model_Mapper
             if (! $fieldMapNode) {
                 Mage::throwException(sprintf("Config path not found %s", $fieldMapPath));
             }
+
+            if ($usePath = $fieldMapNode->getAttribute('use')) {
+                $fieldMapPath = sprintf(self::IMPORT_FIELD_CONFIG_PATH, $usePath);
+                $fieldMapNode = Mage::getConfig()->getNode($fieldMapPath);
+
+                if (! $fieldMapNode) {
+                    Mage::throwException(sprintf("Incorrect 'use' in <fieldmap use=\"%s\" />", $usePath));
+                }
+            }
+
             $columns = $fieldMapNode->children();
             $columnsData = array();
 

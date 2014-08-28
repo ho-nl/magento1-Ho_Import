@@ -390,11 +390,16 @@ you can set the key `skip` to `1` to skip this source row all together.
 
 
 ### Fieldmap
-This is where the core of the module happens. Map a random source formatting to the Magento format.
+This is where the magic of the module happens. Map a random source formatting to the Magento format.
 
 The idea is that you specify the Magento format here and load the right values for each Magento
 field, manipulate the data, etc. There is a syntax to handle the most easy cases and have the
 ability to call an helper if that isn't enough.
+
+| Reusing fieldmapped data. |
+| ------------------------- |
+| When importing mutations and having a complete import happens (complete runs every night for example, mutations every 15 minutes). You might want to use a different profile's fieldmapping. To do this you only need add `<fieldmap use="name_of_other_profile" />`. |
+
 
 _This section assumes that you place these config values in `<config><global><ho_import><my_import_name><fieldmap>`_
 
