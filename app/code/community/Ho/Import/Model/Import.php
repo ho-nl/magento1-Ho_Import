@@ -150,7 +150,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $this->_downloader();
 
-        if ($lines === '0') {
+        if (! $lines) {
             $lines = array(0);
         } else {
             $lines = $lines ? explode(',', $lines) : array();
