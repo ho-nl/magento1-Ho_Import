@@ -673,6 +673,8 @@ Download the image from a remote URL and place it in the `media/import` folder.
 <image helper="ho_import/import::getMediaImage">
     <imagefield field="cImagePad"/>
     <limit>1</limit>
+    <filename use="sku"/> <!-- optional, when the server doesn't give back readable image names -->
+    <extension value="jpg"/> <!-- optional, when the URL doesn't end in a filename -->
 </image>
 ```
 

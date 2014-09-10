@@ -381,19 +381,36 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    public function getMediaImage($line, $image, $limit = null)
+    public function getMediaImage($line, $image, $limit = null, $filename = null, $ext = null)
     {
         $images = (array) $this->_getMapper()->mapItem($image);
+        $filenameBase = $this->_getMapper()->mapItem($filename);
+        $ext = $this->_getMapper()->mapItem($filename);
+
         if ($limit) {
             $images = array_slice($images, 0, $limit);
         }
         foreach ($images as $key => $image) {
             $image = str_replace(' ', '%20', $image);
-            if (!is_file($this->_getUploader()->getTmpDir() . DS . basename($image))) {
-                $this->_copyExternalImageFile($image);
+            if ($ext = null) {
+                $ext = pathinfo($image, PATHINFO_EXTENSION);
             }
-            if (basename($image) !== $images[$key]) {
-                $images[$key] = '/'.basename($image);
+            if ($filenameBase !== null) {
+                if (count($images) > 1) {
+                    $filename = $filenameBase.'-'.($key+1).'.'.$ext;
+                } else {
+                    $filename = $filenameBase.'.'.$ext;
+                }
+            } else {
+                $filename = basename($image);
+            }
+
+            if (!is_file($this->_getUploader()->getTmpDir() . DS . $filename)) {
+                $this->_copyExternalImageFile($image, $filename, $ext);
+            }
+
+            if ($filename !== $images[$key]) {
+                $images[$key] = '/'.$filename;
             }
         }
         return $images;
@@ -440,7 +457,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @param string $url
      */
     protected $_fileCache = array();
-    protected function _copyExternalImageFile($url)
+    protected function _copyExternalImageFile($url, $filename = null)
     {
         if (isset($this->_fileCache[$url])) {
             return;
@@ -453,7 +470,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             if (!is_dir($dir)) {
                 mkdir($dir);
             }
-            $fileName = $dir . DS . basename($url);
+
+            $fileName = $dir . DS . (! is_null($filename) ? $filename : basename($url));
             $fileHandle = fopen($fileName, 'w+');
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
