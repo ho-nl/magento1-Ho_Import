@@ -375,7 +375,7 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
                         $aPositions[] = $iPos;
                     }
                 }
-                $minPos = min($aPositions);
+                $minPos = count($aPositions) > 0 ? min($aPositions) : false;
                 if ($minPos !== false && $minPos != 0) {
                     $sElementName = substr($element, 0, $minPos);
                     $endTag       = "</" . $sElementName . ">";
