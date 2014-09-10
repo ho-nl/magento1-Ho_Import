@@ -144,6 +144,9 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     public function mapLines($lines)
     {
+        if (! is_string($this->getProfile())) {
+            Mage::throwException($this->_getLog()->__("No profile specified"));
+        }
         if (!array_key_exists($this->getProfile(), $this->getProfiles())) {
             Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
         }
