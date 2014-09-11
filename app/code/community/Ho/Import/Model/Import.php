@@ -282,7 +282,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $model = Mage::getModel($downloader->getAttribute('model'));
         if (!$model) {
-            Mage::throwException($this->_getLog()->__("Trying to load %s, model not found %s", $downloader));
+            Mage::throwException($this->_getLog()->__("Trying to load %s, model not found", $downloader->getAttribute('model')));
         }
 
         if (!$model instanceof Ho_Import_Model_Downloader_Abstract) {
@@ -300,6 +300,8 @@ class Ho_Import_Model_Import extends Varien_Object
         try {
             $model->download($transport, $target);
         } catch (Exception $e) {
+            $this->_getLog()->log($this->_getLog()->__("Error while downloading external file (%s):", $downloader->getAttribute('model')), Zend_Log::ERR);
+            Mage::throwException($e->getMessage());
         }
     }
 

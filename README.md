@@ -203,7 +203,7 @@ Using a config path:
 
 
 ### Downloaders
-The only current supported downloader is HTTP. New downloaders can be easily created.
+The supported downloaders are HTTP and FTP.
 
 #### HTTP Example (:white_check_mark: Low Memory)
 ```XML
@@ -215,6 +215,16 @@ The only current supported downloader is HTTP. New downloaders can be easily cre
 </downloader>
 ```
 
+#### FTP Example (:white_check_mark: Low Memory)
+```XML
+<downloader model="ho_import/downloader_ftp">
+    <host>ftp.website.com</host>
+    <username>userr</username>
+    <password>supersecurepassword</password>
+    <file>httpdocs/file.xml</file> <!-- relative path from the login -->
+    <target>var/import/file.xml</target>
+</downloader>
+```
 
 ### Decompressors
 Decompress a file that has just been downloaded.
