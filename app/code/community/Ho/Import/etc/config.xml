@@ -26,7 +26,7 @@
 <config>
 	<modules>
 		<Ho_Import>
-			<version>0.5.1</version>
+			<version>1.5.0</version>
 		</Ho_Import>
 	</modules>
 	<global>
