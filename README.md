@@ -216,6 +216,17 @@ The only current supported downloader is HTTP. New downloaders can be easily cre
 ```
 
 
+### Decompressors
+Decompress a file that has just been downloaded.
+
+#### Zip Example (:white_check_mark: Low Memory)
+```XML
+<decompressor model="ho_import/decompressor_zip">
+    <source>var/import/Archief.zip</source>
+    <target>var/import/extracted</target>
+</decompressor>
+```
+
 #### Temporarily disable a download:
 ```XML
 <import_options>
