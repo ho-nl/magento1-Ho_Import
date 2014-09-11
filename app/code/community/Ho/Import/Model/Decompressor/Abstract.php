@@ -42,7 +42,7 @@ abstract class Ho_Import_Model_Decompressor_Abstract {
      *
      * @return $this
      */
-    protected function _log($message, $level = Zend_Log::DEBUG) {
+    protected function _log($message, $level = Zend_Log::INFO) {
         $this->_getLog()->log($message, $level);
         return $this;
     }

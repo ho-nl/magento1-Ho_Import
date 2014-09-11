@@ -30,6 +30,8 @@ class Ho_Import_Model_Decompressor_Zip extends Ho_Import_Model_Decompressor_Abst
         $source = $object->getSource();
         $target = $object->getTarget();
 
+        $this->_log($this->_getLog()->__("Decompressing file %s to %s", $source, $target));
+
         if (! $source || ! $target) {
             Mage::throwException($this->_getLog()->__("Source and target must me speficied (source: %s, target %s)", $source, $target));
         }
