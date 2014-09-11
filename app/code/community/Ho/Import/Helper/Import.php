@@ -385,14 +385,14 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     {
         $images = (array) $this->_getMapper()->mapItem($image);
         $filenameBase = $this->_getMapper()->mapItem($filename);
-        $ext = $this->_getMapper()->mapItem($filename);
+        $ext = $this->_getMapper()->mapItem($ext);
 
         if ($limit) {
             $images = array_slice($images, 0, $limit);
         }
         foreach ($images as $key => $image) {
             $image = str_replace(' ', '%20', $image);
-            if ($ext = null) {
+            if ($ext == null) {
                 $ext = pathinfo($image, PATHINFO_EXTENSION);
             }
             if ($filenameBase !== null) {
