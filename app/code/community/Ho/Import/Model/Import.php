@@ -495,6 +495,8 @@ class Ho_Import_Model_Import extends Varien_Object
         $mapper = $this->_getMapper();
         $mapper->setItem($item);
         $symbolForClearField = $this->_fastSimpleImport->getSymbolEmptyFields();
+        $profile = $this->getProfile();
+
 
         $allFieldConfig = $mapper->getFieldConfig();
         //Step 1: Get the values for the fields
@@ -523,12 +525,16 @@ class Ho_Import_Model_Import extends Varien_Object
         //Step 2: Flatten all the rows.
         $flattenedRows = array();
         foreach ($itemRows as $store => $storeData) {
-            foreach ($storeData as $storeRow) {
+            foreach ($storeData as $storeKey => $storeRow) {
                 $flatRow = array();
                 foreach ($allFieldConfig[$store] as $key => $column) {
                     if (isset($storeRow[$key]) && (strlen($storeRow[$key]))) {
                         $flatRow[$key] = (string)$storeRow[$key];
                     }
+                }
+
+                if ($store == 'admin' && $storeKey == 0) {
+                    $flatRow['ho_import_profile'] = $profile;
                 }
 
                 if ($flatRow) {

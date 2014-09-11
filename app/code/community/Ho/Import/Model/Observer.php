@@ -63,4 +63,49 @@ class Ho_Import_Model_Observer
 
         Mage::helper('ho_import/log')->log($name);
     }
+
+    
+    /**
+     * @event catalog_product_edit_action
+     * @param Varien_Event_Observer $observer
+     */
+    public function catalogProductEditAction(Varien_Event_Observer $observer) {
+        /** @var Mage_Catalog_Model_Product $product */
+        $product = $observer->getProduct();
+
+        // Is product assigned to import profile.
+        if (! ($profile = $product->getData('ho_import_profile'))){
+            return;
+        }
+
+        // Is lock attributes functionality enabled.
+        $lockAttributes = sprintf('global/ho_import/%s/import_options/lock_attributes', $profile);
+        $fieldMapNode = Mage::getConfig()->getNode($lockAttributes);
+        if (!$fieldMapNode || !$fieldMapNode->asArray()) {
+            return;
+        }
+
+        // Get the mapper.
+        /** @var Ho_Import_Model_Mapper $mapper */
+        $mapper = Mage::getModel('ho_import/mapper');
+        $mapper->setProfileName($profile);
+        $storeCode = $product->getStore()->getCode();
+
+        // Check if attributes need to be locked.
+        $attributes = $product->getAttributes();
+        foreach ($attributes as $attribute) {
+            /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attribute */
+            $mapper->setStoreCode($attribute->isScopeStore() || $attribute->isScopeWebsite() ? $storeCode :'admin');
+
+            $fieldConfig = $mapper->getFieldConfig($attribute->getAttributeCode());
+            if (isset($fieldConfig['@'])) {
+                $product->lockAttribute($attribute->getAttributeCode());
+                $note = $attribute->getNote() ? $attribute->getNote()."<br />\n" : '';
+
+                //scope global, website
+                $note .= Mage::helper('ho_import')->__("Automatically filled by import %s", '<code>'.$profile.'</code>');
+                $attribute->setNote($note);
+            }
+        }
+    }
 }
