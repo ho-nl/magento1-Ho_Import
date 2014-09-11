@@ -78,33 +78,36 @@ class Ho_Import_Model_Observer
             return;
         }
 
-        // Is lock attributes functionality enabled.
-        $lockAttributes = sprintf('global/ho_import/%s/import_options/lock_attributes', $profile);
-        $fieldMapNode = Mage::getConfig()->getNode($lockAttributes);
-        if (!$fieldMapNode || !$fieldMapNode->asArray()) {
-            return;
-        }
+        $profiles = explode(',',$profile);
+        foreach ($profiles as $profile) {
+            // Is lock attributes functionality enabled.
+            $lockAttributes = sprintf('global/ho_import/%s/import_options/lock_attributes', $profile);
+            $fieldMapNode = Mage::getConfig()->getNode($lockAttributes);
+            if (!$fieldMapNode || !$fieldMapNode->asArray()) {
+                continue;
+            }
 
-        // Get the mapper.
-        /** @var Ho_Import_Model_Mapper $mapper */
-        $mapper = Mage::getModel('ho_import/mapper');
-        $mapper->setProfileName($profile);
-        $storeCode = $product->getStore()->getCode();
+            // Get the mapper.
+            /** @var Ho_Import_Model_Mapper $mapper */
+            $mapper = Mage::getModel('ho_import/mapper');
+            $mapper->setProfileName($profile);
+            $storeCode = $product->getStore()->getCode();
 
-        // Check if attributes need to be locked.
-        $attributes = $product->getAttributes();
-        foreach ($attributes as $attribute) {
-            /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attribute */
-            $mapper->setStoreCode($attribute->isScopeStore() || $attribute->isScopeWebsite() ? $storeCode :'admin');
+            // Check if attributes need to be locked.
+            $attributes = $product->getAttributes();
+            foreach ($attributes as $attribute) {
+                /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attribute */
+                $mapper->setStoreCode($attribute->isScopeStore() || $attribute->isScopeWebsite() ? $storeCode :'admin');
 
-            $fieldConfig = $mapper->getFieldConfig($attribute->getAttributeCode());
-            if (isset($fieldConfig['@'])) {
-                $product->lockAttribute($attribute->getAttributeCode());
-                $note = $attribute->getNote() ? $attribute->getNote()."<br />\n" : '';
+                $fieldConfig = $mapper->getFieldConfig($attribute->getAttributeCode());
+                if (isset($fieldConfig['@'])) {
+                    $product->lockAttribute($attribute->getAttributeCode());
+                    $note = $attribute->getNote() ? $attribute->getNote()."<br />\n" : '';
 
-                //scope global, website
-                $note .= Mage::helper('ho_import')->__("Automatically filled by import %s", '<code>'.$profile.'</code>');
-                $attribute->setNote($note);
+                    //scope global, website
+                    $note .= Mage::helper('ho_import')->__("Automatically filled by import %s", '<code>'.$profile.'</code>');
+                    $attribute->setNote($note);
+                }
             }
         }
     }

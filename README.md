@@ -22,6 +22,10 @@ Example config for a customer import (this is added to the `<config><global><ho_
     <downloader model="ho_import/downloader_http">
         <url>http://google.nl/file.xml</url>
     </downloader>
+    <decompressor model="ho_import/decompressor_zip">
+        <source>var/import/Archief.zip</source>
+        <target>var/import/extracted</target>
+    </decompressor>
     <source model="ho_import/source_adapter_xml">
         <file>var/import/Klant.xml</file>
         <!--<rootNode>FMPDSORESULT</rootNode>-->
@@ -37,7 +41,7 @@ Example config for a customer import (this is added to the `<config><global><ho_
     </events>
     <fieldmap>
         <email field="Email"/>
-        <_website helper="ho_importjanselijn/import_customer::getWebsites"/>
+        <_website helper="ho_import/import::getAllWebsites"/>
         <group_id helper="ho_import/import::getFieldMap">
             <field field="Status"/>
             <mapping>
@@ -50,7 +54,7 @@ Example config for a customer import (this is added to the `<config><global><ho_
         <middlename field="Tussenvoegsel" />
         <lastname field="Achternaam" required="1"/>
         <company field="Bedrijfsnaam"/>
-        <created_in helper="ho_importjanselijn/import_customer::getCreatedIn"/>
+        <created_in value="old shop name"/>
         <taxvat field="BTWnummer" />
         <password field="cWachtWoord" />
         <gender helper="ho_import/import::getFieldMap">
@@ -64,6 +68,7 @@ Example config for a customer import (this is added to the `<config><global><ho_
     </fieldmap>
 </my_customer_import>
 ```
+
 ## Installation
 
 You can install the module via modman:
@@ -202,6 +207,60 @@ Using a config path:
 ```
 
 
+### Import Options
+
+All the options that are possible with the [AvS_FastSimpleImport][] are possible here as well:
+
+```XML
+<import_options>
+	<error_limit>10000</error_limit>
+    <continue_after_errors>1</continue_after_errors>
+    <ignore_duplicates>1</ignore_duplicates>
+    <allow_rename_files>0</allow_rename_files>
+    <partial_indexing>1</partial_indexing>
+    <skip_download>1</skip_download>
+    <lock_attributes>1</lock_attributes>
+    <dropdown_attributes>
+        <country>country</country>
+    </dropdown_attributes>
+    <multiselect_attributes>
+        <show_in_collection>show_in_collection</show_in_collection>
+        <condition>condition</condition>
+        <condition_label>condition_label</condition_label>
+    </multiselect_attributes>
+</import_options>
+```
+
+### Lock product attributes in backend
+When you enable this option, a store admin can't edit the attributes that are imported by the
+importer. Ho_Import is smart about this, it save the profile name with the product, so it only locks
+the attributes which are set by the current importer. It also knows about store view specific values
+imported.
+
+Exampe config:
+
+```XML
+<import_options>
+    <lock_attributes>1</lock_attributes>
+</import_options>
+```
+
+When importing the name of a product it shows the attribute is locked, but if you switch to a store
+view it isn't locked any more.
+
+![Lock Attributes](docs/images/lock_attributes.png)
+
+#### Multiple imports for the same product
+If you have multiple imports for the same product (product information and stock information for
+example), you have to define the profile associated with the product manually.
+
+In your `<fieldmap>` node, add the following:
+```XML
+<ho_import_profile value="profile_one,profile_two"/>
+```
+
+If you have only one profile with `lock_attributes` enabled, this field gets filled automatically.
+
 ### Downloaders
 The supported downloaders are HTTP and FTP.
 
@@ -240,7 +299,7 @@ Decompress a file that has just been downloaded.
 ```XML
 <decompressor model="ho_import/decompressor_zip">
     <source>var/import/Archief.zip</source>
-    <target>var/import/extracted</target>
+    <target>var/import/extracted</target> <!-- this is a folder, files inside the archive will be placed here -->
 </decompressor>
 ```
 
@@ -360,30 +419,6 @@ The current implementation isn't low memory because it executes the query and lo
 ```
 
 If your PDO driver doesn't support `pdoType` then simply remove that node. If you wish to pass more config parameters to the PDO driver then add more nodes like for PGSQL: `<sslmode>require</sslmode>`
-
-### Import Options
-
-All the options that are possible with the [AvS_FastSimpleImport][] are possible here as well:
-
-```XML
-<import_options>
-	<error_limit>10000</error_limit>
-    <continue_after_errors>1</continue_after_errors>
-    <ignore_duplicates>1</ignore_duplicates>
-    <allow_rename_files>0</allow_rename_files>
-    <partial_indexing>1</partial_indexing>
-    <dropdown_attributes>
-        <country>country</country>
-    </dropdown_attributes>
-    <multiselect_attributes>
-        <show_in_collection>show_in_collection</show_in_collection>
-        <condition>condition</condition>
-        <condition_label>condition_label</condition_label>
-    </multiselect_attributes>
-</import_options>
-```
-
-
 
 
 ### Events

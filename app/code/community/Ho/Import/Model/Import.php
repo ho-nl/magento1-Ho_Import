@@ -578,7 +578,7 @@ class Ho_Import_Model_Import extends Varien_Object
                     }
                 }
 
-                if ($store == 'admin' && $storeKey == 0) {
+                if ($store == 'admin' && $storeKey == 0 && !isset($flatRow['ho_import_profile'])) {
                     $flatRow['ho_import_profile'] = $profile;
                 }
 
