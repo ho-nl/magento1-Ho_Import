@@ -226,6 +226,13 @@ The supported downloaders are HTTP and FTP.
 </downloader>
 ```
 
+#### Temporarily disable a download:
+```XML
+<import_options>
+	<skip_download>1</skip_download>
+</import_options>
+```
+
 ### Decompressors
 Decompress a file that has just been downloaded.
 
@@ -235,13 +242,6 @@ Decompress a file that has just been downloaded.
     <source>var/import/Archief.zip</source>
     <target>var/import/extracted</target>
 </decompressor>
-```
-
-#### Temporarily disable a download:
-```XML
-<import_options>
-	<skip_download>1</skip_download>
-</import_options>
 ```
 
 ### Sources
@@ -382,6 +382,9 @@ All the options that are possible with the [AvS_FastSimpleImport][] are possible
     </multiselect_attributes>
 </import_options>
 ```
+
+
+
 
 ### Events
 All events work with a transport object which holds the data for that line. This a `Varien_Object`
