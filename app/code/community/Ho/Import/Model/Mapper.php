@@ -218,7 +218,7 @@ class Ho_Import_Model_Mapper
             $result = $attributes['defaultvalue'];
         }
 
-        return $result;
+        return is_array($result) ? array_values($result) : $result;
     }
 
 
