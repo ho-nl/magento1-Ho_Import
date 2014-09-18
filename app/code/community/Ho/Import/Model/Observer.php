@@ -101,11 +101,13 @@ class Ho_Import_Model_Observer
 
                 $fieldConfig = $mapper->getFieldConfig($attribute->getAttributeCode());
                 if (isset($fieldConfig['@'])) {
-                    $product->lockAttribute($attribute->getAttributeCode());
-                    $note = $attribute->getNote() ? $attribute->getNote()."<br />\n" : '';
+                    $note = $attribute->getNote() ? $attribute->getNote() : '';
 
                     //scope global, website
-                    $note .= Mage::helper('ho_import')->__("Automatically filled by import %s", '<code>'.$profile.'</code>');
+                    if (! $product->isLockedAttribute($attribute->getAttributeCode())) {
+                        $note .= Mage::helper('ho_import')->__("Locked by Ho_Import");
+                    }
+                    $product->lockAttribute($attribute->getAttributeCode());
                     $attribute->setNote($note);
                 }
             }
