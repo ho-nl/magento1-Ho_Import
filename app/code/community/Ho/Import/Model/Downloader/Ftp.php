@@ -27,16 +27,22 @@ class Ho_Import_Model_Downloader_Ftp extends Ho_Import_Model_Downloader_Abstract
 
         $file = $connectionInfo->getFile();
 
-        $this->_log($this->_getLog()->__("Downloading file %s from %s, to %s", $connectionInfo->getFile(), $connectionInfo->getHost(), $target));
+        $this->_log($this->_getLog()->__("Connecting to FTP server %s", $connectionInfo->getHost()));
 
         $ftp = new Varien_Io_Ftp();
         $ftp->open(array(
-            'host' => $connectionInfo->getHost(),
-            'user' => $connectionInfo->getUsername(),
-            'password' => $connectionInfo->getPassword()
+            'host'     => $connectionInfo->getHost(),
+            'user'     => $connectionInfo->getUsername(),
+            'password' => $connectionInfo->getPassword(),
+            'timeout'  => $connectionInfo->hasTimeout() ? $connectionInfo->getTimeout() : 10,
+            'passive'  => $connectionInfo->hasPassive() ? $connectionInfo->getPassive() : true,
+            'ssl'      => $connectionInfo->hasSsl() ? $connectionInfo->getSsl() : null,
+            'file_mode'      => $connectionInfo->hasFileMode() ? $connectionInfo->getFileMode() : null,
         ));
 
-        $targetPath = $this->_getTargetPath(dirname($target), basename($file));
+        $this->_log($this->_getLog()->__("Downloading file %s from %s, to %s", $connectionInfo->getFile(), $connectionInfo->getHost(), $target));
+
+        $targetPath = $this->_getTargetPath($target, basename($file));
         $ftp->read($file, $targetPath);
         $ftp->close();
     }

@@ -280,8 +280,12 @@ The supported downloaders are HTTP and FTP.
     <host>ftp.website.com</host>
     <username>userr</username>
     <password>supersecurepassword</password>
-    <file>httpdocs/file.xml</file> <!-- relative path from the login -->
-    <target>var/import/file.xml</target>
+    <file>httpdocs/file.xml</file> <!-- Relative path on the server, relative from the login -->
+    <target>var/import/file.xml</target> <!-- Path relative from the Magento root -->
+    <timeout>10</timeout> <!-- Optional: How long should we wait to connect -->
+    <passive>0</passive> <!-- Optional: FTP transfer mode, by default it is set to passive, usually correct -->
+    <ssl>1</ssl> <!-- Optional: For FTP with implicit SSL, this is NOT SFTP, which is FTP over SSH -->
+    <file_mode>1</file_mode><!-- Optional: For FTP_ASCII or FTP_TEXT set value to 1, for FTP_BINARY or FTP_IMAGE leave empty.
 </downloader>
 ```
 
