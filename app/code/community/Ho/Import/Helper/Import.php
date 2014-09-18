@@ -306,6 +306,27 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $parts;
     }
 
+
+    /**
+     * @param $line
+     * @param $field
+     * @param $limit
+     *
+     * @return array
+     */
+    public function getFieldLimit($line, $field, $limit = null, $offset = null) {
+        $values = $this->_getMapper()->mapItem($field);
+        $limit = $this->_getMapper()->mapItem($limit);
+        $offset = $this->_getMapper()->mapItem($offset) ?: 0;
+
+        if (! is_array($values)) {
+            $values = array($values);
+        }
+
+        return array_slice($values, $offset, $limit);
+    }
+
+
     /**
      * Map fields
      *

@@ -666,6 +666,19 @@ to call a helper, value, field, iffieldvalue, etc.
 </_address_prefix>
 ```
 
+
+#### getFieldLimit
+Implements [array_slice](http://us.php.net/array_slice).
+
+```XML
+<image helper="ho_import/import::getFieldLimit">
+    <field use="_media_image"/>
+    <limit value="1"/> <!-- optional -->
+    <offset value="1"/> <!-- optional -->
+</image>
+```
+
+
 #### getFieldCombine
 Get multiple fields and glue them together
 
