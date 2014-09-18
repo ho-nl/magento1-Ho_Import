@@ -715,7 +715,7 @@ to check multiple fields.
 </billing_first_name>
 ```
 
-#### getMediaAttributeId
+#### getMediaAttributeId (@deprecated in 1.5, use getAttributeId)
 Usually used in combination with a counter to set the correct getMediaAttributeId
 
 ```XML
@@ -724,6 +724,17 @@ Usually used in combination with a counter to set the correct getMediaAttributeI
     <fieldvalue helper="ho_import/import::getMediaAttributeId"/>
 </_media_attribute_id>
 ```
+
+
+#### getAttributeId
+Get an attribute's ID.
+
+```XML
+<field helper="ho_import/import::getAttributeId">
+    <attribute value="media_gallery"/>
+</field>
+```
+
 
 #### getMediaImage
 Download the image from a remote URL and place it in the `media/import` folder.

@@ -370,20 +370,30 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    protected $_mediaAttributeId = null;
-    public function getMediaAttributeId($line, $countField)
-    {
-        if ($this->_mediaAttributeId === null) {
-            $this->_mediaAttributeId = Mage::getSingleton('catalog/product')->getResource()
-                ->getAttribute('media_gallery')->getId();
+    public function getMediaAttributeId($line) {
+        return $this->getMediaAttributeId('media_gallery');
+    }
+
+
+    protected $_attributeMapping = array();
+    public function getAttributeId($line, $attribute) {
+        $attributeCode = is_string($attribute)
+            ? $attribute : $this->_getMapper()->mapItem($attribute);
+
+        if (! isset($this->_attributeMapping[$attributeCode])) {
+
+            $this->_attributeMapping[$attributeCode] =
+                Mage::getSingleton('catalog/product')->getResource()
+                            ->getAttribute($attributeCode)->getId();
         }
-        return $this->_mediaAttributeId;
+        return $this->_attributeMapping[$attributeCode];
     }
 
 
     public function getMediaImage($line, $image, $limit = null, $filename = null, $ext = null)
     {
         $images = (array) $this->_getMapper()->mapItem($image);
+        $images = array_filter($images);
         $filenameBase = $this->_getMapper()->mapItem($filename);
         $ext = $this->_getMapper()->mapItem($ext);
 
@@ -413,7 +423,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
                 $images[$key] = '/'.$filename;
             }
         }
-        return $images;
+
+        return array_values($images);
     }
 
 
