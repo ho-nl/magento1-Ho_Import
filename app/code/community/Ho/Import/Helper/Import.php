@@ -354,6 +354,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $values;
     }
 
+
     /**
      * Count another field an give it or a list or a value.
      * @param      $line
@@ -368,10 +369,11 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         $value = $this->_getMapper()->mapItem($valueConfig);
         $values = array();
         for ($i = 0; $i < $count; $i++) {
-            $values[] = $value ? $value : $i;
+            $values[] = is_null($value) ? $i : $value;
         }
         return $values;
     }
+
 
     public function ifFieldsValue($line, $fields, $valueField) {
         $values = $this->getFieldMultiple($line, $fields);
