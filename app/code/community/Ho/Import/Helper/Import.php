@@ -142,7 +142,12 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return string
      */
     public function formatField($line, $format, $fields) {
-        $values = array_map(array($this->_getMapper(), 'mapItem'), $fields);
+        $values = array();
+        foreach ($fields as $key => $field) {
+            $value = $this->_getMapper()->mapItem($field);
+            $values[$key] = is_array($value) ? reset($value) : $value;
+        }
+
         $result = vsprintf($format, $values);
         return $result;
     }
