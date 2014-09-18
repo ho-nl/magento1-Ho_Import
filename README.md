@@ -237,6 +237,8 @@ importer. Ho_Import is smart about this, it save the profile name with the produ
 the attributes which are set by the current importer. It also knows about store view specific values
 imported.
 
+
+
 Exampe config:
 
 ```XML
@@ -245,10 +247,13 @@ Exampe config:
 </import_options>
 ```
 
-When importing the name of a product it shows the attribute is locked, but if you switch to a store
-view it isn't locked any more.
-
+When importing the name of a product it shows the attribute is locked
 ![Lock Attributes](docs/images/lock_attributes.png)
+
+
+If you switch to a store view you can override the field:
+![Lock Attributes](docs/images/lock_attributes2.png)
+
 
 #### Multiple imports for the same product
 If you have multiple imports for the same product (product information and stock information for
