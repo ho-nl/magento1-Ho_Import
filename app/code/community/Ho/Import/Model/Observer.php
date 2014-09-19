@@ -14,7 +14,7 @@
  *
  * @category    Ho
  * @package     Ho_Import
- * @copyright   Copyright © 2013 H&O (http://www.h-o.nl/)
+ * @copyright   Copyright © 2014 H&O (http://www.h-o.nl/)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  * @author      Paul Hachmang – H&O <info@h-o.nl>
  *
@@ -62,5 +62,55 @@ class Ho_Import_Model_Observer
         $name = ucfirst(str_replace('_',' ',$name)).'...';
 
         Mage::helper('ho_import/log')->log($name);
+    }
+
+    
+    /**
+     * @event catalog_product_edit_action
+     * @param Varien_Event_Observer $observer
+     */
+    public function catalogProductEditAction(Varien_Event_Observer $observer) {
+        /** @var Mage_Catalog_Model_Product $product */
+        $product = $observer->getProduct();
+
+        // Is product assigned to import profile.
+        if (! ($profile = $product->getData('ho_import_profile'))){
+            return;
+        }
+
+        $profiles = explode(',',$profile);
+        foreach ($profiles as $profile) {
+            // Is lock attributes functionality enabled.
+            $lockAttributes = sprintf('global/ho_import/%s/import_options/lock_attributes', $profile);
+            $fieldMapNode = Mage::getConfig()->getNode($lockAttributes);
+            if (!$fieldMapNode || !$fieldMapNode->asArray()) {
+                continue;
+            }
+
+            // Get the mapper.
+            /** @var Ho_Import_Model_Mapper $mapper */
+            $mapper = Mage::getModel('ho_import/mapper');
+            $mapper->setProfileName($profile);
+            $storeCode = $product->getStore()->getCode();
+
+            // Check if attributes need to be locked.
+            $attributes = $product->getAttributes();
+            foreach ($attributes as $attribute) {
+                /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attribute */
+                $mapper->setStoreCode($attribute->isScopeStore() || $attribute->isScopeWebsite() ? $storeCode :'admin');
+
+                $fieldConfig = $mapper->getFieldConfig($attribute->getAttributeCode());
+                if (isset($fieldConfig['@'])) {
+                    $note = $attribute->getNote() ? $attribute->getNote() : '';
+
+                    //scope global, website
+                    if (! $product->isLockedAttribute($attribute->getAttributeCode())) {
+                        $note .= Mage::helper('ho_import')->__("Locked by Ho_Import");
+                    }
+                    $product->lockAttribute($attribute->getAttributeCode());
+                    $attribute->setNote($note);
+                }
+            }
+        }
     }
 }

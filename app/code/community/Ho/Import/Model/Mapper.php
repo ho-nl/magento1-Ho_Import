@@ -14,7 +14,7 @@
  *
  * @category    Ho
  * @package     Ho_Import
- * @copyright   Copyright © 2013 H&O (http://www.h-o.nl/)
+ * @copyright   Copyright © 2014 H&O (http://www.h-o.nl/)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  * @author      Paul Hachmang – H&O <info@h-o.nl>
  */
@@ -218,7 +218,7 @@ class Ho_Import_Model_Mapper
             $result = $attributes['defaultvalue'];
         }
 
-        return $result;
+        return is_array($result) ? array_values($result) : $result;
     }
 
 
@@ -278,7 +278,7 @@ class Ho_Import_Model_Mapper
 
         if (! is_null($fieldName)) {
             if (! isset($this->_fieldConfig[$fieldMapPath][$this->getStoreCode()][$fieldName])) {
-
+                return null;
             }
             return $this->_fieldConfig[$fieldMapPath][$this->getStoreCode()][$fieldName];
         }

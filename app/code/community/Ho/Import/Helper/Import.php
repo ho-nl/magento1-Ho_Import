@@ -142,7 +142,12 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return string
      */
     public function formatField($line, $format, $fields) {
-        $values = array_map(array($this->_getMapper(), 'mapItem'), $fields);
+        $values = array();
+        foreach ($fields as $key => $field) {
+            $value = $this->_getMapper()->mapItem($field);
+            $values[$key] = is_array($value) ? reset($value) : $value;
+        }
+
         $result = vsprintf($format, $values);
         return $result;
     }
@@ -301,6 +306,27 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return $parts;
     }
 
+
+    /**
+     * @param $line
+     * @param $field
+     * @param $limit
+     *
+     * @return array
+     */
+    public function getFieldLimit($line, $field, $limit = null, $offset = null) {
+        $values = $this->_getMapper()->mapItem($field);
+        $limit = $this->_getMapper()->mapItem($limit);
+        $offset = $this->_getMapper()->mapItem($offset) ?: 0;
+
+        if (! is_array($values)) {
+            $values = array($values);
+        }
+
+        return array_slice($values, $offset, $limit);
+    }
+
+
     /**
      * Map fields
      *
@@ -312,18 +338,22 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      */
     public function getFieldMap($line, $field, $mapping) {
         $values = $this->_getMapper()->mapItem($field);
-        if (! is_array($values)) { $values = array($values); }
+        if (! is_array($values)) {
+            $values = array($values);
+        }
 
         foreach ($values as $key => $value) {
             foreach($mapping as $map) {
-                if ($map['@']['from'] == $value) {
-                    $values[$key] = $map['@']['to'];
+                $from = html_entity_decode($map['@']['from']);
+                if ($from == $value) {
+                    $values[$key] = htmlspecialchars_decode($map['@']['to']);
                 }
             }
         }
 
         return $values;
     }
+
 
     /**
      * Count another field an give it or a list or a value.
@@ -339,10 +369,11 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         $value = $this->_getMapper()->mapItem($valueConfig);
         $values = array();
         for ($i = 0; $i < $count; $i++) {
-            $values[] = $value ? $value : $i;
+            $values[] = is_null($value) ? $i : $value;
         }
         return $values;
     }
+
 
     public function ifFieldsValue($line, $fields, $valueField) {
         $values = $this->getFieldMultiple($line, $fields);
@@ -370,20 +401,30 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    protected $_mediaAttributeId = null;
-    public function getMediaAttributeId($line, $countField)
-    {
-        if ($this->_mediaAttributeId === null) {
-            $this->_mediaAttributeId = Mage::getSingleton('catalog/product')->getResource()
-                ->getAttribute('media_gallery')->getId();
+    public function getMediaAttributeId($line) {
+        return $this->getMediaAttributeId('media_gallery');
+    }
+
+
+    protected $_attributeMapping = array();
+    public function getAttributeId($line, $attribute) {
+        $attributeCode = is_string($attribute)
+            ? $attribute : $this->_getMapper()->mapItem($attribute);
+
+        if (! isset($this->_attributeMapping[$attributeCode])) {
+
+            $this->_attributeMapping[$attributeCode] =
+                Mage::getSingleton('catalog/product')->getResource()
+                            ->getAttribute($attributeCode)->getId();
         }
-        return $this->_mediaAttributeId;
+        return $this->_attributeMapping[$attributeCode];
     }
 
 
     public function getMediaImage($line, $image, $limit = null, $filename = null, $ext = null)
     {
         $images = (array) $this->_getMapper()->mapItem($image);
+        $images = array_filter($images);
         $filenameBase = $this->_getMapper()->mapItem($filename);
         $ext = $this->_getMapper()->mapItem($ext);
 
@@ -413,7 +454,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
                 $images[$key] = '/'.$filename;
             }
         }
-        return $images;
+
+        return array_values($images);
     }
 
 

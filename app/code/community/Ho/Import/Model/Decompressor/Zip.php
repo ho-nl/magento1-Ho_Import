@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Ho_Import
  *
@@ -18,25 +17,28 @@
  * @copyright   Copyright © 2014 H&O (http://www.h-o.nl/)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  * @author      Paul Hachmang – H&O <info@h-o.nl>
- *
- *
  */
-class Ho_Import_Helper_Data extends Mage_Core_Helper_Abstract
-{
+ 
+class Ho_Import_Model_Decompressor_Zip extends Ho_Import_Model_Decompressor_Abstract {
+
     /**
-     * Convert strings with underscores into CamelCase
-     *
-     * @param string $string
-     * @param bool   $first_char_caps
-     *
+     * Extract a file
+     * @param Varien_Object $object
      * @return mixed
      */
-    public function underscoreToCamelCase($string, $first_char_caps = FALSE)
-    {
-        if ($first_char_caps == TRUE) {
-            $string[0] = strtoupper($string[0]);
+    public function decompress(Varien_Object $object) {
+        $source = $object->getSource();
+        $target = $object->getTarget();
+
+        $this->_log($this->_getLog()->__("Decompressing file %s to %s", $source, $target));
+
+        if (! $source || ! $target) {
+            Mage::throwException($this->_getLog()->__("Source and target must me speficied (source: %s, target %s)", $source, $target));
         }
-        $func = create_function('$c', 'return strtoupper($c[1]);');
-        return preg_replace_callback('/_([a-z])/', $func, $string);
+
+        $zip = new ZipArchive;
+        $zip->open($this->_getFilePath(dirname($source), basename($source)));
+        $zip->extractTo($this->_getFilePath(dirname($target), basename($target)));
+        $zip->close();
     }
 }

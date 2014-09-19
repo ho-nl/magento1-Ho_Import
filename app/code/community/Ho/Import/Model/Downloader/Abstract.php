@@ -31,7 +31,7 @@ abstract class Ho_Import_Model_Downloader_Abstract {
      *
      * @return mixed
      */
-    abstract function download($connectionInfo, $target);
+    abstract function download(Varien_Object $connectionInfo, $target);
 
 
     protected function _getTargetPath($folder, $filename) {

@@ -15,7 +15,7 @@
  *
  * @category    Ho
  * @package     Ho_Import
- * @copyright   Copyright © 2013 H&O (http://www.h-o.nl/)
+ * @copyright   Copyright © 2014 H&O (http://www.h-o.nl/)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  * @author      Paul Hachmang – H&O <info@h-o.nl>
  *
@@ -26,7 +26,7 @@
 <config>
 	<modules>
 		<Ho_Import>
-			<version>0.5.0</version>
+			<version>1.5.0</version>
 		</Ho_Import>
 	</modules>
 	<global>
@@ -57,11 +57,21 @@
         <resources>
             <ho_import_setup>
                 <setup>
-                    <module>Mage_Eav_Model_Entity_Setup</module>
+                    <module>Ho_Import</module>
+                    <class>Mage_Catalog_Model_Resource_Setup</class>
                 </setup>
             </ho_import_setup>
         </resources>
 		<events>
+            <catalog_product_edit_action>
+                <observers>
+                    <ho_import_catalog_product_edit_action>
+                        <type>singleton</type>
+                        <class>Ho_Import_Model_Observer</class>
+                        <method>catalogProductEditAction</method>
+                    </ho_import_catalog_product_edit_action>
+                </observers>
+            </catalog_product_edit_action>
             <fastsimpleimport_reindex_products_before>
                 <observers>
                     <ho_import_fastsimpleimport_reindex_products_before>
