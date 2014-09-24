@@ -782,6 +782,13 @@ Parse a timestamp and output in the Magento running format, just specify in whic
 </news_to_date>
 ```
 
+#### getCurrentDate
+Returns the current date
+
+```XML
+<news_from_date helper="ho_import/import::getCurrentDate">
+```
+
 #### Product: getUrlKey
 ```XML
 <url_key helper="ho_import/import_product::getUrlKey">
@@ -791,6 +798,29 @@ Parse a timestamp and output in the Magento running format, just specify in whic
     <glue>-</glue>
 </url_key>
 ```
+
+#### getSpecialFromDate
+Give the price and the special_price and it returns the current date if the special_price is lower that the price (and not empty).
+
+```XML
+<special_from_date helper="ho_import/import_product::getSpecialFromDate">
+    <price use="price"/>
+    <special_price use="special_price"/>
+</special_from_date>
+```
+
+#### getSpecialPrice
+Give the price and the special_price and it returns the special_price if the special_price is lower that the price (and not empty).
+
+```XML
+<special_price helper="ho_import/import_product::getSpecialPrice">
+    <price use="price"/>
+    <special_price field="special_price"/>
+</special_price>
+```
+
+
+#### getSpecialPrice
 
 #### Category: getUrlKey
 ```XML

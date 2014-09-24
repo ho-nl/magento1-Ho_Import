@@ -37,4 +37,33 @@ class Ho_Import_Helper_Import_Product extends Ho_Import_Helper_Import
         $string = Mage::helper('ho_import/import')->getFieldCombine($line, $fields, $glue, $suffix);
         return Mage::getSingleton('catalog/category')->formatUrlKey($string).$suffix;
     }
+
+
+    /**
+     * @param $line
+     * @param $price
+     * @param $specialPrice
+     *
+     * @return bool|null|string
+     */
+    public function getSpecialFromDate($line, $price, $specialPrice) {
+        $price = (float) $this->_getMapper()->mapItem($price);
+        $specialPrice = (float) $this->_getMapper()->mapItem($specialPrice);
+        if (! $specialPrice) {
+            return null;
+        }
+
+        return $specialPrice < $price ? $this->getCurrentDate($line) : null;
+    }
+
+
+    public function getSpecialPrice($line, $price, $specialPrice) {
+        $price = (float) $this->_getMapper()->mapItem($price);
+        $specialPrice = (float) $this->_getMapper()->mapItem($specialPrice);
+        if (! $specialPrice) {
+            return null;
+        }
+
+        return $specialPrice < $price ? $specialPrice : null;
+    }
 }

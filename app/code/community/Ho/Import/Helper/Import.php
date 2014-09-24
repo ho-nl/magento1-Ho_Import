@@ -468,6 +468,15 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return array_values($images);
     }
 
+    public function getCurrentDate($line) {
+        if ($this->_today === null) {
+            $currentTimestamp = Mage::getSingleton('core/date')->timestamp(time());
+            $this->_today = date('d-m-Y', $currentTimestamp);
+        }
+
+        return $this->_today;
+    }
+
 
     public function timestampToDate($line, $field, $timezoneFrom = null, $offset = null) {
         $values = $this->_getMapper()->mapItem($field);
