@@ -98,7 +98,6 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
-            $import->setDryrun($this->getArg('dryrun'));
             $import->process();
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
@@ -115,13 +114,10 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
         $profiles = implode("    ",array_keys($import->getProfiles()));
 
    		return "\n\t-profile profile_name             Available profiles:    {$profiles}"
-              ."\n\t-partial_indexing 1               When done importing will the imported products be indexed or will the whole system be indexed"
-              ."\n\t-continue_after_errors 1          If encountered an error, will we continue, sometimes one row is corrupt, but the rest is fine"
-              ."\n\t-dropdown_attributes attr1,attr2  Comma separated list of dropdownattributes that are autofilled when importing."
-              ."\n\t-rename_files 0                   Normally, when importing, images are renamed if an image exists. Set this to 0 to overwrite images"
-              ."\n\t-dryrun 1                         Run a dryrun, validate all data agains the Magento validator but do not import anything"
-              ."\n\t-ignore_duplicates 1              Ignore duplicates.;"
-              ."\n\t-error_limit 10000                Set the error limit, default=100 error lines.;";
+              ."\n\t-skip_download 1                  Skip the download"
+              ."\n\t-skip_decompress 1                Skip the decompressing of files"
+              ."\n\t-dryrun 1                         Validate all data agains the Magento validator, but do not import anything"
+              ."\n";
    	}
 
 
@@ -153,8 +149,11 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
         $profiles = implode("    ",array_keys($import->getProfiles()));
 
    		return "\n\t-profile profile_name             Available profiles:    {$profiles}"
+              ."\n\t-skip_download 1                  Skip the download"
+              ."\n\t-skip_decompress 1                Skip the decompressing of the downloaded file"
               ."\n\t-line 1,2,3                       Commaseparated list of lines to be checked"
-              ."\n\t-search sku=abd                   Alternatively you can search for a value of a field";
+              ."\n\t-search sku=abd                   Search for the value of a field."
+              ."\n";
    	}
 
 
@@ -172,7 +171,6 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
-            $import->setDryrun($this->getArg('dryrun'));
             $import->importCsv();
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
@@ -190,13 +188,8 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 
    		return "\n\tDebug method: doesn't fieldmap, only imports the current csv"
    		      ."\n\t-profile profile_name             Available profiles:    {$profiles}"
-              ."\n\t-partial_indexing 1               When done importing will the imported products be indexed or will the whole system be indexed"
-              ."\n\t-continue_after_errors 1          If encountered an error, will we continue, sometimes one row is corrupt, but the rest is fine"
-              ."\n\t-dropdown_attributes attr1,attr2  Comma separated list of dropdownattributes that are autofilled when importing."
-              ."\n\t-rename_files 0                   Normally, when importing, images are renamed if an image exists. Set this to 0 to overwrite images"
-              ."\n\t-dryrun 1                         Run a dryrun, validate all data agains the Magento validator but do not import anything"
-              ."\n\t-ignore_duplicates 1              Ignore duplicates.;"
-              ."\n\t-error_limit 10000                Set the error limit, default=100 error lines.;";
+              ."\n\t-dryrun 1                         Validate all data agains the Magento validator, but do not import anything"
+              ."\n";
    	}
 }
 

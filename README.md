@@ -858,22 +858,28 @@ The importer comes with a shell utiliy where you'll be spending most of your tim
 ### line
 ```
 php hoimport.php  -action line
-	-profile profile_name             Available profiles:    janselijn_customers
-	-line 1,2,3                       Comma separated list of lines to be checked
-	-search sku=abd                   Alternatively you can search for a value of a field
+	-profile profile_name             Available profiles:    [list of profiles]
+	-skip_download 1                  Skip the download
+	-skip_decompress 1                Skip the decompressing of the downloaded file
+	-line 1,2,3                       Commaseparated list of lines to be checked
+	-search sku=abd                   Search for the value of a field.
 ```
 
 ### import
 ```
 php hoimport.php -action import
-	-profile profile_name             Available profiles:    janselijn_customers
-	-partial_indexing 1               When done importing will the imported products be indexed or will the whole system be indexed
-	-continue_after_errors 1          If encountered an error, will we continue, sometimes one row is corrupt, but the rest is fine
-	-dropdown_attributes attr1,attr2  Comma separated list of dropdownattributes that are autofilled when importing.
-	-rename_files 0                   Normally, when importing, images are renamed if an image exists. Set this to 0 to overwrite images
-	-dryrun 1                         Run a dryrun, validate all data agains the Magento validator but do not import anything
-	-ignore_duplicates 1              Ignore duplicates.;
-	-error_limit 10000                Set the error limit, default=100 error lines.;
+	-profile profile_name             Available profiles:    [list of profiles]
+	-skip_download 1                  Skip the download
+	-skip_decompress 1                Skip the decompressing of files
+	-dryrun 1                         Validate all data agains the Magento validator, but do not import anything
+```
+
+### importCsv
+```
+php hoimport.php -action csv
+	Debug method: doesn't fieldmap, only imports the current csv
+	-profile profile_name             Available profiles:    [list of profiles]
+	-dryrun 1                         Validate all data agains the Magento validator, but do not import anything
 ```
 
 ## Logging
