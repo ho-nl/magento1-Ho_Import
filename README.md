@@ -934,6 +934,7 @@ and admin panel message will be added.
 
 ## Use cases
 At the time of release we have this tool running for multiple clients, multiple types of imports:
+- Multiple sources per product [Example config](docs/imports/product_multiple_sources.xml)
 - One time product / category imports from an old datasource [Example config](docs/imports/old_products.xml)
 - Periodic category import with values for multiple store views [Example config](docs/imports/categories_with_store_view_data.xml)
 - 15 minute inventory only updates

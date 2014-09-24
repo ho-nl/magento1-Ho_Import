@@ -1,0 +1,381 @@
+<!-- First source file has the most basic information, download that -->
+<!-- The second source file has all the images, video's, downloads, etc. -->
+<!-- The third source has the product discriptions. Also reindex everything after that has been run -->
+
+<config>
+	<global>
+		<!-- ... -->
+        <ho_import>
+            <shopconnect_products>
+                <entity_type>catalog_product</entity_type>
+                <downloader model="ho_import/downloader_ftp">
+                    <host>server.com</host>
+                    <username>shopdirect.nl</username>
+                    <password>1234mostsecurepasswordintheworld</password>
+                    <file>CAT_NL.zip</file>
+                    <target>var/import</target>
+                </downloader>
+                <decompressor model="ho_import/decompressor_zip">
+                    <source>var/import/CAT_NL.zip</source>
+                    <target>var/import/CAT_NL</target>
+                </decompressor>
+                <source model="ho_import/source_adapter_xml">
+                    <file>var/import/CAT_NL/CAT_NL.txt</file>
+                    <rootNode>PRODUCT_ENV</rootNode>
+                    <childNode>PRODUCTLINE</childNode>
+                </source>
+                <import_options>
+                    <!--<continue_after_errors>1</continue_after_errors>-->
+                    <!--<ignore_duplicates>1</ignore_duplicates>-->
+                    <!--<partial_indexing>1</partial_indexing>-->
+                    <dropdown_attributes>
+                        <country>brand</country>
+                        <category_major>category_major</category_major>
+                        <category_minor>category_minor</category_minor>
+                        <category_sub>category_sub</category_sub>
+                    </dropdown_attributes>
+                    <lock_attributes>1</lock_attributes>
+                </import_options>
+                <fieldmap>
+                    <ho_import_profile value="shopconnect_products,shopconnect_media,shopconnect_descriptions"/>
+                    <sku field="ProductNumber"/>
+                    <!--<_store/> field is never required, store configuration is per field -->
+                    <_attribute_set value="Default" />
+                    <_type value="simple"/> <!-- simple, grouped, bundle, configurable, downloadable, virtual. -->
+                    <!--<_category helper="ho_importinktweb/product::getCategories"/>-->
+                    <!--<_root_category value="2"/>-->
+                    <_product_websites helper="ho_import/import::getAllWebsites"><limit>1</limit></_product_websites>
+
+                <!-- GENERAL PRODUCT INFORMATION -->
+                    <name helper="ho_import/import::formatField">
+                        <format>%s %s (%s)</format>
+                        <fields>
+                            <brand use="brand"/>
+                            <name field="ProductDescription"/>
+                            <number use="sku"/>
+                        </fields>
+                    </name>
+
+                    <short_description />
+                    <description />
+                    <status value="1"/>
+                    <url_key helper="ho_import/import_product::getUrlKey">
+                        <fields>
+                            <name use="name"/>
+                        </fields>
+                        <glue>-</glue>
+                    </url_key>
+                    <!--<url_path /> not required-->
+                    <visibility value="4"/>
+                    <weight />
+
+                    <!--<news_from_date />-->
+                    <!--<news_to_date />-->
+
+                    <!--<meta_description />-->
+                    <!--<meta_keyword />-->
+                    <!--<meta_title/>-->
+
+                    <!--<gift_message_available value=""/> It is possible in the backend to check the 'Use Config Settings' option. If you want to check this value, we need to make sure no value is set for the gift message -->
+                    <!--<enable_googlecheckout value="1" />-->
+
+                <!-- PRICES -->
+                    <price helper="ho_shopconnect/import::priceCent">
+                        <cent field="Price/Gross"/>
+                    </price>
+                    <cost helper="ho_shopconnect/import::priceCent">
+                        <cent field="Price/Net"/>
+                    </cost>
+                    <!--<minimal_price/> NOT REQUIRED -->
+
+                    <!--<special_from_date />-->
+                    <!--<special_to_date />-->
+                    <!--<special_price />-->
+
+                    <msrp />
+                    <!--<msrp_display_actual_price_type/>-->
+                    <!--<msrp_enabled/>-->
+                    <tax_class_id value="2" />
+
+                    <!-- TIER PRICES -->
+                    <!--<_tier_price_website/>-->
+                    <!--<_tier_price_customer_group/>-->
+                    <!--<_tier_price_qty/>-->
+                    <!--<_tier_price_price/>-->
+
+                    <!-- GROUP PRICES -->
+                    <!--<_group_price_website/>-->
+                    <!--<_group_price_customer_group/>-->
+                    <!--<_group_price_price/>-->
+
+                <!-- INVENTORY -->
+                    <qty helper="ho_shopconnect/import::toNumber">
+                        <number field="FreeStock"/>
+                    </qty>
+                    <min_qty helper="ho_shopconnect/import::toNumber">
+                        <number field="MinOrderQuantity"/>
+                    </min_qty>
+                    <use_config_min_qty value="1"/>
+                    <is_qty_decimal value="0"/>
+                    <!--<backorders value="1" />-->
+                    <use_config_backorders value="1"/>
+                    <!--<min_sale_qty value="1"/>-->
+                    <use_config_min_sale_qty value="1"/>
+                    <!--<max_sale_qty value="10000"/>-->
+                    <use_config_max_sale_qty value="1"/>
+                    <is_in_stock helper="ho_import/import::getFieldBoolean"><field use="qty"/></is_in_stock>
+                    <!--<notify_stock_qty value=""/>-->
+                    <use_config_notify_stock_qty value="1"/>
+                    <!--<manage_stock value="1"/>-->
+                    <use_config_manage_stock value="1"/>
+                    <stock_status_changed_auto value="0"/>
+                    <!--<qty_increments value="1"/>-->
+                    <use_config_qty_increments value="1"/>
+                    <enable_qty_increments value="0"/>
+                    <use_config_enable_qty_inc value="1" />
+                    <is_decimal_divided value="0"/>
+
+                <!-- PRODUCT RELATIONS -->
+                    <!--<_links_related_sku field="compatibleProductOEM" required="1" />-->
+                    <!--<_links_related_position value="1"/>-->
+                    <!--<_links_crosssell_sku />-->
+                    <!--<_links_crosssell_position />-->
+                    <!--<_links_upsell_sku helper="ho_import/import::getFieldMultiple" required="1"><field><xlProductOEM/><multipackProductOEM/></field></_links_upsell_sku>-->
+                    <!--<_links_upsell_position value="1"/>-->
+
+                <!-- GROUPED PRODUCTS -->
+                    <!--<_associated_sku>-->
+                    <!--</_associated_sku>-->
+                    <!--<_associated_default_qty>-->
+                    <!--</_associated_default_qty>-->
+                    <!--<_associated_position>-->
+                    <!--</_associated_position>-->
+
+                <!-- DESIGN -->
+                    <custom_design />
+                    <custom_design_from />
+                    <custom_design_to />
+                    <custom_layout_update />
+                    <options_container value="blok na info-kolom"/>
+                    <page_layout/>
+
+                <!-- PRODUCT OPTIONS-->
+                    <!--<has_options /> Is automatically set, no need to fill in -->
+                    <!--<required_options /> Is automatically set, no need to fill in-->
+
+                <!-- USER DEFINED FIELDS -->
+                    <oem field="ProductOEM"/>
+                    <ean field="ProductEAN"/>
+
+                    <dimensions helper="ho_import/import::formatField">
+                        <format>%scm × %scm × %scm</format>
+                        <fields>
+                            <dimension_length helper="ho_shopconnect/import::toNumber">
+                                <number field="Dimension/Length"/>
+                                <divide value="10"/>
+                            </dimension_length>
+                            <dimension_width helper="ho_shopconnect/import::toNumber">
+                                <number field="Dimension/Width"/>
+                                <divide value="10"/>
+                            </dimension_width>
+                            <dimension_height helper="ho_shopconnect/import::toNumber">
+                                <number field="Dimension/Height"/>
+                                <divide value="10"/>
+                            </dimension_height>
+                        </fields>
+                    </dimensions>
+                    <dimension_weight helper="ho_shopconnect/import::toNumber">
+                        <number field="Dimension/Weight"/>
+                        <divide value="1000"/>
+                    </dimension_weight>
+                    <dimension_volume helper="ho_shopconnect/import::toNumber">
+                        <number field="Dimension/Volume"/>
+                        <divide value="1000000"/>
+                    </dimension_volume>
+
+                    <brand helper="ho_import/import::getFieldMap">
+                        <value field="Categorie/Brand"/>
+                        <mapping>
+                            <a4tech from="A4Tech gaming &amp; music" to="A4Tech"/>
+                            <cablexpert from="Cablexpert kabels" to="Cablexpert"/>
+                            <energenie from="Energenie groene stroom producten" to="Energenie"/>
+                            <gcube from="G-cube modern &amp; stijlvol" to="G-cube"/>
+                            <gembird from="Gembird computeraccessoires" to="Gembird"/>
+                        </mapping>
+                    </brand>
+                    <category_major field="Categorie/Major"/>
+                    <category_minor field="Categorie/Minor"/>
+                    <category_sub   field="Categorie/Sub"/>
+                </fieldmap>
+            </shopconnect_products>
+
+            <shopconnect_media>
+                <entity_type>catalog_product</entity_type>
+                <downloader model="ho_import/downloader_ftp">
+                    <host>ftp.gembird.nl</host>
+                    <username>shopdirect.nl</username>
+                    <password>2135TS</password>
+                    <file>Extra_Info.zip</file>
+                    <target>var/import/</target>
+                </downloader>
+                <decompressor model="ho_import/decompressor_zip">
+                    <source>var/import/Extra_Info.zip</source>
+                    <target>var/import/Extra_Info</target>
+                </decompressor>
+                <source model="ho_import/source_adapter_xml">
+                    <file>var/import/Extra_Info/Extra_Info.txt</file>
+                    <rootNode>EXTRA_ENV</rootNode>
+                    <childNode>EXTRALINE</childNode>
+                </source>
+                <import_options>
+                    <!--<continue_after_errors>1</continue_after_errors>-->
+                    <!--<ignore_duplicates>1</ignore_duplicates>-->
+                    <!--<partial_indexing>1</partial_indexing>-->
+                    <dropdown_attributes>
+                        <country>brand</country>
+                        <category_major>category_major</category_major>
+                        <category_minor>category_minor</category_minor>
+                        <category_sub>category_sub</category_sub>
+                    </dropdown_attributes>
+                    <lock_attributes>1</lock_attributes>
+                </import_options>
+                <!-- Media fields
+                | v | video
+                | v | web-site_image
+                | - | hi-res_photo -> we gebruiken web-site_image en web_package_image
+                | - | certificate -> Zijn alleen documenten
+                | - | CE_certificate -> betekend CE keurmerk?
+                | v | manual
+                | - | artwork_preview -> Zijn de PDF's voor het afdrukken van de foto's
+                | v | driver -> Driver downloads
+                | v | award
+                | - | additional_info
+                | v | web_package_image
+                | - | artwork_preview
+                -->
+
+                <fieldmap>
+                    <ho_import_profile value="shopconnect_products,shopconnect_media,shopconnect_descriptions"/>
+                    <sku field="ProductNumber"/>
+
+                <!-- USER DEFINED FIELDS -->
+                    <videos helper="ho_import/import::getFieldCombine">
+                        <fields>
+                            <videos field="video"/>
+                        </fields>
+                        <glue>\n</glue>
+                    </videos>
+                    <manuals helper="ho_import/import::getFieldCombine">
+                        <fields>
+                            <videos field="manual"/>
+                        </fields>
+                        <glue>\n</glue>
+                    </manuals>
+                    <divers helper="ho_import/import::getFieldCombine">
+                        <fields>
+                            <videos field="driver"/>
+                        </fields>
+                        <glue>\n</glue>
+                    </divers>
+
+                <!-- MEDIA FIELDS -->
+                    <_media_attribute_id helper="ho_import/import::getFieldMultiple">
+                        <fields>
+                            <web-site_image helper="ho_import/import::getFieldCounter">
+                                <web-site_image field="web-site_image"/>
+                                <fieldvalue helper="ho_import/import::getAttributeId">
+                                    <attribute value="media_gallery"/>
+                                </fieldvalue>
+                            </web-site_image>
+                            <web_package_image helper="ho_import/import::getFieldCounter">
+                                <web_package_image field="web_package_image"/>
+                                <fieldvalue helper="ho_import/import::getAttributeId">
+                                    <attribute value="media_gallery"/>
+                                </fieldvalue>
+                            </web_package_image>
+                            <award helper="ho_import/import::getFieldCounter">
+                                <award field="award"/>
+                                <fieldvalue helper="ho_import/import::getAttributeId">
+                                    <attribute value="award_image"/>
+                                </fieldvalue>
+                            </award>
+                        </fields>
+                    </_media_attribute_id>
+                    <_media_image helper="ho_import/import::getMediaImage">
+                        <images helper="ho_import/import::getFieldMultiple">
+                            <fields>
+                                <web-site_image field="web-site_image"/>
+                                <web_package_image field="web_package_image"/>
+                                <award field="award"/>
+                            </fields>
+                        </images>
+                        <limit/>
+                        <filename helper="ho_import/import_product::getUrlKey">
+                            <fields><name use="sku"/></fields>
+                            <glue>-</glue>
+                        </filename>
+                    </_media_image>
+
+                    <_media_position helper="ho_import/import::getFieldCounter">
+                        <images use="_media_image"/>
+                    </_media_position>
+
+                    <_media_is_disabled value="1"/>
+
+                    <image helper="ho_import/import::getFieldLimit">
+                        <field use="_media_image"/>
+                        <limit value="1"/>
+                    </image>
+                    <small_image helper="ho_import/import::getFieldLimit">
+                        <field use="_media_image"/>
+                        <limit value="1"/>
+                    </small_image>
+                    <thumbnail helper="ho_import/import::getFieldLimit">
+                        <field use="_media_image"/>
+                        <limit value="1"/>
+                    </thumbnail>
+                </fieldmap>
+            </shopconnect_media>
+
+            <shopconnect_descriptions>
+                <entity_type>catalog_product</entity_type>
+                <downloader model="ho_import/downloader_ftp">
+                    <host>ftp.gembird.nl</host>
+                    <username>shopdirect.nl</username>
+                    <password>2135TS</password>
+                    <file>COM_NL.zip</file>
+                    <target>var/import</target>
+                </downloader>
+                <decompressor model="ho_import/decompressor_zip">
+                    <source>var/import/COM_NL.zip</source>
+                    <target>var/import/COM_NL</target>
+                </decompressor>
+                <source model="ho_import/source_adapter_xml">
+                    <file>var/import/COM_NL/3-COMX_NL.txt</file>
+                    <rootNode>COMM_ENV</rootNode>
+                    <childNode>COMMLINE</childNode>
+                </source>
+                <import_options>
+                    <continue_after_errors>1</continue_after_errors>
+                    <!--<ignore_duplicates>1</ignore_duplicates>-->
+                    <partial_indexing>1</partial_indexing>
+                    <dropdown_attributes>
+                        <country>brand</country>
+                        <category_major>category_major</category_major>
+                        <category_minor>category_minor</category_minor>
+                        <category_sub>category_sub</category_sub>
+                    </dropdown_attributes>
+                    <lock_attributes>1</lock_attributes>
+                </import_options>
+                <fieldmap>
+                    <ho_import_profile value="shopconnect_products,shopconnect_media,shopconnect_descriptions"/>
+                    <sku field="ProductNumber"/>
+
+                    <short_description helper="ho_shopconnect/import::htmlEntitiesDecode">
+                        <field field="CommercialDescription"/>
+                    </short_description>
+                </fieldmap>
+            </shopconnect_descriptions>
+        </ho_import>
+    </global>
+</config>
