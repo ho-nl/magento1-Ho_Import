@@ -89,7 +89,8 @@ class Ho_Import_Model_Import extends Varien_Object
             return;
         }
 
-        if ($this->getDryrun()) {
+        $importData = $this->getImportData();
+        if (isset($importData['dryrun']) && $importData['dryrun'] == 1) {
             $this->_getLog()->log($this->_getLog()->__('Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
             $errors = $this->_dryRun();
         } else {
@@ -125,7 +126,8 @@ class Ho_Import_Model_Import extends Varien_Object
         $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
         $this->_runEvent('process_before', $this->_getTransport()->setAdapter($this->getSourceAdapter()));
 
-        if ($this->getDryrun()) {
+        $importData = $this->getImportData();
+        if (isset($importData['dryrun']) && $importData['dryrun'] == 1) {
             $this->_getLog()->log($this->_getLog()->__('Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
             $errors = $this->_dryRun();
         } else {
