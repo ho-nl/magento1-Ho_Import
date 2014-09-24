@@ -225,7 +225,12 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
                 break;
         }
 
-        return implode($glue, $this->getFieldMultiple($line, $fields));
+        $result = $this->getFieldMultiple($line, $fields);
+        if (! $result) {
+            return null;
+        }
+
+        return implode($glue, $result);
     }
 
 
@@ -257,7 +262,13 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
                 $split = "\f";
                 break;
         }
-        return explode($split, $this->_getMapper()->mapItem($field));
+
+        $result = $this->_getMapper()->mapItem($field);
+        if (! $result) {
+            return null;
+        }
+
+        return explode($split, $result);
     }
 
 
@@ -286,7 +297,6 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @return array
      */
     public function getFieldMultiple($line, $fields, $withKeys = false) {
-
         $mapper = $this->_getMapper();
 
         $parts = array();
@@ -368,7 +378,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         $count = count($this->_getMapper()->mapItem($countConfig));
         $value = $this->_getMapper()->mapItem($valueConfig);
         $values = array();
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 1; $i <= $count; $i++) {
             $values[] = is_null($value) ? $i : $value;
         }
         return $values;
