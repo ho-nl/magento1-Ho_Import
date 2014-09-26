@@ -26,9 +26,9 @@
 $installer = $this;
 $installer->startSetup();
 
-$installer->addAttribute(Mage_Catalog_Model_Product::ENTITY, 'ho_import_profile', array(
+$installer->addAttribute(Mage_Catalog_Model_Category::ENTITY, 'ho_import_profile', array(
     'label'                      => 'Import Profile',
-    'group'                      => 'General',
+    'group'                      => 'General Information',
     'sort_order'                 => 100,
     'type'                       => 'text',
     'note'                       => '',
@@ -37,7 +37,7 @@ $installer->addAttribute(Mage_Catalog_Model_Product::ENTITY, 'ho_import_profile'
     'required'                   => false,                                                     // eav_attribute.is_required                           required in admin
     'user_defined'               => false,                                                    // eav_attribute.is_user_defined                       editable in admin attributes section, false for not
     'unique'                     => false,                                                    // eav_attribute.is_unique                             unique value required
-    'global'                     => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_WEBSITE,  // catalog_eav_attribute.is_global                     (products only) scope
+    'global'                     => Mage_Catalog_Model_Resource_Eav_Attribute::SCOPE_GLOBAL,  // catalog_eav_attribute.is_global                     (products only) scope
     'visible'                    => true,                                                     // catalog_eav_attribute.is_visible                    (products only) visible on admin
     'visible_on_front'           => false,                                                    // catalog_eav_attribute.is_visible_on_front           (products only) visible on frontend (store) attribute table
     'used_in_product_listing'    => false,                                                     // catalog_eav_attribute.used_in_product_listing       (products only) made available in product listing

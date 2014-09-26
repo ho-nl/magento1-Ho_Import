@@ -72,13 +72,37 @@ class Ho_Import_Model_Observer
     public function catalogProductEditAction(Varien_Event_Observer $observer) {
         /** @var Mage_Catalog_Model_Product $product */
         $product = $observer->getProduct();
+        $this->_lockAttributes($product);
+    }
 
-        // Is product assigned to import profile.
-        if (! ($profile = $product->getData('ho_import_profile'))){
+
+    /**
+     * @param Varien_Event_Observer $observer
+     */
+    public function catalogCategoryEditAction(Varien_Event_Observer $observer) {
+        /** @var Mage_Core_Controller_Request_Http $request */
+        $request = $observer->getAction()->getRequest();
+
+        if ($request->getControllerName() !== 'catalog_category'
+           || $request->getModuleName() !== 'admin') {
             return;
         }
 
-        $profiles = explode(',',$profile);
+        $category = Mage::registry('current_category');
+        $this->_lockAttributes($category);
+    }
+
+
+    /**
+     * @param Mage_Catalog_Model_Abstract $model
+     */
+    protected function _lockAttributes(Mage_Catalog_Model_Abstract $model) {
+        // Is product assigned to import profile.
+        if (! ($profiles = $model->getData('ho_import_profile'))){
+            return;
+        }
+
+        $profiles = explode(',',$profiles);
         foreach ($profiles as $profile) {
             // Is lock attributes functionality enabled.
             $lockAttributes = sprintf('global/ho_import/%s/import_options/lock_attributes', $profile);
@@ -91,10 +115,10 @@ class Ho_Import_Model_Observer
             /** @var Ho_Import_Model_Mapper $mapper */
             $mapper = Mage::getModel('ho_import/mapper');
             $mapper->setProfileName($profile);
-            $storeCode = $product->getStore()->getCode();
+            $storeCode = $model->getStore()->getCode();
 
             // Check if attributes need to be locked.
-            $attributes = $product->getAttributes();
+            $attributes = $model->getAttributes();
             foreach ($attributes as $attribute) {
                 /** @var Mage_Catalog_Model_Resource_Eav_Attribute $attribute */
                 $mapper->setStoreCode($attribute->isScopeStore() || $attribute->isScopeWebsite() ? $storeCode :'admin');
@@ -104,10 +128,14 @@ class Ho_Import_Model_Observer
                     $note = $attribute->getNote() ? $attribute->getNote() : '';
 
                     //scope global, website
-                    if (! $product->isLockedAttribute($attribute->getAttributeCode())) {
+                    if (! $model->isLockedAttribute($attribute->getAttributeCode())) {
+                        if ($note) {
+                            $note .= "<br />\n";
+                        }
                         $note .= Mage::helper('ho_import')->__("Locked by Ho_Import");
                     }
-                    $product->lockAttribute($attribute->getAttributeCode());
+
+                    $model->lockAttribute($attribute->getAttributeCode());
                     $attribute->setNote($note);
                 }
             }

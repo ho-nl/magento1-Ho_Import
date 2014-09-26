@@ -231,12 +231,11 @@ All the options that are possible with the [AvS_FastSimpleImport][] are possible
 </import_options>
 ```
 
-### Lock product attributes in backend
+### Lock product/category attributes in backend
 When you enable this option, a store admin can't edit the attributes that are imported by the
-importer. Ho_Import is smart about this, it save the profile name with the product, so it only locks
-the attributes which are set by the current importer. It also knows about store view specific values
+importer. Ho_Import is smart about this, it save the profile name with the product/category, so it only
+locks the attributes which are set by the current importer. It also knows about store view specific values
 imported.
-
 
 
 Exampe config:

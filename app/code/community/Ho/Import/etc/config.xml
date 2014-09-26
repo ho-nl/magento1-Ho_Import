@@ -26,7 +26,7 @@
 <config>
 	<modules>
 		<Ho_Import>
-			<version>1.5.0</version>
+			<version>1.5.1</version>
 		</Ho_Import>
 	</modules>
 	<global>
@@ -72,6 +72,16 @@
                     </ho_import_catalog_product_edit_action>
                 </observers>
             </catalog_product_edit_action>
+            <controller_action_layout_load_before>
+                <observers>
+                    <ho_import_catalog_category_edit_action>
+                        <type>singleton</type>
+                        <class>Ho_Import_Model_Observer</class>
+                        <method>catalogCategoryEditAction</method>
+                    </ho_import_catalog_category_edit_action>
+                </observers>
+            </controller_action_layout_load_before>
+
             <fastsimpleimport_reindex_products_before>
                 <observers>
                     <ho_import_fastsimpleimport_reindex_products_before>
