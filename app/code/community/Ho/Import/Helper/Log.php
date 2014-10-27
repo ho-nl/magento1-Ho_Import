@@ -37,6 +37,28 @@ class Ho_Import_Helper_Log extends Mage_Core_Helper_Abstract
         mb_internal_encoding('UTF-8');
     }
 
+
+    /**
+     * @param string $file
+     * @return $this
+     */
+    public function setLogfile($file) {
+        $this->_logfile = $file;
+        return $this;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getLogfile() {
+        return $this->_logfile;
+    }
+
+
+    /**
+     * @param int $level
+     */
     public function setMinLogLevel($level) {
         if (! is_numeric($level)) {
             Mage::throwException($this->__('The min log level should be numeric, %s given', $level));
