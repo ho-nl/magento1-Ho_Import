@@ -83,6 +83,7 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
+        $this->_archiveOldCsv();
         $hasRows = $this->_createImportCsv();
         if (! $hasRows) {
             $this->_runEvent('process_after');
@@ -848,5 +849,29 @@ class Ho_Import_Model_Import extends Varien_Object
     {
         $this->_getMapper()->setProfileName($profile);
         return parent::setProfile($profile);
+    }
+
+
+
+    /**
+     * Archive the old file.
+     * @return $this
+     */
+    protected function _archiveOldCsv() {
+        $allowArchive = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_IMPORT_OPTIONS.'/archive_import_files');
+
+        $fileName = $this->_getFileName();
+        if (!$allowArchive || !file_exists($fileName)) {
+            return $this;
+        }
+
+        $pathInfo = pathinfo($this->_getFileName());
+        $fileTime = date(DATE_W3C, filemtime($this->_getFileName()));
+        $newFileName = $pathInfo['dirname'].DS.$pathInfo['basename'] .'-'.$fileTime.'.'.$pathInfo['extension'];
+
+        $this->_getLog()->log($this->_getLog()->__("Archiving old import file, renaming to %s", basename($newFileName)), Zend_Log::INFO);
+
+        rename($fileName, $newFileName);
+        return $this;
     }
 }

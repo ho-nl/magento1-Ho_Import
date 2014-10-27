@@ -213,13 +213,16 @@ All the options that are possible with the [AvS_FastSimpleImport][] are possible
 
 ```XML
 <import_options>
+    <skip_download>1</skip_download>
+    <lock_attributes>1</lock_attributes>
+    <archive_import_files>1</archive_import_files> <!-- archive files for later reference -->
+
+    <!-- below are AvS_FastSimpleImport options. See http://avstudnitz.github.io/AvS_FastSimpleImport/options.html for more information and extra options. -->
 	<error_limit>10000</error_limit>
     <continue_after_errors>1</continue_after_errors>
     <ignore_duplicates>1</ignore_duplicates>
     <allow_rename_files>0</allow_rename_files>
     <partial_indexing>1</partial_indexing>
-    <skip_download>1</skip_download>
-    <lock_attributes>1</lock_attributes>
     <dropdown_attributes>
         <country>country</country>
     </dropdown_attributes>
