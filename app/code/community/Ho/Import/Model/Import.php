@@ -868,7 +868,7 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $pathInfo = pathinfo($this->_getFileName());
-        $fileTime = date(DATE_W3C, filemtime($this->_getFileName()));
+        $fileTime = date('Ymd-His', filemtime($this->_getFileName()));
         $newFileName = $pathInfo['dirname'].DS.$pathInfo['basename'] .'-'.$fileTime.'.'.$pathInfo['extension'];
 
         $this->_getLog()->log($this->_getLog()->__("Archiving old import file, renaming to %s", basename($newFileName)), Zend_Log::INFO);
