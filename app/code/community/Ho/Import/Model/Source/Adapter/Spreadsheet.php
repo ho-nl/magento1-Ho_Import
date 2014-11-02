@@ -34,16 +34,20 @@ class Ho_Import_Model_Source_Adapter_Spreadsheet extends SpreadsheetReader
      */
     protected $_colNames = array();
 
-    public function __construct(array $config) {
+    public function __construct(array $config)
+    {
         $source = is_string($config) ? $config : $config['file'];
         if (!is_string($source)) {
-            Mage::throwException(Mage::helper('importexport')->__('Source file path must be a string'));
+            Mage::throwException(Mage::helper('importexport')->__(
+                    'Source file path must be a string'));
         }
         if (!is_readable($source)) {
-            Mage::throwException(Mage::helper('importexport')->__("%s file does not exists or is not readable", $source));
+            Mage::throwException(Mage::helper('importexport')->__(
+                    "%s file does not exists or is not readable", $source));
         }
         if (!is_file($source)) {
-            Mage::throwException(Mage::helper('importexport')->__("%s isn't a file, probably a folder.", $source));
+            Mage::throwException(Mage::helper('importexport')->__(
+                    "%s isn't a file, probably a folder.", $source));
         }
         $this->_source = $source;
         parent::__construct($this->_source);
@@ -56,7 +60,8 @@ class Ho_Import_Model_Source_Adapter_Spreadsheet extends SpreadsheetReader
         return $this;
     }
 
-    public function rewind() {
+    public function rewind()
+    {
         parent::rewind();
 
         if ($this->_hasHeaders) {
@@ -65,7 +70,8 @@ class Ho_Import_Model_Source_Adapter_Spreadsheet extends SpreadsheetReader
         }
     }
 
-    public function current() {
+    public function current()
+    {
         if ($this->_hasHeaders && count($this->_colNames)) {
             $row = parent::current();
             foreach ($this->_colNames as $index => $key) {

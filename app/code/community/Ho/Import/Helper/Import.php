@@ -36,7 +36,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @param $limit
      * @return array|null
      */
-    public function getAllWebsites($line, $limit = null) {
+    public function getAllWebsites($line, $limit = null)
+    {
         if ($this->_websiteIds === null) {
             $this->_websiteIds = array();
             foreach (Mage::app()->getWebsites() as $website) {
@@ -62,7 +63,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return mixed|string
      */
-    public function findReplace($line, $field, $findReplaces = array(), $trim = false) {
+    public function findReplace($line, $field, $findReplaces = array(), $trim = false)
+    {
         $value = $this->_getMapper()->mapItem($field);
         if (! $value) {
             return '';
@@ -82,14 +84,16 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    public function callUserFunc($line, $func, $args) {
+    public function callUserFunc($line, $func, $args)
+    {
         foreach ($args as $key => $arg) {
             $args[$key] = $this->_getMapper()->mapItem($arg);
         }
         return call_user_func_array($func, $args);
     }
 
-    public function parsePrice($line, $field) {
+    public function parsePrice($line, $field)
+    {
         $s = $this->_getMapper()->mapItem($field);
         // convert "," to "."
         $s = str_replace(',', '.', $s);
@@ -98,7 +102,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         $s = preg_replace("/[^0-9\.]/", "", $s);
 
         // remove all seperators from first part and keep the end
-        $s = str_replace('.', '',substr($s, 0, -3)) . substr($s, -3);
+        $s = str_replace('.', '', substr($s, 0, -3)) . substr($s, -3);
 
         // return float
         return (float) $s;
@@ -112,7 +116,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function stripHtmlTags($line, $field, $allowedTags = '<p><a><br>') {
+    public function stripHtmlTags($line, $field, $allowedTags = '<p><a><br>')
+    {
         $value = $this->_getMapper()->mapItem($field);
         $content = trim(strip_tags($value, $allowedTags));
         return $content ? $content : '<!--empty-->';
@@ -127,13 +132,14 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getHtmlComment($line, $comment = '') {
+    public function getHtmlComment($line, $comment = '')
+    {
         return '<!--'.$comment.'-->';
     }
 
 
     /**
-         * Allows you to format a field using vsprintf
+     * Allows you to format a field using vsprintf
      *
      * @param $line
      * @param $format
@@ -141,7 +147,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function formatField($line, $format, $fields) {
+    public function formatField($line, $format, $fields)
+    {
         $values = array();
         foreach ($fields as $key => $field) {
             $value = $this->_getMapper()->mapItem($field);
@@ -160,7 +167,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @param string $etc
      * @param bool   $breakWords
      */
-    public function truncate($line, $field, $length = 80, $etc = '…', $breakWords = true) {
+    public function truncate($line, $field, $length = 80, $etc = '…', $breakWords = true)
+    {
         $string = $this->_getMapper()->mapItem($field);
         return Mage::helper('core/string')->truncate($string, $length, $etc, $remainder = '', $breakWords);
     }
@@ -174,7 +182,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return array
      */
-    public function getValueMultiple($line, $values) {
+    public function getValueMultiple($line, $values)
+    {
         return array_values($values);
     }
 
@@ -187,7 +196,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return mixed
      */
-    public function getFieldDefault($line, $field, $default) {
+    public function getFieldDefault($line, $field, $default)
+    {
         $value = $this->_getMapper()->mapItem($field);
         return $value ? $value : $default;
     }
@@ -202,7 +212,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getFieldCombine($line, $fields, $glue = ' ') {
+    public function getFieldCombine($line, $fields, $glue = ' ')
+    {
 
         switch ($glue) {
             case '\n': //linefeed (LF or 0x0A (10) in ASCII)
@@ -280,7 +291,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getFieldBoolean($line, $field) {
+    public function getFieldBoolean($line, $field)
+    {
         $value = $this->_getMapper()->mapItem($field);
         return $value ? '1' : '0';
     }
@@ -296,13 +308,16 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return array
      */
-    public function getFieldMultiple($line, $fields, $withKeys = false) {
+    public function getFieldMultiple($line, $fields, $withKeys = false)
+    {
         $mapper = $this->_getMapper();
 
         $parts = array();
         foreach ($fields as $fieldConfig) {
             $values = $mapper->mapItem($fieldConfig);
-            if (! is_array($values)) { $values = array($values); }
+            if (! is_array($values)) {
+                $values = array($values);
+            }
 
             foreach ($values as $value) {
                 if ($withKeys && isset($fieldName)) {
@@ -321,10 +336,12 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @param $line
      * @param $field
      * @param $limit
+     * @param int|null $offset
      *
      * @return array
      */
-    public function getFieldLimit($line, $field, $limit = null, $offset = null) {
+    public function getFieldLimit($line, $field, $limit = null, $offset = null)
+    {
         $values = $this->_getMapper()->mapItem($field);
         $limit = $this->_getMapper()->mapItem($limit);
         $offset = $this->_getMapper()->mapItem($offset) ?: 0;
@@ -346,14 +363,15 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function getFieldMap($line, $field, $mapping) {
+    public function getFieldMap($line, $field, $mapping)
+    {
         $values = $this->_getMapper()->mapItem($field);
         if (! is_array($values)) {
             $values = array($values);
         }
 
         foreach ($values as $key => $value) {
-            foreach($mapping as $map) {
+            foreach ($mapping as $map) {
                 $from = html_entity_decode($map['@']['from']);
                 if ($from == $value) {
                     $values[$key] = htmlspecialchars_decode($map['@']['to']);
@@ -374,7 +392,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
      * @internal param $countField
      * @return array|null
      */
-    public function getFieldCounter($line, $countConfig, $valueConfig = null) {
+    public function getFieldCounter($line, $countConfig, $valueConfig = null)
+    {
         $count = count($this->_getMapper()->mapItem($countConfig));
         $value = $this->_getMapper()->mapItem($valueConfig);
         $values = array();
@@ -385,7 +404,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    public function ifFieldsValue($line, $fields, $valueField) {
+    public function ifFieldsValue($line, $fields, $valueField)
+    {
         $values = $this->getFieldMultiple($line, $fields);
         $valid = true;
         foreach ($values as $value) {
@@ -411,13 +431,15 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    public function getMediaAttributeId($line) {
+    public function getMediaAttributeId($line)
+    {
         return $this->getMediaAttributeId('media_gallery');
     }
 
 
     protected $_attributeMapping = array();
-    public function getAttributeId($line, $attribute) {
+    public function getAttributeId($line, $attribute)
+    {
         $attributeCode = is_string($attribute)
             ? $attribute : $this->_getMapper()->mapItem($attribute);
 
@@ -468,7 +490,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         return array_values($images);
     }
 
-    public function getCurrentDate($line) {
+    public function getCurrentDate($line)
+    {
         if ($this->_today === null) {
             $currentTimestamp = Mage::getSingleton('core/date')->timestamp(time());
             $this->_today = date('d-m-Y', $currentTimestamp);
@@ -478,7 +501,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
-    public function timestampToDate($line, $field, $timezoneFrom = null, $offset = null) {
+    public function timestampToDate($line, $field, $timezoneFrom = null, $offset = null)
+    {
         $values = $this->_getMapper()->mapItem($field);
         if (! is_array($values)) {
             $values = array($values);
@@ -523,8 +547,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         if (isset($this->_fileCache[$url])) {
             return;
         }
-//        Mage::helper('ho_import/log')->log($this->__("Downloading image %s", $url));
-        
+
         try {
             $this->_fileCache[$url] = true;
             $dir = $this->_getUploader()->getTmpDir();
@@ -546,7 +569,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
             if ($code !== 200) {
                 $this->_fileCache[$url] = $code;
-                Mage::helper('ho_import/log')->log($this->__("Returned status code %s while downloading image", $code), Zend_Log::ERR);
+                Mage::helper('ho_import/log')->log($this->__(
+                        "Returned status code %s while downloading image", $code), Zend_Log::ERR);
                 unlink($fileName);
             }
 

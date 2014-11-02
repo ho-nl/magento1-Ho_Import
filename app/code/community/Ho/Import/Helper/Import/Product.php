@@ -46,7 +46,8 @@ class Ho_Import_Helper_Import_Product extends Ho_Import_Helper_Import
      *
      * @return bool|null|string
      */
-    public function getSpecialFromDate($line, $price, $specialPrice) {
+    public function getSpecialFromDate($line, $price, $specialPrice)
+    {
         $price = (float) $this->_getMapper()->mapItem($price);
         $specialPrice = (float) $this->_getMapper()->mapItem($specialPrice);
         if (! $specialPrice) {
@@ -57,7 +58,8 @@ class Ho_Import_Helper_Import_Product extends Ho_Import_Helper_Import
     }
 
 
-    public function getSpecialPrice($line, $price, $specialPrice) {
+    public function getSpecialPrice($line, $price, $specialPrice)
+    {
         $price = (float) $this->_getMapper()->mapItem($price);
         $specialPrice = (float) $this->_getMapper()->mapItem($specialPrice);
         if (! $specialPrice) {

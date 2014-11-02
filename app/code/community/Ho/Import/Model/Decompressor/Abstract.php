@@ -21,17 +21,19 @@
  * 
  */
  
-abstract class Ho_Import_Model_Decompressor_Abstract {
+abstract class Ho_Import_Model_Decompressor_Abstract
+{
 
     /**
      * Extract a file
      * @param Varien_Object $object
      * @return mixed
      */
-    abstract function decompress(Varien_Object $object);
+    abstract public function decompress(Varien_Object $object);
 
 
-    protected function _getFilePath($folder, $filename) {
+    protected function _getFilePath($folder, $filename)
+    {
         return Mage::getBaseDir() . DS . trim($folder, '/') . DS . $filename;
     }
 
@@ -42,7 +44,8 @@ abstract class Ho_Import_Model_Decompressor_Abstract {
      *
      * @return $this
      */
-    protected function _log($message, $level = Zend_Log::INFO) {
+    protected function _log($message, $level = Zend_Log::INFO)
+    {
         $this->_getLog()->log($message, $level);
         return $this;
     }
@@ -51,7 +54,8 @@ abstract class Ho_Import_Model_Decompressor_Abstract {
     /**
      * @return Ho_Import_Helper_Log
      */
-    protected function _getLog() {
+    protected function _getLog()
+    {
         return Mage::helper('ho_import/log');
     }
 }

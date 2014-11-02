@@ -21,9 +21,11 @@
  * 
  */
  
-class Ho_Import_Model_Downloader_Ftp extends Ho_Import_Model_Downloader_Abstract {
+class Ho_Import_Model_Downloader_Ftp extends Ho_Import_Model_Downloader_Abstract
+{
 
-    function download(Varien_Object $connectionInfo, $target) {
+    public function download(Varien_Object $connectionInfo, $target)
+    {
 
         $file = $connectionInfo->getFile();
 
@@ -40,7 +42,10 @@ class Ho_Import_Model_Downloader_Ftp extends Ho_Import_Model_Downloader_Abstract
             'file_mode'      => $connectionInfo->hasFileMode() ? $connectionInfo->getFileMode() : null,
         ));
 
-        $this->_log($this->_getLog()->__("Downloading file %s from %s, to %s", $connectionInfo->getFile(), $connectionInfo->getHost(), $target));
+        $this->_log($this->_getLog()->__(
+            "Downloading file %s from %s, to %s",
+            $connectionInfo->getFile(), $connectionInfo->getHost(), $target
+        ));
 
         $targetPath = $this->_getTargetPath($target, basename($file));
         $ftp->read($file, $targetPath);

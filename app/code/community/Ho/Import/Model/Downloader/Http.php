@@ -21,9 +21,11 @@
  * 
  */
  
-class Ho_Import_Model_Downloader_Http extends Ho_Import_Model_Downloader_Abstract {
+class Ho_Import_Model_Downloader_Http extends Ho_Import_Model_Downloader_Abstract
+{
 
-    function download(Varien_Object $connectionInfo, $target) {
+    public function download(Varien_Object $connectionInfo, $target)
+    {
         $url = $connectionInfo->getUrl();
         if (! $url) {
             Mage::throwException($this->_getLog()->__("No valid URL given: %s", $url));
@@ -39,7 +41,8 @@ class Ho_Import_Model_Downloader_Http extends Ho_Import_Model_Downloader_Abstrac
 
         $cookie = tempnam(Mage::getBaseDir('tmp'), "CURLCOOKIE");
         $ch = curl_init($url);//Here is the file we are downloading, replace spaces with %20
-        curl_setopt( $ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
+        curl_setopt( $ch, CURLOPT_USERAGENT,
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
         curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie);
         curl_setopt( $ch, CURLOPT_ENCODING, "");
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true);
@@ -55,14 +58,17 @@ class Ho_Import_Model_Downloader_Http extends Ho_Import_Model_Downloader_Abstrac
 
         if ($response['http_code'] == 301 || $response['http_code'] == 302) {
             if ($headers = get_headers($response['url'])) {
-                foreach( $headers as $value ) {
+                foreach ($headers as $value) {
                     if (substr(strtolower($value), 0, 9) == "location:") {
                         $connectionInfo->setUrl(trim(substr($value, 9, strlen($value))));
-                        Mage::throwException($this->_getLog()->__("Retrying with forwarded URL: %s", $connectionInfo->getUrl()));
+                        Mage::throwException($this->_getLog()->__(
+                                "Retrying with forwarded URL: %s", $connectionInfo->getUrl()));
                         return $this->download($connectionInfo, $target);
                     }
                 }
             }
         }
+
+        return null;
     }
 }

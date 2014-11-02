@@ -28,7 +28,8 @@ class Ho_Import_Model_System_Import extends Varien_Object
     const CONFIG_TEMPLATE_CRON_MODEL = '/run/model';
     const CRON_MODEL_EXPR   = 'ho_import/observer::process';
 
-    public function schedule($flushCache = true) {
+    public function schedule($flushCache = true)
+    {
         try {
             if (! $this->getSchedule()) {
                 return false;
@@ -61,27 +62,33 @@ class Ho_Import_Model_System_Import extends Varien_Object
         return true;
     }
 
-    public function getConfigCronExpr() {
+    public function getConfigCronExpr()
+    {
         return $this->getConfigPath() . Ho_Import_Model_System_Import::CONFIG_TEMPLATE_CRON_EXPR;
     }
 
-    public function getConfigModel() {
+    public function getConfigModel()
+    {
         return $this->getConfigPath() . Ho_Import_Model_System_Import::CONFIG_TEMPLATE_CRON_MODEL;
     }
 
-    public function getConfigPath() {
+    public function getConfigPath()
+    {
         return sprintf(Ho_Import_Model_System_Import::CONFIG_JOB_PREFIX, $this->getId());
     }
 
-    public function getModelExpr() {
+    public function getModelExpr()
+    {
         return Ho_Import_Model_System_Import::CRON_MODEL_EXPR;
     }
 
-    public function process() {
+    public function process()
+    {
 
     }
 
-    public function scheduleNow() {
+    public function scheduleNow()
+    {
         if (! $this->schedule()) {
             return false;
         }

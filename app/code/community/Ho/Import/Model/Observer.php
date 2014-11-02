@@ -22,7 +22,8 @@
  */
 class Ho_Import_Model_Observer
 {
-    public function schedule() {
+    public function schedule()
+    {
         $importCollection = Mage::getResourceModel('ho_import/system_import_collection');
         foreach ($importCollection as $import) {
             /** @var $import Ho_Import_Model_System_Import */
@@ -33,7 +34,8 @@ class Ho_Import_Model_Observer
         $importCollection->cleanupCron();
     }
 
-    public function process(Mage_Cron_Model_Schedule $cron) {
+    public function process(Mage_Cron_Model_Schedule $cron)
+    {
         //initialize the translations so that we are able to translate things.
         Mage::app()->loadAreaPart(
             Mage_Core_Model_App_Area::AREA_ADMINHTML,
@@ -56,10 +58,11 @@ class Ho_Import_Model_Observer
         Mage::helper('ho_import/log')->done();
     }
 
-    public function progressLog(Varien_Event_Observer $event) {
+    public function progressLog(Varien_Event_Observer $event)
+    {
         $name = str_replace('fastsimpleimport_', '', $event->getEvent()->getName());
         $name = str_replace('before_', '', $name);
-        $name = ucfirst(str_replace('_',' ',$name)).'...';
+        $name = ucfirst(str_replace('_', ' ', $name)).'...';
 
         Mage::helper('ho_import/log')->log($name);
     }
@@ -69,7 +72,8 @@ class Ho_Import_Model_Observer
      * @event catalog_product_edit_action
      * @param Varien_Event_Observer $observer
      */
-    public function catalogProductEditAction(Varien_Event_Observer $observer) {
+    public function catalogProductEditAction(Varien_Event_Observer $observer)
+    {
         /** @var Mage_Catalog_Model_Product $product */
         $product = $observer->getProduct();
         $this->_lockAttributes($product);
@@ -79,7 +83,8 @@ class Ho_Import_Model_Observer
     /**
      * @param Varien_Event_Observer $observer
      */
-    public function catalogCategoryEditAction(Varien_Event_Observer $observer) {
+    public function catalogCategoryEditAction(Varien_Event_Observer $observer)
+    {
         /** @var Mage_Core_Controller_Request_Http $request */
         $request = $observer->getAction()->getRequest();
 
@@ -96,13 +101,14 @@ class Ho_Import_Model_Observer
     /**
      * @param Mage_Catalog_Model_Abstract $model
      */
-    protected function _lockAttributes(Mage_Catalog_Model_Abstract $model) {
+    protected function _lockAttributes(Mage_Catalog_Model_Abstract $model)
+    {
         // Is product assigned to import profile.
-        if (! ($profiles = $model->getData('ho_import_profile'))){
+        if (! ($profiles = $model->getData('ho_import_profile'))) {
             return;
         }
 
-        $profiles = explode(',',$profiles);
+        $profiles = explode(',', $profiles);
         foreach ($profiles as $profile) {
             // Is lock attributes functionality enabled.
             $lockAttributes = sprintf('global/ho_import/%s/import_options/lock_attributes', $profile);
@@ -125,20 +131,29 @@ class Ho_Import_Model_Observer
 
                 $fieldConfig = $mapper->getFieldConfig($attribute->getAttributeCode());
                 if (isset($fieldConfig['@'])) {
-                    $note = $attribute->getNote() ? $attribute->getNote() : '';
-
-                    //scope global, website
-                    if (! $model->isLockedAttribute($attribute->getAttributeCode())) {
-                        if ($note) {
-                            $note .= "<br />\n";
-                        }
-                        $note .= Mage::helper('ho_import')->__("Locked by Ho_Import");
-                    }
-
-                    $model->lockAttribute($attribute->getAttributeCode());
-                    $attribute->setNote($note);
+                    $this->_lockAttribute($attribute, $model);
                 }
             }
         }
+    }
+
+    protected function _lockAttribute(Mage_Eav_Model_Entity_Attribute $attribute, Mage_Catalog_Model_Abstract $model)
+    {
+        $note = $attribute->getNote() ? $attribute->getNote() : '';
+
+        if ($attribute->getAttributeCode() == 'ho_import_profile') {
+            return;
+        }
+
+        //scope global, website
+        if (! $model->isLockedAttribute($attribute->getAttributeCode())) {
+            if ($note) {
+                $note .= "<br />\n";
+            }
+            $note .= Mage::helper('ho_import')->__("Locked by import <i>%s</i>", $model->getData('ho_import_profile'));
+        }
+
+        $model->lockAttribute($attribute->getAttributeCode());
+        $attribute->setNote($note);
     }
 }

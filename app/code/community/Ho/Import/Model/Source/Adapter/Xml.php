@@ -117,13 +117,16 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
     {
         $source = is_string($data) ? $data : $data['file'];
         if (!is_string($source)) {
-            Mage::throwException(Mage::helper('importexport')->__('Source file path must be a string'));
+            Mage::throwException(Mage::helper('importexport')->__(
+                    'Source file path must be a string'));
         }
         if (!is_readable($source)) {
-            Mage::throwException(Mage::helper('importexport')->__("%s file does not exists or is not readable", $source));
+            Mage::throwException(Mage::helper('importexport')->__(
+                    "%s file does not exists or is not readable", $source));
         }
         if (!is_file($source)) {
-            Mage::throwException(Mage::helper('importexport')->__("%s isn't a file, probably a folder.", $source));
+            Mage::throwException(Mage::helper('importexport')->__(
+                    "%s isn't a file, probably a folder.", $source));
         }
 
         $this->_source = $source;
@@ -286,7 +289,8 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
     }
 
 
-    protected function _processNode($xmlString) {
+    protected function _processNode($xmlString)
+    {
         if (! strlen($xmlString)) {
             return null;
         }
@@ -296,7 +300,8 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
         return $this->_nodeToArray($doc->documentElement);
     }
 
-    protected function _nodeToArray($node) {
+    protected function _nodeToArray($node)
+    {
         $output = array();
         switch ($node->nodeType) {
             case XML_CDATA_SECTION_NODE:
@@ -424,13 +429,14 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
     }
 
 
-    protected function _getRootNode() {
+    protected function _getRootNode()
+    {
         if (isset($this->_rootNode)) {
             return;
         }
 
         $continue = $this->_readNextChunk();
-        while($continue) {
+        while ($continue) {
             // Find root node
             if (isset($this->_customRootNode)) {
                 $customRootNodePos = strpos($this->_chunk, "<{$this->_customRootNode}");
@@ -443,13 +449,17 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
                     // Custom child node?
                     if (isset($this->_customChildNode)) {
                         // Find it in the chunk
-                        $customChildNodePos = strpos(substr($this->_chunk, $readFromChunkPos), "<{$this->_customChildNode}");
+                        $customChildNodePos = strpos(
+                            substr($this->_chunk, $readFromChunkPos),
+                            "<{$this->_customChildNode}"
+                        );
                         if ($customChildNodePos !== false) {
                             // Found it!
                             $readFromChunkPos = $readFromChunkPos + $customChildNodePos;
                         } else {
                             // Didn't find it - read a larger chunk and do everything again
-                            Mage::throwException(Mage::helper('ho_import')->__("Couldn't find child node in first chunk (chunk size %s)" , $this->_chunkSize));
+                            Mage::throwException(Mage::helper('ho_import')->__(
+                                    "Couldn't find child node in first chunk (chunk size %s)", $this->_chunkSize));
                         }
                     }
 
@@ -474,11 +484,12 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
         }
 
         if (isset($this->_customRootNode)) {
-            Mage::throwException(Mage::helper('ho_import')->__("Couldn't find custom root node (%s) in document" , $this->_customRootNode));
+            Mage::throwException(Mage::helper('ho_import')->__(
+                    "Couldn't find custom root node (%s) in document", $this->_customRootNode));
         } else {
-            Mage::throwException(Mage::helper('ho_import')->__("Couldn't find root node (%s) in document" , $this->_rootNode));
+            Mage::throwException(Mage::helper('ho_import')->__(
+                    "Couldn't find root node (%s) in document", $this->_rootNode));
         }
-
     }
 
 

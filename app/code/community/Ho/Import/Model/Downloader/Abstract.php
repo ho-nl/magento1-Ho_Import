@@ -21,7 +21,8 @@
  * 
  */
  
-abstract class Ho_Import_Model_Downloader_Abstract {
+abstract class Ho_Import_Model_Downloader_Abstract
+{
 
     /**
      * Download the external file to disk.
@@ -31,10 +32,11 @@ abstract class Ho_Import_Model_Downloader_Abstract {
      *
      * @return mixed
      */
-    abstract function download(Varien_Object $connectionInfo, $target);
+    abstract public function download(Varien_Object $connectionInfo, $target);
 
 
-    protected function _getTargetPath($folder, $filename) {
+    protected function _getTargetPath($folder, $filename)
+    {
         return Mage::getBaseDir() . DS . trim($folder, '/') . DS . $filename;
     }
 
@@ -45,7 +47,8 @@ abstract class Ho_Import_Model_Downloader_Abstract {
      *
      * @return $this
      */
-    protected function _log($message, $level = Zend_Log::DEBUG) {
+    protected function _log($message, $level = Zend_Log::DEBUG)
+    {
         $this->_getLog()->log($message, $level);
         return $this;
     }
@@ -54,7 +57,8 @@ abstract class Ho_Import_Model_Downloader_Abstract {
     /**
      * @return Ho_Import_Helper_Log
      */
-    protected function _getLog() {
+    protected function _getLog()
+    {
         return Mage::helper('ho_import/log');
     }
 }

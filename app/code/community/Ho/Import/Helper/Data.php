@@ -31,9 +31,9 @@ class Ho_Import_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return mixed
      */
-    public function underscoreToCamelCase($string, $first_char_caps = FALSE)
+    public function underscoreToCamelCase($string, $firstCharCaps = true)
     {
-        if ($first_char_caps == TRUE) {
+        if ($firstCharCaps === true) {
             $string[0] = strtoupper($string[0]);
         }
         $func = create_function('$c', 'return strtoupper($c[1]);');

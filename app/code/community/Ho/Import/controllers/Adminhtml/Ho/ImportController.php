@@ -55,15 +55,11 @@ class Ho_Import_Adminhtml_Ho_ImportController extends Mage_Adminhtml_Controller_
              ->_title(Mage::helper('adminhtml')->__('Import/Export'))
              ->_title($this->__('H&O Import'));
 
-        /**
-         * Add breadcrumb item
-         */
-        $this->_addBreadcrumb(Mage::helper('adminhtml')->__('Import/Export'), Mage::helper('adminhtml')->__('Import/Export'));
-        $this->_addBreadcrumb($this->__('H&O Import'), $this->__('H&O Import'));
         return $this;
     }
 
-    public function indexAction() {
+    public function indexAction()
+    {
         $this->_initAction();
         $this->renderLayout();
     }

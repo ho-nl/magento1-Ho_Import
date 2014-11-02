@@ -25,7 +25,8 @@ class Ho_Import_Helper_Import_Customer extends Ho_Import_Helper_Import
     public $_mapCountryIso2ToIso3 = null;
     public $_mapCountryIso3ToIso2 = null;
 
-    public function mapCountryIso2ToIso3($line, $field) {
+    public function mapCountryIso2ToIso3($line, $field)
+    {
         $value = $this->_getMapper()->mapItem($field);
 
         if ($this->_mapCountryIso2ToIso3 === null) {
@@ -38,7 +39,8 @@ class Ho_Import_Helper_Import_Customer extends Ho_Import_Helper_Import
         return null;
     }
 
-    public function mapCountryIso3ToIso2($line, $field) {
+    public function mapCountryIso3ToIso2($line, $field)
+    {
         $value = $this->_getMapper()->mapItem($field);
 
         if ($this->_mapCountryIso3ToIso2 === null) {
@@ -51,13 +53,14 @@ class Ho_Import_Helper_Import_Customer extends Ho_Import_Helper_Import
         return null;
     }
 
-    protected function _loadCountryIsoMap() {
+    protected function _loadCountryIsoMap()
+    {
         $this->_mapCountryIso2ToIso3 = array();
         $this->_mapCountryIso3ToIso2 = array();
 
         /** @var Mage_Directory_Model_Resource_Country_Collection $countryCollection */
         $countryCollection = Mage::getModel('directory/country')->getCollection();
-        foreach($countryCollection as $country) {
+        foreach ($countryCollection as $country) {
             /** @var $country Mage_Directory_Model_Country */
             $this->_mapCountryIso2ToIso3[$country->getIso2Code()] = $country->getIso3Code();
             $this->_mapCountryIso3ToIso2[$country->getIso3Code()] = $country->getIso2Code();

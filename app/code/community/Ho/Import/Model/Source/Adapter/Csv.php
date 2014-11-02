@@ -95,7 +95,8 @@ class Ho_Import_Model_Source_Adapter_Csv implements SeekableIterator
             Mage::throwException(Mage::helper('importexport')->__('File path must be a string'));
         }
         if (!is_readable($config['file'])) {
-            Mage::throwException(Mage::helper('importexport')->__("%s file does not exists or is not readable", $config['file']));
+            Mage::throwException(Mage::helper('importexport')->__(
+                    "%s file does not exists or is not readable", $config['file']));
         }
         $this->_source = $config['file'];
 
@@ -121,7 +122,8 @@ class Ho_Import_Model_Source_Adapter_Csv implements SeekableIterator
                 Mage::throwException(Mage::helper('importexport')->__('Column names have duplicates'));
             }
         } else {
-            Mage::throwException(Mage::helper('importexport')->__('Column names is empty or is not an array, there seems to be a problem reading the source file.'));
+            Mage::throwException(Mage::helper('importexport')->__(
+                    'Column names is empty or is not an array, there seems to be a problem reading the source file.'));
         }
     }
 
@@ -189,7 +191,8 @@ class Ho_Import_Model_Source_Adapter_Csv implements SeekableIterator
     {
         if ($position != $this->_currentKey) {
             if (0 == $position) {
-                return $this->rewind();
+                $this->rewind();
+                return;
             } elseif ($position > 0) {
                 if ($position < $this->_currentKey) {
                     $this->rewind();

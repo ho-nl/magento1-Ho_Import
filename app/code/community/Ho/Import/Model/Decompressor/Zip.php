@@ -19,21 +19,24 @@
  * @author      Paul Hachmang – H&O <info@h-o.nl>
  */
  
-class Ho_Import_Model_Decompressor_Zip extends Ho_Import_Model_Decompressor_Abstract {
+class Ho_Import_Model_Decompressor_Zip extends Ho_Import_Model_Decompressor_Abstract
+{
 
     /**
      * Extract a file
      * @param Varien_Object $object
      * @return mixed
      */
-    public function decompress(Varien_Object $object) {
+    public function decompress(Varien_Object $object)
+    {
         $source = $object->getSource();
         $target = $object->getTarget();
 
         $this->_log($this->_getLog()->__("Decompressing file %s to %s", $source, $target));
 
         if (! $source || ! $target) {
-            Mage::throwException($this->_getLog()->__("Source and target must me speficied (source: %s, target %s)", $source, $target));
+            Mage::throwException($this->_getLog()->__(
+                    "Source and target must me speficied (source: %s, target %s)", $source, $target));
         }
 
         $zip = new ZipArchive;

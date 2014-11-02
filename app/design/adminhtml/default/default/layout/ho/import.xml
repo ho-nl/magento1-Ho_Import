@@ -20,7 +20,7 @@
  */
 -->
 
-<layout>
+<layout version="0.1.0">
     <adminhtml_ho_import_index>
         <reference name="content">
             <block type="ho_import/adminhtml_ho_import" name="adminhtml_ho_import.grid.container" />

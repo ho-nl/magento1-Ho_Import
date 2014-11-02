@@ -25,6 +25,8 @@
  * @method array getImportData()
  * @method Ho_Import_Model_Import setRowCount(int $rowCount)
  * @method int getRowCount()
+ * @method Ho_Import_Model_Import setEntityCount(int $rowCount)
+ * @method int getEntityCount()
  * @method Ho_Import_Model_Import setDryrun(bool $drurun)
  * @method int getDryrun()
  * @method Ho_Import_Model_Import setSourceOptions(array $sourceOptions)
@@ -82,7 +84,9 @@ class Ho_Import_Model_Import extends Varien_Object
             Mage::throwException($this->_getLog()->__("Entity %s not supported", $entity));
         }
 
-        $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
+        $this->_getLog()->log($this->_getLog()->__(
+                'Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
+
         $this->_archiveOldCsv();
         $hasRows = $this->_createImportCsv();
         if (! $hasRows) {
@@ -92,10 +96,14 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $importData = $this->getImportData();
         if (isset($importData['dryrun']) && $importData['dryrun'] == 1) {
-            $this->_getLog()->log($this->_getLog()->__('Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+            $this->_getLog()->log($this->_getLog()->__(
+                'Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+
             $errors = $this->_dryRun();
         } else {
-            $this->_getLog()->log($this->_getLog()->__('Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+            $this->_getLog()->log($this->_getLog()->__(
+                'Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+
             $errors = $this->$method();
         }
 
@@ -124,15 +132,19 @@ class Ho_Import_Model_Import extends Varien_Object
             Mage::throwException($this->_getLog()->__("Entity %s not supported", $entity));
         }
 
-        $this->_getLog()->log($this->_getLog()->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
-        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($this->getSourceAdapter()));
+        $this->_getLog()->log($this->_getLog()->__(
+            'Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
+
+        $this->_runEvent('process_before', $this->_getTransport()->setData('adapter', $this->getSourceAdapter()));
 
         $importData = $this->getImportData();
         if (isset($importData['dryrun']) && $importData['dryrun'] == 1) {
-            $this->_getLog()->log($this->_getLog()->__('Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+            $this->_getLog()->log($this->_getLog()->__(
+                'Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
             $errors = $this->_dryRun();
         } else {
-            $this->_getLog()->log($this->_getLog()->__('Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
+            $this->_getLog()->log($this->_getLog()->__(
+                'Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
             $errors = $this->$method();
         }
 
@@ -167,7 +179,8 @@ class Ho_Import_Model_Import extends Varien_Object
 
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
-        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($sourceAdapter));
+        $this->_runEvent('process_before', $this->_getTransport()->setData('adapter', $sourceAdapter));
+
         $this->_applyImportOptions();
 
         //search a line instead on specifying the line.
@@ -184,7 +197,8 @@ class Ho_Import_Model_Import extends Varien_Object
             }
 
             if ($sourceAdapter->key() == NULL) {
-                Mage::throwException($this->_getLog()->__("Couldn't find  %s=%s in %s", $parts[1], $parts[0], $this->getProfile()));
+                Mage::throwException($this->_getLog()->__(
+                        "Couldn't find  %s=%s in %s", $parts[1], $parts[0], $this->getProfile()));
             }
 
             $lines = array($sourceAdapter->key());
@@ -209,9 +223,10 @@ class Ho_Import_Model_Import extends Varien_Object
             $transport->setData('items', array($sourceRows[$line]));
             $this->_runEvent('source_row_fieldmap_before', $transport);
             if ($transport->getData('skip')) {
-                $this->_getLog()->log($this->_getLog()->__('Skip flag is set for line (%s) in event source_row_fieldmap_before', $line), Zend_Log::WARN);
+                $this->_getLog()->log($this->_getLog()->__(
+                        'Skip flag is set for line (%s) in event source_row_fieldmap_before', $line), Zend_Log::WARN);
                 $this->_getLog()->log($transport->getData('items'), Zend_Log::DEBUG);
-                return;
+                return false;
             } else {
                 $this->_getLog()->log($transport->getData('items'), Zend_Log::DEBUG);
 
@@ -248,16 +263,20 @@ class Ho_Import_Model_Import extends Varien_Object
         }
         $this->_getLog()->log($logEntities, Zend_Log::DEBUG);
 
-        return TRUE;
+        return true;
     }
 
-    /** @var Varien_Object */
-    protected $_transport = NULL;
+    /** @var Ho_Import_Model_Import_Transport */
+    protected $_transport = null;
 
+
+    /**
+     * @return Ho_Import_Model_Import_Transport
+     */
     protected function _getTransport()
     {
         if ($this->_transport === NULL) {
-            return new Varien_Object();
+            $this->_transport = Mage::getModel('ho_import/import_transport');
         } else {
             $this->_transport->setData(array());
             $this->_transport->setOrigData(array());
@@ -285,11 +304,15 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $model = Mage::getModel($downloader->getAttribute('model'));
         if (!$model) {
-            Mage::throwException($this->_getLog()->__("Trying to load %s, model not found", $downloader->getAttribute('model')));
+            Mage::throwException($this->_getLog()->__(
+                    "Trying to load %s, model not found", $downloader->getAttribute('model')));
         }
 
         if (!$model instanceof Ho_Import_Model_Downloader_Abstract) {
-            Mage::throwException($this->_getLog()->__("Downloader model %s must be instance of Ho_Import_Model_Downloader_Abstract", $downloader->getAttribute('model')));
+            Mage::throwException($this->_getLog()->__(
+                "Downloader model %s must be instance of Ho_Import_Model_Downloader_Abstract",
+                $downloader->getAttribute('model')
+            ));
         }
 
         $target = $downloader->target ? : 'var/import';
@@ -303,7 +326,8 @@ class Ho_Import_Model_Import extends Varien_Object
         try {
             $model->download($transport, $target);
         } catch (Exception $e) {
-            $this->_getLog()->log($this->_getLog()->__("Error while downloading external file (%s):", $downloader->getAttribute('model')), Zend_Log::ERR);
+            $this->_getLog()->log($this->_getLog()->__(
+                    "Error while downloading external file (%s):", $downloader->getAttribute('model')), Zend_Log::ERR);
             Mage::throwException($e->getMessage());
         }
     }
@@ -328,11 +352,15 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $model = Mage::getModel($decompressor->getAttribute('model'));
         if (!$model) {
-            Mage::throwException($this->_getLog()->__("Trying to load %s, model not found", $decompressor->getAttribute('model')));
+            Mage::throwException($this->_getLog()->__(
+                    "Trying to load %s, model not found", $decompressor->getAttribute('model')));
         }
 
         if (!$model instanceof Ho_Import_Model_Decompressor_Abstract) {
-            Mage::throwException($this->_getLog()->__("Decompressor model %s must be instance of Ho_Import_Model_Decompressor_Abstract", $decompressor->getAttribute('model')));
+            Mage::throwException($this->_getLog()->__(
+                "Decompressor model %s must be instance of Ho_Import_Model_Decompressor_Abstract",
+                $decompressor->getAttribute('model')
+            ));
         }
 
         $args = array_merge($decompressor->asArray());
@@ -344,7 +372,8 @@ class Ho_Import_Model_Import extends Varien_Object
         try {
             $model->decompress($transport);
         } catch (Exception $e) {
-            $this->_getLog()->log($this->_getLog()->__("Error while decompressing file (%s):", $decompressor->getAttribute('model')), Zend_Log::ERR);
+            $this->_getLog()->log($this->_getLog()->__(
+                    "Error while decompressing file (%s):", $decompressor->getAttribute('model')), Zend_Log::ERR);
             Mage::throwException($e->getMessage());
         }
     }
@@ -353,7 +382,7 @@ class Ho_Import_Model_Import extends Varien_Object
     {
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
-        $this->_runEvent('process_before', $this->_getTransport()->setAdapter($sourceAdapter));
+        $this->_runEvent('process_before', $this->_getTransport()->setData('adapter', $sourceAdapter));
         $timer = microtime(TRUE);
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
@@ -361,7 +390,9 @@ class Ho_Import_Model_Import extends Varien_Object
         $fieldNames    = $this->_getMapper()->getFieldNames();
 
         $rowCount = 0;
+        $entityCount = 0;
         while ($sourceAdapter->valid()) {
+            $entityCount++;
             $transport = $this->_getTransport();
             $transport->setData('items', array($sourceAdapter->current()));
             $this->_runEvent('source_row_fieldmap_before', $transport);
@@ -383,10 +414,14 @@ class Ho_Import_Model_Import extends Varien_Object
             $sourceAdapter->next();
         }
         $this->setRowCount($rowCount);
+        $this->setEntityCount($entityCount);
 
         $seconds       = round(microtime(TRUE) - $timer, 2);
         $rowsPerSecond = $seconds ? round($this->getRowCount() / $seconds, 2) : $this->getRowCount();
-        $this->_getLog()->log("Fieldmapping {$this->getProfile()} with {$this->getRowCount()} rows (done in $seconds seconds, $rowsPerSecond rows/s)");
+        $this->_getLog()->log($this->_getLog()->__(
+            'Fieldmapping %s with %s rows, %s entities (done in %s seconds, %s rows/s)',
+            $this->getProfile(), $this->getRowCount(), $this->getEntityCount(), $seconds, $rowsPerSecond
+        ));
 
         if ($this->getRowCount()) {
             return true;
@@ -477,8 +512,10 @@ class Ho_Import_Model_Import extends Varien_Object
     {
         $options = $this->_getConfigNode(self::IMPORT_CONFIG_IMPORT_OPTIONS);
         if ($options) {
-            foreach ($options->children() as $key => $value) {
-                $value      = $value->asArray();
+            foreach ($options->children() as $key => $child) {
+                /** @var Mage_Core_Model_Config_Element $child */
+
+                $value = $child->asArray();
                 $printValue = is_array($value) ? implode(',', $value) : $value;
                 $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $printValue));
                 $this->_fastSimpleImport->setDataUsingMethod($key, $value);
@@ -501,15 +538,15 @@ class Ho_Import_Model_Import extends Varien_Object
         $helperParts = explode('::', $node->$event->getAttribute('helper'));
         $helper      = Mage::helper($helperParts[0]);
         if (!$helper) {
-            Mage::throwException($this->_getLog()->__("Trying to run %s, helper not found %s", $event, $helperParts[0]));
+            Mage::throwException($this->_getLog()->__(
+                    "Trying to run %s, helper not found %s", $event, $helperParts[0]));
         }
 
         $method = $helperParts[1];
         if (!method_exists($helper, $method)) {
-            Mage::throwException($this->_getLog()->__("Trying to run %s, method %s::%s not found.", $event, $helperParts[0], $method));
+            Mage::throwException($this->_getLog()->__(
+                    "Trying to run %s, method %s::%s not found.", $event, $helperParts[0], $method));
         }
-
-//        $this->_getLog()->log($this->_getLog()->__("Running event %s, %s::%s", $event, $helperParts[0], $method));
 
         $args = array_merge($node->$event->asArray());
         unset($args['@']);
@@ -564,7 +601,10 @@ class Ho_Import_Model_Import extends Varien_Object
                 }
 
                 if ($symbolForClearField && isset($fieldConfig['@'])
-                    && (!isset($itemRows[$storeCode][0][$fieldName]) || $itemRows[$storeCode][0][$fieldName] === NULL)) {
+                    && (
+                        !isset($itemRows[$storeCode][0][$fieldName])
+                        || $itemRows[$storeCode][0][$fieldName] === NULL
+                    )) {
                     $itemRows[$storeCode][0][$fieldName] = $symbolForClearField;
                 }
             }
@@ -654,15 +694,21 @@ class Ho_Import_Model_Import extends Varien_Object
             }
         } catch (Exception $e) {
             $seconds  = round(microtime(TRUE) - $timer, 2);
-            $this->_getLog()->log("Exception while running profile  {$this->getProfile()}, ran for $seconds seconds.", Zend_Log::CRIT);
+            $this->_getLog()->log($this->_getLog()->__(
+                'Exception while running profile %s, ran for %s seconds',
+                $this->getProfile(), $seconds
+            ), Zend_Log::CRIT);
             Mage::printException($e);
             exit;
         }
 
         $seconds           = round(microtime(TRUE) - $timer, 2);
         $rowsPerSecond     = round($this->getRowCount() / $seconds, 2);
-        $productsPerSecond = round($this->getRowCount() / $seconds, 2);
-        $this->_getLog()->log("Import {$this->getProfile()} done in $seconds seconds, $rowsPerSecond rows/s, $productsPerSecond items/s.");
+        $entitiesPerSecond = round($this->getEntityCount() / $seconds, 2);
+        $this->_getLog()->log($this->_getLog()->__(
+            'Import %s done in %s seconds, %s entities/s, %s rows/s.',
+            $this->getProfile(), $seconds, $entitiesPerSecond, $rowsPerSecond
+        ));
 
         return $this->_fastSimpleImport->getErrors();
     }
@@ -719,7 +765,8 @@ class Ho_Import_Model_Import extends Varien_Object
         if (isset($arguments['file']) && !is_readable($arguments['file'])) {
             $arguments['file'] = Mage::getBaseDir() . DS . (string)$source->file;
             if (!is_readable($arguments['file'])) {
-                Mage::throwException(Mage::helper('importexport')->__("%s file does not exists or is not readable", $source->file));
+                Mage::throwException(Mage::helper('importexport')->__(
+                        "%s file does not exists or is not readable", $source->file));
             }
         }
 
@@ -731,7 +778,10 @@ class Ho_Import_Model_Import extends Varien_Object
         $importModel = Mage::getModel($source->getAttribute('model'), $arguments);
 
         if (!$importModel) {
-            Mage::throwException($this->_getLog()->__('Import model (%s) not found for profile %s', $source->getAttribute('model'), $this->getProfile()));
+            Mage::throwException($this->_getLog()->__(
+                'Import model (%s) not found for profile %s',
+                $source->getAttribute('model'), $this->getProfile()
+            ));
         }
 
         return $importModel;
@@ -777,10 +827,12 @@ class Ho_Import_Model_Import extends Varien_Object
     {
         if ($errors) {
             foreach ($errors as $type => $errorLines) {
-                $this->_getLog()->log($this->_getLog()->__("%s on lines %s", $type, implode(',', $errorLines)), Zend_Log::ERR);
+                $this->_getLog()->log($this->_getLog()->__(
+                        "%s on lines %s", $type, implode(',', $errorLines)), Zend_Log::ERR);
             }
         } else {
-            $this->_getLog()->log($this->_getLog()->__('No errors found in %s rows', $this->getRowCount()), Ho_Import_Helper_Log::LOG_SUCCESS);
+            $this->_getLog()->log($this->_getLog()->__(
+                    'No errors found in %s rows', $this->getRowCount()), Ho_Import_Helper_Log::LOG_SUCCESS);
         }
         return $this;
     }
@@ -810,7 +862,8 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $errorLines = array_slice($errorLines, 0, 5);
-        $this->_getLog()->log($this->_getLog()->__("Debugging first 5 error lines %s", implode(',', $errorLines)), Zend_Log::DEBUG);
+        $this->_getLog()->log($this->_getLog()->__(
+                "Debugging first 5 error lines %s", implode(',', $errorLines)), Zend_Log::DEBUG);
 
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = Mage::getModel('importexport/import_adapter_csv', $this->_getFileName());
@@ -850,7 +903,7 @@ class Ho_Import_Model_Import extends Varien_Object
     public function setProfile($profile)
     {
         $this->_getMapper()->setProfileName($profile);
-        return parent::setProfile($profile);
+        return $this->setData('profile', $profile);
     }
 
 
@@ -859,7 +912,8 @@ class Ho_Import_Model_Import extends Varien_Object
      * Archive the old file.
      * @return $this
      */
-    protected function _archiveOldCsv() {
+    protected function _archiveOldCsv()
+    {
         $allowArchive = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_IMPORT_OPTIONS.'/archive_import_files');
 
         $fileName = $this->_getFileName();
@@ -871,7 +925,8 @@ class Ho_Import_Model_Import extends Varien_Object
         $fileTime = date('Ymd-His', filemtime($this->_getFileName()));
         $newFileName = $pathInfo['dirname'].DS.$pathInfo['basename'] .'-'.$fileTime.'.'.$pathInfo['extension'];
 
-        $this->_getLog()->log($this->_getLog()->__("Archiving old import file, renaming to %s", basename($newFileName)), Zend_Log::INFO);
+        $this->_getLog()->log($this->_getLog()->__(
+                "Archiving old import file, renaming to %s", basename($newFileName)), Zend_Log::INFO);
 
         rename($fileName, $newFileName);
         return $this;

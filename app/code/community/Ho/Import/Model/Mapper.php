@@ -43,7 +43,8 @@ class Ho_Import_Model_Mapper
      * @param array $item
      * @return $this
      */
-    public function setItem(array &$item) {
+    public function setItem(array &$item)
+    {
         $this->_item = &$item;
         return $this;
     }
@@ -53,7 +54,8 @@ class Ho_Import_Model_Mapper
      * Get the item, which is the xml-config array
      * @return null|array
      */
-    public function getItem() {
+    public function getItem()
+    {
         return $this->_item;
     }
 
@@ -63,7 +65,8 @@ class Ho_Import_Model_Mapper
      * @param string $profileName
      * @return $this
      */
-    public function setProfileName($profileName) {
+    public function setProfileName($profileName)
+    {
         $this->_profileName = $profileName;
         return $this;
     }
@@ -73,7 +76,8 @@ class Ho_Import_Model_Mapper
      * Get the profile_name that is currently set.
      * @return null|string
      */
-    public function getProfileName() {
+    public function getProfileName()
+    {
         return $this->_profileName;
     }
 
@@ -83,7 +87,8 @@ class Ho_Import_Model_Mapper
      * @param string $storeCode
      * @return $this
      */
-    public function setStoreCode($storeCode) {
+    public function setStoreCode($storeCode)
+    {
         $this->_storeCode = $storeCode;
         return $this;
     }
@@ -93,7 +98,8 @@ class Ho_Import_Model_Mapper
      * Get the store_code that is currently set.
      * @return null|string
      */
-    public function getStoreCode() {
+    public function getStoreCode()
+    {
         return $this->_storeCode;
     }
 
@@ -105,7 +111,8 @@ class Ho_Import_Model_Mapper
      * @param string $fieldName name of the field to be mapped
      * @return array|mixed
      */
-    public function map($fieldName) {
+    public function map($fieldName)
+    {
         return $this->mapItem($this->getFieldConfig($fieldName));
     }
 
@@ -116,7 +123,8 @@ class Ho_Import_Model_Mapper
      * @param $fieldConfig
      * @return array|mixed
      */
-    public function mapItem($fieldConfig) {
+    public function mapItem($fieldConfig)
+    {
         if ($fieldConfig instanceof Mage_Core_Model_Config_Element) {
             $fieldConfig = $fieldConfig->asArray();
         }
@@ -141,8 +149,8 @@ class Ho_Import_Model_Mapper
         if (isset($attributes['unlessfieldvalue'])) {
             $field = $attributes['unlessfieldvalue'];
             if (isset($item[$field]) && !empty($item[$field])) {
-               return null;
-           }
+                return null;
+            }
         }
 
         // use: ability to copy another field's value
@@ -160,7 +168,8 @@ class Ho_Import_Model_Mapper
             $method = $helperParts[1];
 
             if (! method_exists($helper, $method)) {
-                Mage::throwException(Mage::helper('ho_import')->__('Method %s could not be found for helper %s', $method, $helperParts[0]));
+                Mage::throwException(Mage::helper('ho_import')->__(
+                        'Method %s could not be found for helper %s', $method, $helperParts[0]));
             }
 
             //prepare the arguments
@@ -195,7 +204,7 @@ class Ho_Import_Model_Mapper
             $field = $attributes['field'];
             //allow us to traverse an array, keys split by a slash.
             if (strpos($field, '/')) {
-                $fieldParts = explode('/',$field);
+                $fieldParts = explode('/', $field);
 
                 $value = $item;
                 foreach ($fieldParts as $part) {
@@ -229,15 +238,15 @@ class Ho_Import_Model_Mapper
      *
      * @return mixed
      */
-    public function getFieldConfig($fieldName = null, $profile = null) {
+    public function getFieldConfig($fieldName = null, $profile = null)
+    {
         if (is_null($profile)) {
             $profile = $this->getProfileName();
         }
 
         $fieldMapPath = sprintf(self::IMPORT_FIELD_CONFIG_PATH, $profile);
 
-        if (! isset($this->_fieldConfig[$fieldMapPath]))
-        {
+        if (! isset($this->_fieldConfig[$fieldMapPath])) {
             $fieldMapNode = Mage::getConfig()->getNode($fieldMapPath);
             if (! $fieldMapNode) {
                 Mage::throwException(sprintf("Config path not found %s", $fieldMapPath));
@@ -295,7 +304,8 @@ class Ho_Import_Model_Mapper
      *
      * @return array
      */
-    public function getFieldNames($profile = null) {
+    public function getFieldNames($profile = null)
+    {
         if (is_null($profile)) {
             $profile = $this->getProfileName();
         }
