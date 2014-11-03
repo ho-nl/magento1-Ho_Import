@@ -698,8 +698,8 @@ class Ho_Import_Model_Import extends Varien_Object
                 'Exception while running profile %s, ran for %s seconds',
                 $this->getProfile(), $seconds
             ), Zend_Log::CRIT);
-            Mage::printException($e);
-            exit;
+            Mage::logException($e);
+            throw $e;
         }
 
         $seconds           = round(microtime(TRUE) - $timer, 2);
