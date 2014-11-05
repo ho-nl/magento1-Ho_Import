@@ -131,27 +131,27 @@ class Ho_Import_Model_Observer
 
                 $fieldConfig = $mapper->getFieldConfig($attribute->getAttributeCode());
                 if (isset($fieldConfig['@'])) {
-                    $this->_lockAttribute($attribute, $model);
+                    $this->_lockAttribute($attribute, $model, $profile);
                 }
             }
         }
     }
 
-    protected function _lockAttribute(Mage_Eav_Model_Entity_Attribute $attribute, Mage_Catalog_Model_Abstract $model)
-    {
+    protected function _lockAttribute(
+        Mage_Eav_Model_Entity_Attribute $attribute,
+        Mage_Catalog_Model_Abstract $model,
+        $profile
+    ) {
         $note = $attribute->getNote() ? $attribute->getNote() : '';
 
         if ($attribute->getAttributeCode() == 'ho_import_profile') {
             return;
         }
 
-        //scope global, website
-        if (! $model->isLockedAttribute($attribute->getAttributeCode())) {
-            if ($note) {
-                $note .= "<br />\n";
-            }
-            $note .= Mage::helper('ho_import')->__("Locked by import <i>%s</i>", $model->getData('ho_import_profile'));
+        if ($note) {
+            $note .= "<br />\n";
         }
+        $note .= Mage::helper('ho_import')->__("Locked by import: <i>%s</i>", $profile);
 
         $model->lockAttribute($attribute->getAttributeCode());
         $attribute->setNote($note);
