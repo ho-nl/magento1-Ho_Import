@@ -848,6 +848,40 @@ Give the price and the special_price and it returns the special_price if the spe
 </billing>
 ```
 
+
+### Combining helper methods <a name="combining-helpers"></a>
+The output of a helper method can be used as the input of another helper. This way you can combine multiple helpers to achieve your task.
+
+**Example:**  
+In the following example we have multiple fields that are used for the `_media_image` field:
+
+```XML
+<_media_image helper="ho_import/import::getMediaImage">
+    <!-- We use the result of getFieldMultiple as the first argument for the `getMediaImage` helper. -->
+    <images helper="ho_import/import::getFieldMultiple">
+        <fields>
+            <field field="image"/>
+            <!-- we are using the result of getFieldSplit as the input for getFieldMultiple -->
+            <media_gallery helper="ho_import/import::getFieldSplit"> 
+                <field field="media_gallery"/>
+                <split>,</split>
+            </media_gallery>
+            <awards helper="ho_import/import::getFieldSplit">
+                <field field="awards"/>
+                <split>,</split>
+            </awards>
+        </fields>
+    </images>
+    <limit/>
+    <!-- We use result of `getUrlKey` as the third argument for the `getMediaImage` helper. -->
+    <!-- We make sure the name of the image is the same as the SKU of the product, gets automatically appended with -1, -2, etc. -->
+    <filename helper="ho_import/import_product::getUrlKey">
+        <fields><name use="sku"/></fields>
+        <glue>-</glue>
+    </filename>
+</_media_image>
+```
+
 ### Custom helper methods <a name="custom-helpers"></a>
 Not every situation is a simple value processing and more complex logic might have to be used. You have the ability to easily create your own helper methods for each project. Simply create your own helper class and call that class.
 
