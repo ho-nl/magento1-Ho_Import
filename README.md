@@ -13,6 +13,7 @@ We have chosen to do all configuration in XML, this makes the import profile way
 To increase development and debugging speed there is a extensive shell tool that allows you to easily create new fieldmaps, add a downloader and start working.
 
 ![Terminal Preview](docs/images/terminal.png)
+![Terminal Preview](docs/images/terminal2.png)
 
 Example config for a customer import (this is added to the `<config><global><ho_import>` node:
 
