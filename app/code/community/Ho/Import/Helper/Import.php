@@ -570,7 +570,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             if ($code !== 200) {
                 $this->_fileCache[$url] = $code;
                 Mage::helper('ho_import/log')->log($this->__(
-                        "Returned status code %s while downloading image %s", $code, $fileName), Zend_Log::ERR);
+                        "Returned status code %s while downloading image %s", $code, $url), Zend_Log::ERR);
                 unlink($fileName);
             }
 
