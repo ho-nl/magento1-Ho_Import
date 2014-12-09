@@ -88,7 +88,7 @@ all the config for that specific import.
 
 _Need help creating an empty module for your installation, use a [module creator](http://www.silksoftware.com/magento-module-creator/).
 
-Example config:
+Example config ([More import examples](#use-cases))
 
 ```XML
 <config>
@@ -999,7 +999,7 @@ and admin panel message will be added.
 ```
 
 
-## Use cases
+## Use cases <a name="use-cases"></a>
 At the time of release we have this tool running for multiple clients, multiple types of imports:
 - Multiple sources per product [Example config](docs/imports/product_multiple_sources.xml)
 - One time product / category imports from an old datasource [Example config](docs/imports/old_products.xml)
