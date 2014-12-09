@@ -113,12 +113,24 @@ class Ho_Import_Model_Source_Adapter_Csv implements SeekableIterator
         }
 
         $this->_init();
+        if (isset($config['columns'])) {
+            $this->_colNames = array_keys($config['columns']);
+            if (count($this->_colNames) != count($this->_currentRow)) {
+                Mage::helper('ho_import/log')->log(array($this->_colNames, $this->_currentRow), Zend_Log::DEBUG);
+                Mage::throwException(Mage::helper('importexport')->__(
+                    'Column names do not match (%s columns configured, %s in first row)',
+                    count($this->_colNames),
+                    count($this->_currentRow)
+                ));
+            }
+        }
 
         // validate column names consistency
         if (is_array($this->_colNames) && !empty($this->_colNames)) {
             $this->_colQuantity = count($this->_colNames);
 
             if (count(array_unique($this->_colNames)) != $this->_colQuantity) {
+                Mage::helper('ho_import/log')->log(array($this->_colNames), Zend_Log::DEBUG);
                 Mage::throwException(Mage::helper('importexport')->__('Column names have duplicates'));
             }
         } else {
