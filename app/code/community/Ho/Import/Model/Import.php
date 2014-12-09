@@ -78,11 +78,6 @@ class Ho_Import_Model_Import extends Varien_Object
         $this->_decompressor();
 
         $entity = (string)$this->_getEntityType();
-        $method = '_import' . ucfirst(Mage::helper('ho_import')->underscoreToCamelCase($entity));
-
-        if (FALSE === method_exists($this, $method)) {
-            Mage::throwException($this->_getLog()->__("Entity %s not supported", $entity));
-        }
 
         $this->_getLog()->log($this->_getLog()->__(
                 'Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
@@ -104,7 +99,7 @@ class Ho_Import_Model_Import extends Varien_Object
             $this->_getLog()->log($this->_getLog()->__(
                 'Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
 
-            $errors = $this->$method();
+            $errors = $this->_importMain();
         }
 
         $this->_runEvent('process_after');
@@ -431,11 +426,9 @@ class Ho_Import_Model_Import extends Varien_Object
     }
 
     /**
-     * @param $type
-     *
      * @return Ho_Import_Model_Import
      */
-    protected function _importMain($type = '')
+    protected function _importMain()
     {
         $importData = $this->getImportData();
         if (is_array($importData)) {
@@ -470,42 +463,6 @@ class Ho_Import_Model_Import extends Varien_Object
         $transport->addData(array('object' => $this->_fastSimpleImport, 'errors' => $errors));
         $this->_runEvent('import_after', $transport);
         return $errors;
-    }
-
-    /**
-     * Actual importmethod
-     * @return Ho_Import_Model_Import
-     */
-    protected function _importCustomer()
-    {
-        return $this->_importMain(self::IMPORT_TYPE_CUSTOMER);
-    }
-
-    /**
-     * Actual import method
-     * @return Ho_Import_Model_Import
-     */
-    protected function _importCatalogProduct()
-    {
-        return $this->_importMain(self::IMPORT_TYPE_PRODUCT);
-    }
-
-    /**
-     * Actual import method
-     * @return Ho_Import_Model_Import
-     */
-    protected function _importCatalogCategory()
-    {
-        return $this->_importMain(self::IMPORT_TYPE_CATEGORY);
-    }
-
-    /**
-     * Actual import method
-     * @return Ho_Import_Model_Import
-     */
-    protected function _importCatalogCategoryProduct()
-    {
-        return $this->_importMain(self::IMPORT_TYPE_CATEGORY_PRODUCT);
     }
 
     protected function _applyImportOptions()
