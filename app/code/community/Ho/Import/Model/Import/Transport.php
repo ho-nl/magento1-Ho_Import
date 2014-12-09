@@ -22,4 +22,13 @@
 class Ho_Import_Model_Import_Transport extends Varien_Object
 {
 
+    /**
+     * Clean up the transport object, without having to reinstantiate a new class (saves memory)
+     */
+    public function reset()
+    {
+        $this->setData(array());
+        $this->setOrigData(null, array());
+        $this->setDataChanges(false);
+    }
 }

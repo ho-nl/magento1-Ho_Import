@@ -273,9 +273,7 @@ class Ho_Import_Model_Import extends Varien_Object
         if ($this->_transport === NULL) {
             $this->_transport = Mage::getModel('ho_import/import_transport');
         } else {
-            $this->_transport->setData(array());
-            $this->_transport->setOrigData(null, array());
-            $this->_transport->setDataChanges(false);
+            $this->_transport->reset();
         }
         return $this->_transport;
     }
