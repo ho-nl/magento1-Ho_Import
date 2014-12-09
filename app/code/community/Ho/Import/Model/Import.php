@@ -437,11 +437,9 @@ class Ho_Import_Model_Import extends Varien_Object
                 $importData['dropdown_attributes'] = explode(',', $importData['dropdown_attributes']);
             }
 
-            if ($type !== self::IMPORT_TYPE_CATEGORY) { // @SchumacherFM I'm not sure if that is needed
-                foreach ($importData as $key => $value) {
-                    $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
-                    $this->_fastSimpleImport->setDataUsingMethod($key, (string)$value);
-                }
+            foreach ($importData as $key => $value) {
+                $this->_getLog()->log($this->_getLog()->__('Setting option %s to %s', $key, $value));
+                $this->_fastSimpleImport->setDataUsingMethod($key, (string)$value);
             }
 
             if (isset($importData['ignoreErrors']) && (int)$importData['ignoreErrors'] === 1) {
