@@ -18,15 +18,45 @@
  * @copyright 2014 Copyright © H&O (http://www.h-o.nl/)
  * @license   H&O Commercial License (http://www.h-o.nl/license)
  */
- 
+
+
+
+/**
+ * Class Ho_Import_Model_Import_Transport
+ * @method $this setSkip(bool $skip)
+ * @method bool getSkip()
+ */
 class Ho_Import_Model_Import_Transport extends Varien_Object
 {
+    protected $_items = array();
+
+
+    /**
+     * @param array $items
+     * @return $this
+     */
+    public function setItems(array $items)
+    {
+        $this->_items = $items;
+        return $this;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getItems()
+    {
+        return $this->_items;
+    }
+
 
     /**
      * Clean up the transport object, without having to reinstantiate a new class (saves memory)
      */
     public function reset()
     {
+        $this->_items = array();
         $this->setData(array());
         $this->setOrigData(null, array());
         $this->setDataChanges(false);

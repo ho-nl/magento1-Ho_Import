@@ -215,18 +215,18 @@ class Ho_Import_Model_Import extends Varien_Object
 
             $transport         = $this->_getTransport();
             $sourceRows[$line] = $sourceAdapter->current();
-            $transport->setData('items', array($sourceRows[$line]));
+            $transport->setItems(array($sourceRows[$line]));
             $this->_runEvent('source_row_fieldmap_before', $transport);
-            if ($transport->getData('skip')) {
+            if ($transport->getSkip()) {
                 $this->_getLog()->log($this->_getLog()->__(
                         'Skip flag is set for line (%s) in event source_row_fieldmap_before', $line), Zend_Log::WARN);
-                $this->_getLog()->log($transport->getData('items'), Zend_Log::DEBUG);
+                $this->_getLog()->log($transport->getItems(), Zend_Log::DEBUG);
                 return false;
             } else {
-                $this->_getLog()->log($transport->getData('items'), Zend_Log::DEBUG);
+                $this->_getLog()->log($transport->getItems(), Zend_Log::DEBUG);
 
                 $i = 0;
-                foreach ($transport->getData('items') as $preparedItem) {
+                foreach ($transport->getItems() as $preparedItem) {
                     $results = $this->_fieldMapItem($preparedItem);
 
                     foreach ($results as $result) {
@@ -380,25 +380,28 @@ class Ho_Import_Model_Import extends Varien_Object
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
         $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getFileName());
-        $fieldNames    = $this->_getMapper()->getFieldNames();
+        $fieldNames = $this->_getMapper()->getFieldNames();
 
         $rowCount = 0;
         $entityCount = 0;
         while ($sourceAdapter->valid()) {
             $entityCount++;
-            $transport = $this->_getTransport();
-            $transport->setData('items', array($sourceAdapter->current()));
+            $transport = $this->_getTransport()->setItems(array($sourceAdapter->current()));
             $this->_runEvent('source_row_fieldmap_before', $transport);
-            if ($transport->getData('skip')) {
+
+            if ($transport->getSkip()) {
                 $rowCount++;
                 $sourceAdapter->next();
                 continue;
             }
 
-            foreach ($transport->getData('items') as $preparedItem) {
+            foreach ($transport->getItems() as $preparedItem) {
                 $result = $this->_fieldMapItem($preparedItem);
 
-                foreach ($result as $row) {
+                $transport = $this->_getTransport()->setItems($result);
+                $this->_runEvent('source_row_fieldmap_after', $transport);
+
+                foreach ($transport->getItems() as $row) {
                     $rowCount++;
                     $exportAdapter->writeRow(array_merge($fieldNames, $row));
                 }
