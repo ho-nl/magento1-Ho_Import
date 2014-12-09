@@ -308,6 +308,7 @@ class Ho_Import_Model_Import extends Varien_Object
             ));
         }
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $target = $downloader->target ? : 'var/import';
 
         $args = array_merge($downloader->asArray());
@@ -709,18 +710,25 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $arguments = array();
         foreach ($source->children() as $key => $value) {
-            $arguments[$key] = (string)$value;
+            /** @var Mage_Core_Model_Config_Element $value */
+            //asArray doesn't actually always return an array, it can also return a string.
+            $arguments[$key] = $value->asArray();
         }
 
         if ($this->getSourceOptions() && is_array($this->getSourceOptions())) {
             foreach ($this->getSourceOptions() as $key => $value) {
-                $arguments[$key] = (string)$value;
+                /** @var Mage_Core_Model_Config_Element $value */
+                $arguments[$key] = $value->asArray();
             }
         }
 
         if (isset($arguments['file']) && !is_readable($arguments['file'])) {
+
+            /** @noinspection PhpUndefinedFieldInspection */
             $arguments['file'] = Mage::getBaseDir() . DS . (string)$source->file;
             if (!is_readable($arguments['file'])) {
+
+                /** @noinspection PhpUndefinedFieldInspection */
                 Mage::throwException(Mage::helper('importexport')->__(
                         "%s file does not exists or is not readable", $source->file));
             }
