@@ -442,6 +442,8 @@ with the information set.
 	<process_before helper="ho_import/import_product::prepareSomeData"/>
 	<import_before helper="ho_import/import_product::callWifeIfItIsOk"/>
 	<source_row_fieldmap_before helper="ho_import/import_product::checkIfValid"/>
+	<source_row_fieldmap_after helper="ho_import/import_product::extractData"/
+	<source_fieldmap_after helper="ho_import/import_product::appendExtraData"/>
 	<import_after helper="ho_import/import_product::reindexStuff"/>
 	<process_after helper="ho_import/import_product::cleanupSomeData"/>
 </events>
