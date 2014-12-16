@@ -108,8 +108,9 @@ class Ho_Import_Model_Observer
             return;
         }
 
-        $profiles = explode(',', $profiles);
-        foreach ($profiles as $profile) {
+        foreach ($profiles as $profileData) {
+            $profile = $profileData['profile'];
+
             // Is lock attributes functionality enabled.
             $lockAttributes = sprintf('global/ho_import/%s/import_options/lock_attributes', $profile);
             $fieldMapNode = Mage::getConfig()->getNode($lockAttributes);

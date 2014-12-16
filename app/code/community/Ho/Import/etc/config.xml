@@ -26,7 +26,7 @@
 <config>
 	<modules>
 		<Ho_Import>
-			<version>1.5.1</version>
+			<version>1.6.0</version>
 		</Ho_Import>
 	</modules>
 	<global>
@@ -47,11 +47,11 @@
 			</ho_import>
             <ho_import_resource>
                 <class>Ho_Import_Model_Resource</class>
-                <!--<entities>-->
-                    <!--<tablename>-->
-                        <!--<table>ho_import_tablename</table>-->
-                    <!--</tablename>-->
-                <!--</entities>-->
+                <entities>
+                    <entity>
+                        <table>ho_import_entity</table>
+                    </entity>
+                </entities>
             </ho_import_resource>
 		</models>
         <resources>
@@ -65,120 +65,120 @@
 		<events>
             <catalog_product_edit_action>
                 <observers>
-                    <ho_import_catalog_product_edit_action>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>catalogProductEditAction</method>
-                    </ho_import_catalog_product_edit_action>
+                    </ho_import>
                 </observers>
             </catalog_product_edit_action>
             <controller_action_layout_load_before>
                 <observers>
-                    <ho_import_catalog_category_edit_action>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>catalogCategoryEditAction</method>
-                    </ho_import_catalog_category_edit_action>
+                    </ho_import>
                 </observers>
             </controller_action_layout_load_before>
 
             <fastsimpleimport_reindex_products_before>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before>
             <fastsimpleimport_reindex_products_before_indexer_stock>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before_indexer_stock>
             <fastsimpleimport_reindex_products_before_product_indexer_price>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before_product_indexer_price>
             <fastsimpleimport_reindex_products_before_category_indexer_product>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before_category_indexer_product>
             <fastsimpleimport_reindex_products_before_product_indexer_eav>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before_product_indexer_eav>
             <fastsimpleimport_reindex_products_before_fulltext>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before_fulltext>
             <fastsimpleimport_reindex_products_before_ecomdev_urlrewrite>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before_ecomdev_urlrewrite>
             <fastsimpleimport_reindex_products_before_urlrewrite>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before_urlrewrite>
             <fastsimpleimport_reindex_products_after>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_after>
             <fastsimpleimport_reindex_products_delete_before>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_delete_before>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_delete_before>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_delete_before>
             <fastsimpleimport_reindex_products_delete_after>
                 <observers>
-                    <ho_import_fastsimpleimport_reindex_products_delete_after>
+                    <ho_import>
                         <type>singleton</type>
                         <class>Ho_Import_Model_Observer</class>
                         <method>progressLog</method>
-                    </ho_import_fastsimpleimport_reindex_products_delete_after>
+                    </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_delete_after>
 		</events>
