@@ -329,8 +329,14 @@ The CSV source is an implementation of PHP's [fgetcsv](http://php.net/manual/en/
     <file>var/import/customer.csv</file>
 
     <!-- the delimmiter and enclosure aren't required -->
-    <!--<delimiter>;</delimiter>-->
-    <!--<enclosure></enclosure>-->
+    <delimiter>;</delimiter>
+    <enclosure></enclosure>
+    
+    <!-- if the CSV has no header information, you can specify the column names -->
+    <columns>
+    	<sku/>
+    	<other_columns/>
+    </columns>
 </source>
 ```
 
