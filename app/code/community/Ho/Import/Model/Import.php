@@ -45,6 +45,7 @@ class Ho_Import_Model_Import extends Varien_Object
     const IMPORT_CONFIG_ENTITY_TYPE    = 'global/ho_import/%s/entity_type';
     const IMPORT_CONFIG_EVENTS         = 'global/ho_import/%s/events';
     const IMPORT_CONFIG_IMPORT_OPTIONS = 'global/ho_import/%s/import_options';
+    const IMPORT_CONFIG_CLEAN          = 'global/ho_import/%s/clean';
     const IMPORT_CONFIG_LOG_LEVEL      = 'global/ho_import/%s/log_level';
 
     /**
@@ -102,10 +103,29 @@ class Ho_Import_Model_Import extends Varien_Object
             $errors = $this->_importMain();
         }
 
-        $this->_runEvent('process_after');
-
         $this->_logErrors($errors);
         $this->_debugErrors($errors);
+        $cleanRowCount = $this->_createCleanCsv();
+
+        if ($cleanRowCount) {
+            if (isset($importData['dryrun']) && $importData['dryrun'] == 1) {
+                $this->_getLog()->log($this->_getLog()->__(
+                    'Dry run cleaning %s rows from temp csv file (%s)', $cleanRowCount, $this->_getCleanFileName()));
+
+                $errors = $this->_dryRunClean();
+            } else {
+                $this->_getLog()->log($this->_getLog()->__(
+                    'Clean %s rows from temp csv file (%s)', $cleanRowCount, $this->_getCleanFileName()));
+
+                $errors = $this->_importClean();
+            }
+
+            $this->_logErrors($errors);
+            $this->_debugErrors($errors);
+        }
+
+        $this->_cleanEntityTable();
+        $this->_runEvent('process_after');
     }
 
     public function importCsv()
@@ -377,59 +397,54 @@ class Ho_Import_Model_Import extends Varien_Object
         /** @var SeekableIterator $sourceAdapter */
         $sourceAdapter = $this->getSourceAdapter();
         $this->_runEvent('process_before', $this->_getTransport()->setData('adapter', $sourceAdapter));
-        $timer = microtime(TRUE);
-
+        $timer = microtime(true);
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
         $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getFileName());
-        $fieldNames = $this->_getMapper()->getFieldNames();
-
-        $rowCount = 0;
+        $fieldNames    = $this->_getMapper()->getFieldNames();
+        $rowCount    = 0;
         $entityCount = 0;
         while ($sourceAdapter->valid()) {
             $entityCount++;
             $transport = $this->_getTransport()->setItems(array($sourceAdapter->current()));
             $this->_runEvent('source_row_fieldmap_before', $transport);
-
             if ($transport->getSkip()) {
                 $rowCount++;
                 $sourceAdapter->next();
                 continue;
             }
-
             foreach ($transport->getItems() as $preparedItem) {
                 $result = $this->_fieldMapItem($preparedItem);
-
                 $transport = $this->_getTransport()->setItems($result);
                 $this->_runEvent('source_row_fieldmap_after', $transport);
-
                 foreach ($transport->getItems() as $row) {
                     $rowCount++;
                     $exportAdapter->writeRow(array_merge($fieldNames, $row));
                 }
             }
-
             $sourceAdapter->next();
         }
-
         $transport = $this->_getTransport();
         $this->_runEvent('source_fieldmap_after', $transport);
         if ($transport->getItems()) {
-            foreach($transport->getItems() as $item) {
+            foreach ($transport->getItems() as $item) {
                 $rowCount++;
                 $exportAdapter->writeRow(array_merge($fieldNames, $item));
             }
         }
-
         $this->setRowCount($rowCount);
         $this->setEntityCount($entityCount);
-
-        $seconds       = round(microtime(TRUE) - $timer, 2);
+        $seconds       = round(microtime(true) - $timer, 2);
         $rowsPerSecond = $seconds ? round($this->getRowCount() / $seconds, 2) : $this->getRowCount();
-        $this->_getLog()->log($this->_getLog()->__(
-            'Fieldmapping %s with %s rows, %s entities (done in %s seconds, %s rows/s)',
-            $this->getProfile(), $this->getRowCount(), $this->getEntityCount(), $seconds, $rowsPerSecond
-        ));
-
+        $this->_getLog()->log(
+            $this->_getLog()->__(
+                'Fieldmapping %s with %s rows, %s entities (done in %s seconds, %s rows/s)',
+                $this->getProfile(),
+                $this->getRowCount(),
+                $this->getEntityCount(),
+                $seconds,
+                $rowsPerSecond
+            )
+        );
         if ($this->getRowCount()) {
             return true;
         } else {
@@ -621,9 +636,24 @@ class Ho_Import_Model_Import extends Varien_Object
         return Mage::getSingleton('ho_import/mapper');
     }
 
+
+    /**
+     * Get the intermediate filename for importing the entities
+     * @return string
+     */
     protected function _getFileName()
     {
         return Mage::getBaseDir('var') . DS . 'import' . DS . $this->getProfile() . '.csv';
+    }
+
+
+    /**
+     * get the intermediate filename for cleaning up entities
+     * @return string
+     */
+    protected function _getCleanFileName()
+    {
+        return Mage::getBaseDir('var') . DS . 'import' . DS . $this->getProfile() . '_clean.csv';
     }
 
     /**
@@ -639,9 +669,11 @@ class Ho_Import_Model_Import extends Varien_Object
      * @throws Exception
      * @return \Ho_Import_Model_Import
      */
-    protected function _importData()
+    protected function _importData($fileName = null, $profile = null)
     {
-        $timer = microtime(TRUE);
+        $timer = microtime(true);
+        $fileName = $fileName ?: $this->_getFileName();
+        $profile = $profile ?: $this->getProfile();
 
         //importing
         $entityType    = (string)$this->_getEntityType();
@@ -654,27 +686,27 @@ class Ho_Import_Model_Import extends Varien_Object
 
         try {
             if (isset($importMethods[$entityType])) {
-                $this->_getLog()->log($this->_getLog()->__('Start import %s', $entityType));
-                $this->_fastSimpleImport->{$importMethods[$entityType]}($this->_getFileName());
+                $this->_getLog()->log($this->_getLog()->__('Start profile %s', $entityType));
+                $this->_fastSimpleImport->{$importMethods[$entityType]}($fileName);
             } else {
                 $this->_getLog()->log($this->_getLog()->__('Type %s not found', $entityType));
             }
         } catch (Exception $e) {
-            $seconds  = round(microtime(TRUE) - $timer, 2);
+            $seconds  = round(microtime(true) - $timer, 2);
             $this->_getLog()->log($this->_getLog()->__(
                 'Exception while running profile %s, ran for %s seconds',
-                $this->getProfile(), $seconds
+                $profile, $seconds
             ), Zend_Log::CRIT);
             Mage::printException($e);
             exit;
         }
 
-        $seconds           = round(microtime(TRUE) - $timer, 2);
+        $seconds           = round(microtime(true) - $timer, 2);
         $rowsPerSecond     = round($this->getRowCount() / $seconds, 2);
         $entitiesPerSecond = round($this->getEntityCount() / $seconds, 2);
         $this->_getLog()->log($this->_getLog()->__(
-            'Import %s done in %s seconds, %s entities/s, %s rows/s.',
-            $this->getProfile(), $seconds, $entitiesPerSecond, $rowsPerSecond
+            'Profile %s done in %s seconds, %s entities/s, %s rows/s.',
+            $profile, $seconds, $entitiesPerSecond, $rowsPerSecond
         ));
 
         return $this->_fastSimpleImport->getErrors();
@@ -904,5 +936,142 @@ class Ho_Import_Model_Import extends Varien_Object
 
         rename($fileName, $newFileName);
         return $this;
+    }
+
+
+
+
+
+
+    protected function _getCleanMode()
+    {
+        return (string) $this->_getConfigNode(self::IMPORT_CONFIG_CLEAN.'/mode');
+    }
+
+    protected function _createCleanCsv()
+    {
+        /** @var SeekableIterator $sourceAdapter */
+        $sourceAdapter = $this->getSourceAdapter();
+        $this->_runEvent('process_clean_before', $this->_getTransport()->setData('adapter', $sourceAdapter));
+
+        Mage::helper('ho_import')->getCurrentDatetime();
+        $resource = Mage::getSingleton('core/resource');
+
+        /** @var Magento_Db_Adapter_Pdo_Mysql $adapter */
+        $adapter = $resource->getConnection('write');
+
+        /** @var Mage_Eav_Model_Entity_Type $entityType */
+        $entityType = Mage::getSingleton('eav/config')->getEntityType((string) $this->_getEntityType());
+        $cleanMode = $this->_getCleanMode();
+
+        $select = $this->_getCleanSelect('inner');
+
+        $skus = $adapter->fetchPairs($select);
+
+        /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
+        $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getCleanFileName());
+
+        $rowCount = 0;
+        foreach ($skus as $sku) {
+            $rowCount++;
+
+            $rowData = array('sku' => $sku);
+            switch($cleanMode) {
+                case 'hide':
+                    $rowData['visibility'] = Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE;
+                    break;
+
+                case 'disable':
+                    $rowData['status'] = Mage_Catalog_Model_Product_Status::STATUS_DISABLED;
+                    break;
+
+                case 'delete':
+                    break;
+            }
+            $exportAdapter->writeRow($rowData);
+        }
+
+        if ($rowCount) {
+            $this->_getLog()->log($this->_getLog()->__(
+                'Prepared cleaning of %s entities with mode %s',
+                $rowCount, $cleanMode
+            ));
+        }
+
+        return $rowCount;
+    }
+
+    protected function _getEntityTypeId()
+    {
+        /** @var Mage_Eav_Model_Entity_Type $entityType */
+        $entityType = Mage::getSingleton('eav/config')->getEntityType((string) $this->_getEntityType());
+
+        return $entityType->getId();
+    }
+
+    protected function _getCleanSelect($joinType = 'inner')
+    {
+        $resource = Mage::getSingleton('core/resource');
+
+        /** @var Magento_Db_Adapter_Pdo_Mysql $adapter */
+        $adapter = $resource->getConnection('write');
+        $select = $adapter
+            ->select()
+            ->from(
+                array('entity_profile' => $resource->getTableName('ho_import/entity')),
+                array('entity_id')
+            )->where(
+                'entity_profile.profile=?', $this->getProfile()
+            )->where(
+                'entity_profile.updated_at<?', Mage::helper('ho_import')->getCurrentDatetime()
+            )->where(
+                'entity_profile.entity_type_id=?', $this->_getEntityTypeId()
+            );
+
+        $joinMethod = $joinType == 'left' ? 'joinLeft' : 'join';
+        switch ($this->_getEntityType()) {
+            case 'catalog_category':
+                Mage::throwException('Cleaning categories not yet implemented');
+                break;
+            case 'catalog_product':
+                $select->$joinMethod(
+                    array('entity' => $resource->getTableName('catalog/product')),
+                    'entity.entity_id = entity_profile.entity_id',
+                    array('sku')
+                );
+                break;
+            case 'customer':
+                Mage::throwException('Cleaning customers not yet implemented');
+                break;
+        }
+
+        return $select;
+    }
+
+    protected function _importClean()
+    {
+        $cleanMode = $this->_getCleanMode();
+        if ($cleanMode == 'delete') {
+            $this->_fastSimpleImport->setBehavior(Mage_ImportExport_Model_Import::BEHAVIOR_DELETE);
+        }
+
+//        $errors = $this->_importData($this->_getCleanFileName(), $this->getProfile().'_clean');
+//        return $errors;
+
+        return array();
+    }
+
+    protected function _cleanEntityTable()
+    {
+        $select = $this->_getCleanSelect('left');
+        $select->where('entity.entity_id IS NULL');
+
+        $resource = Mage::getSingleton('core/resource');
+
+        /** @var Magento_Db_Adapter_Pdo_Mysql $adapter */
+        $adapter = $resource->getConnection('write');
+
+//        $adapter->delete($resource->getTableName('ho_import/entity'), )
+        $adapter->deleteFromSelect($select, $resource->getTableName('ho_import/entity'));
     }
 }

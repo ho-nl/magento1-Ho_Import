@@ -22,6 +22,51 @@
  */
 class Ho_Import_Model_Observer
 {
+
+    /**
+     * Link imported products to profile.
+     * @param Varien_Event_Observer $observer
+     * @throws Zend_Db_Exception
+     */
+    public function linkProductsToProfile(Varien_Event_Observer $observer)
+    {
+        /** @var AvS_FastSimpleImport_Model_Import_Entity_Product $adapter */
+        $adapter = $observer->getAdapter();
+
+        /** @var $coreResource Mage_Core_Model_Resource */
+        $coreResource = Mage::getSingleton('core/resource');
+        $entityProfileTable = $coreResource->getTableName('ho_import/entity');
+        $entityTypeId = $adapter->getEntityTypeId();
+        $now = Mage::helper('ho_import')->getCurrentDatetime();
+
+        while ($bunch = $adapter->getNextBunch()) {
+            $entityProfileData = array();
+            foreach ($bunch as $rowNum => $rowData) {
+                if ($adapter->getRowScope($rowData) !== Mage_ImportExport_Model_Import_Entity_Product::SCOPE_DEFAULT) {
+                    continue;
+                }
+
+                if (! isset($rowData['ho_import_profile'])) {
+                    continue;
+                }
+
+                $entity = $adapter->getEntityBySku($rowData[$adapter::COL_SKU]);
+
+                $entityProfileData[] = array(
+                    'profile' => $rowData['ho_import_profile'],
+                    'entity_type_id' => $entityTypeId,
+                    'entity_id' => $entity['entity_id'],
+                    'updated_at' => $now,
+                    'created_at' => $now
+                );
+            }
+
+            if ($entityProfileData) {
+                $adapter->getConnection()->insertOnDuplicate($entityProfileTable, $entityProfileData, array('updated_at'));
+            }
+        }
+    }
+
     public function schedule()
     {
         $importCollection = Mage::getResourceModel('ho_import/system_import_collection');

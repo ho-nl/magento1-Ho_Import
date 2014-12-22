@@ -23,6 +23,16 @@
  */
 class Ho_Import_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    protected $_currentDatetime = null;
+
+    public function getCurrentDatetime()
+    {
+        if ($this->_currentDatetime === null) {
+            $this->_currentDatetime = Mage::getModel('core/date')->date('Y-m-d H:i:s');
+        }
+        return $this->_currentDatetime;
+    }
+
     /**
      * Convert strings with underscores into CamelCase
      *

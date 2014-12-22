@@ -82,6 +82,15 @@
                 </observers>
             </controller_action_layout_load_before>
 
+            <catalog_product_import_finish_before>
+                <observers>
+                    <ho_import>
+                        <type>singleton</type>
+                        <class>Ho_Import_Model_Observer</class>
+                        <method>linkProductsToProfile</method>
+                    </ho_import>
+                </observers>
+            </catalog_product_import_finish_before>
             <fastsimpleimport_reindex_products_before>
                 <observers>
                     <ho_import>
