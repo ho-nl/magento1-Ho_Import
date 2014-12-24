@@ -105,26 +105,27 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $this->_logErrors($errors);
         $this->_debugErrors($errors);
-        $cleanRowCount = $this->_createCleanCsv();
+
+        $cleanRowCount = $this->_createEntityCleanCsv();
+        $this->setRowCount($cleanRowCount);
 
         if ($cleanRowCount) {
             if (isset($importData['dryrun']) && $importData['dryrun'] == 1) {
                 $this->_getLog()->log($this->_getLog()->__(
                     'Dry run cleaning %s rows from temp csv file (%s)', $cleanRowCount, $this->_getCleanFileName()));
-
-                $errors = $this->_dryRunClean();
+                $errors = $this->_dryRunEntityCleanCsv();
             } else {
                 $this->_getLog()->log($this->_getLog()->__(
                     'Clean %s rows from temp csv file (%s)', $cleanRowCount, $this->_getCleanFileName()));
-
-                $errors = $this->_importClean();
+                $errors = $this->_processEntityCleanCsv();
             }
 
             $this->_logErrors($errors);
             $this->_debugErrors($errors);
         }
 
-        $this->_cleanEntityTable();
+        $this->_getLog()->log($this->_getLog()->__('Clean entity link table'));
+        $this->_cleanEntityLinkTable();
         $this->_runEvent('process_after');
     }
 
@@ -686,7 +687,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         try {
             if (isset($importMethods[$entityType])) {
-                $this->_getLog()->log($this->_getLog()->__('Start profile %s', $entityType));
+                $this->_getLog()->log($this->_getLog()->__('Start profile %s', $fileName));
                 $this->_fastSimpleImport->{$importMethods[$entityType]}($fileName);
             } else {
                 $this->_getLog()->log($this->_getLog()->__('Type %s not found', $entityType));
@@ -939,21 +940,17 @@ class Ho_Import_Model_Import extends Varien_Object
     }
 
 
-
-
-
-
     protected function _getCleanMode()
     {
         return (string) $this->_getConfigNode(self::IMPORT_CONFIG_CLEAN.'/mode');
     }
 
-    protected function _createCleanCsv()
-    {
-        /** @var SeekableIterator $sourceAdapter */
-        $sourceAdapter = $this->getSourceAdapter();
-        $this->_runEvent('process_clean_before', $this->_getTransport()->setData('adapter', $sourceAdapter));
 
+    /**
+     * @return int
+     */
+    protected function _createEntityCleanCsv()
+    {
         Mage::helper('ho_import')->getCurrentDatetime();
         $resource = Mage::getSingleton('core/resource');
 
@@ -961,12 +958,9 @@ class Ho_Import_Model_Import extends Varien_Object
         $adapter = $resource->getConnection('write');
 
         /** @var Mage_Eav_Model_Entity_Type $entityType */
-        $entityType = Mage::getSingleton('eav/config')->getEntityType((string) $this->_getEntityType());
         $cleanMode = $this->_getCleanMode();
 
-        $select = $this->_getCleanSelect('inner');
-
-        $skus = $adapter->fetchPairs($select);
+        $skus = $adapter->fetchCol($this->_getCleanSelect());
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
         $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getCleanFileName());
@@ -1009,7 +1003,7 @@ class Ho_Import_Model_Import extends Varien_Object
         return $entityType->getId();
     }
 
-    protected function _getCleanSelect($joinType = 'inner')
+    protected function _getCleanSelect()
     {
         $resource = Mage::getSingleton('core/resource');
 
@@ -1019,7 +1013,7 @@ class Ho_Import_Model_Import extends Varien_Object
             ->select()
             ->from(
                 array('entity_profile' => $resource->getTableName('ho_import/entity')),
-                array('entity_id')
+                array()
             )->where(
                 'entity_profile.profile=?', $this->getProfile()
             )->where(
@@ -1028,13 +1022,12 @@ class Ho_Import_Model_Import extends Varien_Object
                 'entity_profile.entity_type_id=?', $this->_getEntityTypeId()
             );
 
-        $joinMethod = $joinType == 'left' ? 'joinLeft' : 'join';
         switch ($this->_getEntityType()) {
             case 'catalog_category':
                 Mage::throwException('Cleaning categories not yet implemented');
                 break;
             case 'catalog_product':
-                $select->$joinMethod(
+                $select->join(
                     array('entity' => $resource->getTableName('catalog/product')),
                     'entity.entity_id = entity_profile.entity_id',
                     array('sku')
@@ -1048,30 +1041,65 @@ class Ho_Import_Model_Import extends Varien_Object
         return $select;
     }
 
-    protected function _importClean()
+
+    /**
+     * @return Ho_Import_Model_Import
+     */
+    protected function _processEntityCleanCsv()
     {
         $cleanMode = $this->_getCleanMode();
         if ($cleanMode == 'delete') {
             $this->_fastSimpleImport->setBehavior(Mage_ImportExport_Model_Import::BEHAVIOR_DELETE);
         }
 
-//        $errors = $this->_importData($this->_getCleanFileName(), $this->getProfile().'_clean');
-//        return $errors;
-
-        return array();
+        $errors = $this->_importData($this->_getCleanFileName(), $this->getProfile().'_clean');
+        return $errors;
     }
 
-    protected function _cleanEntityTable()
-    {
-        $select = $this->_getCleanSelect('left');
-        $select->where('entity.entity_id IS NULL');
 
+    /**
+     *
+     */
+    protected function _dryRunEntityCleanCsv()
+    {
+
+    }
+
+
+    /**
+     * @throws Mage_Core_Exception
+     */
+    protected function _cleanEntityLinkTable()
+    {
         $resource = Mage::getSingleton('core/resource');
 
         /** @var Magento_Db_Adapter_Pdo_Mysql $adapter */
         $adapter = $resource->getConnection('write');
+        $select = $adapter
+            ->select()
+            ->from(
+                array('entity_profile' => $resource->getTableName('ho_import/entity'))
+            )->where(
+                'entity_profile.entity_type_id=?', $this->_getEntityTypeId()
+            )->where(
+                'entity.entity_id IS NULL'
+            );
 
-//        $adapter->delete($resource->getTableName('ho_import/entity'), )
-        $adapter->deleteFromSelect($select, $resource->getTableName('ho_import/entity'));
+        switch ($this->_getEntityType()) {
+            case 'catalog_category':
+                Mage::throwException('Cleaning categories not yet implemented');
+                break;
+            case 'catalog_product':
+                $select->joinLeft(
+                    array('entity' => $resource->getTableName('catalog/product')),
+                    'entity.entity_id = entity_profile.entity_id'
+                );
+                break;
+            case 'customer':
+                Mage::throwException('Cleaning customers not yet implemented');
+                break;
+        }
+
+        $adapter->deleteFromSelect($select, 'entity_profile');
     }
 }
