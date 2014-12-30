@@ -666,7 +666,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 $this->getProfile(), $seconds
             ), Zend_Log::CRIT);
             Mage::printException($e);
-            exit;
+            exit(1);
         }
 
         $seconds           = round(microtime(TRUE) - $timer, 2);
