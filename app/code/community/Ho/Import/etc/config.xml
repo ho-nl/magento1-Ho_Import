@@ -67,7 +67,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>catalogProductEditAction</method>
                     </ho_import>
                 </observers>
@@ -76,7 +76,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>catalogCategoryEditAction</method>
                     </ho_import>
                 </observers>
@@ -86,7 +86,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>linkProductsToProfile</method>
                     </ho_import>
                 </observers>
@@ -95,7 +95,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -104,7 +104,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -113,7 +113,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -122,7 +122,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -131,7 +131,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -140,7 +140,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -149,7 +149,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -158,16 +158,25 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
             </fastsimpleimport_reindex_products_before_urlrewrite>
+            <fastsimpleimport_reindex_products_before_flat>
+                <observers>
+                    <ho_import>
+                        <type>singleton</type>
+                        <class>ho_import/observer</class>
+                        <method>progressLog</method>
+                    </ho_import>
+                </observers>
+            </fastsimpleimport_reindex_products_before_flat>
             <fastsimpleimport_reindex_products_after>
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -176,7 +185,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
@@ -185,7 +194,7 @@
                 <observers>
                     <ho_import>
                         <type>singleton</type>
-                        <class>Ho_Import_Model_Observer</class>
+                        <class>ho_import/observer</class>
                         <method>progressLog</method>
                     </ho_import>
                 </observers>
