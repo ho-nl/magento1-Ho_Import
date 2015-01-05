@@ -1048,8 +1048,11 @@ class Ho_Import_Model_Import extends Varien_Object
     protected function _processEntityCleanCsv()
     {
         $cleanMode = $this->_getCleanMode();
+        $this->_applyImportOptions();
         if ($cleanMode == 'delete') {
             $this->_fastSimpleImport->setBehavior(Mage_ImportExport_Model_Import::BEHAVIOR_DELETE);
+        } else {
+            $this->_fastSimpleImport->setBehavior(Mage_ImportExport_Model_Import::BEHAVIOR_APPEND);
         }
 
         $errors = $this->_importData($this->_getCleanFileName(), $this->getProfile().'_clean');
