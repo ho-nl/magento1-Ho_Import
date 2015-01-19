@@ -431,9 +431,15 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
+    /**
+     * @param $line
+     *
+     * @deprecated
+     * @return mixed
+     */
     public function getMediaAttributeId($line)
     {
-        return $this->getMediaAttributeId('media_gallery');
+        return $this->getAttributeId($line, 'media_gallery');
     }
 
 
