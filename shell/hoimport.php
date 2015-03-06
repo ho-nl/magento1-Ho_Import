@@ -85,7 +85,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 
 
     /**
-     *
+     * Importing data entities
      */
     public function importAction() {
         if (! $profile = $this->getArg('profile')) {
@@ -126,7 +126,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 
 
     /**
-     *
+     * This doesn't actually import a product
      */
     public function lineAction() {
         if (! $profile = $this->getArg('profile')) {
