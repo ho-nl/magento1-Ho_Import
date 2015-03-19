@@ -447,7 +447,7 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
             if ($encodingPos !== false) {
                 $encodingStr = substr($this->_chunk, $encodingPos + 10);
                 $encodingStr = substr($encodingStr, 0, strpos($encodingStr, '"'));
-                $this->_fileEncoding = $encodingStr;
+                $this->_fileEncoding = strtoupper($encodingStr);
             }
             // Find root node
             if (isset($this->_customRootNode)) {
