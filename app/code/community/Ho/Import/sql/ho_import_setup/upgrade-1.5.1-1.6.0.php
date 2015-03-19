@@ -111,7 +111,8 @@ $productCollection->joinAttribute(
     null,
     'inner'
 );
-$productCollection->getSelect()->where('`at_ho_import_profile_default`.`value` IS NOT NULL');
+
+$productCollection->getSelect()->where('`at_ho_import_profile`.`value` IS NOT NULL');
 
 $entityProfileData = $installer->getConnection()->fetchAll($productCollection->getSelect());
 $insertData = array();
