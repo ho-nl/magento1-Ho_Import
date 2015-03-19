@@ -106,6 +106,9 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
     protected $_customChildNode;
 
 
+    protected $_fileEncoding = 'UTF-8';
+
+
     /**
      * Adapter object constructor.
      *
@@ -295,6 +298,9 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
             return null;
         }
         $doc = new DOMDocument();
+        if ($this->_fileEncoding != 'UTF-8') {
+            $xmlString = iconv($this->_fileEncoding, "UTF-8", $xmlString);
+        }
         $doc->loadXML($xmlString);
 
         return $this->_nodeToArray($doc->documentElement);
@@ -437,6 +443,12 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
 
         $continue = $this->_readNextChunk();
         while ($continue) {
+            $encodingPos = strpos($this->_chunk, 'encoding="');
+            if ($encodingPos !== false) {
+                $encodingStr = substr($this->_chunk, $encodingPos + 10);
+                $encodingStr = substr($encodingStr, 0, strpos($encodingStr, '"'));
+                $this->_fileEncoding = $encodingStr;
+            }
             // Find root node
             if (isset($this->_customRootNode)) {
                 $customRootNodePos = strpos($this->_chunk, "<{$this->_customRootNode}");
