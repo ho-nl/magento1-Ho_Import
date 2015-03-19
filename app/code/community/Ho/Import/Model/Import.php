@@ -951,6 +951,9 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _createEntityCleanCsv()
     {
+        if (! $this->_getCleanMode()) {
+            return 0;
+        }
         Mage::helper('ho_import')->getCurrentDatetime();
         $resource = Mage::getSingleton('core/resource');
 
@@ -1090,7 +1093,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         switch ($this->_getEntityType()) {
             case 'catalog_category':
-                Mage::throwException('Cleaning categories not yet implemented');
+                $this->_getLog()->log('Cleaning category entities not yet implemented', Zend_Log::WARN);
                 break;
             case 'catalog_product':
                 $select->joinLeft(
@@ -1099,7 +1102,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 );
                 break;
             case 'customer':
-                Mage::throwException('Cleaning customers not yet implemented');
+                $this->_getLog()->log('Cleaning customer entities not yet implemented', Zend_Log::WARN);
                 break;
         }
 
