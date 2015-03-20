@@ -561,6 +561,7 @@ class Ho_Import_Model_Import extends Varien_Object
         $itemRows = array();
 
         $mapper = $this->_getMapper();
+        $mapper->setSymbolIgnoreFields($this->_fastSimpleImport->getSymbolIgnoreFields());
         $mapper->setItem($item);
         $symbolForClearField = $this->_fastSimpleImport->getSymbolEmptyFields();
         $profile = $this->getProfile();

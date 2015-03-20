@@ -37,6 +37,9 @@ class Ho_Import_Model_Mapper
     /** @var null|string */
     protected $_storeCode = null;
 
+    /** @var bool|string */
+    protected $_symbolIgnoreFields = false;
+
 
     /**
      * Set the item, array of xml-config.
@@ -118,6 +121,15 @@ class Ho_Import_Model_Mapper
 
 
     /**
+     * @param string $value
+     * @return $this
+     */
+    public function setSymbolIgnoreFields($value) {
+        $this->_symbolIgnoreFields = $value;
+        return $this;
+    }
+
+    /**
      * Get the value for a specific fieldConfig
      *
      * @param $fieldConfig
@@ -130,7 +142,7 @@ class Ho_Import_Model_Mapper
         }
 
         if ($fieldConfig === null) {
-            return null;
+            return isset($attributes['ignoreifempty']) ? $this->_symbolIgnoreFields : null;
         }
 
         $item = $this->getItem();
@@ -141,7 +153,7 @@ class Ho_Import_Model_Mapper
         if (isset($attributes['iffieldvalue'])) {
             $field = $attributes['iffieldvalue'];
             if (! isset($item[$field]) || empty($item[$field])) {
-                return null;
+                return isset($attributes['ignoreifempty']) ? $this->_symbolIgnoreFields : null;
             }
         }
 
@@ -149,7 +161,7 @@ class Ho_Import_Model_Mapper
         if (isset($attributes['unlessfieldvalue'])) {
             $field = $attributes['unlessfieldvalue'];
             if (isset($item[$field]) && !empty($item[$field])) {
-                return null;
+                return isset($attributes['ignoreifempty']) ? $this->_symbolIgnoreFields : null;
             }
         }
 
@@ -225,6 +237,11 @@ class Ho_Import_Model_Mapper
         // defaultvalue
         if (isset($attributes['defaultvalue']) && empty($result)) {
             $result = $attributes['defaultvalue'];
+        }
+
+        //ignoreifempty
+        if (isset($attributes['ignoreifempty']) && empty($result)) {
+            $result = $this->_symbolIgnoreFields;
         }
 
         return is_array($result) ? array_values($result) : $result;
