@@ -91,13 +91,21 @@ class Ho_Import_Model_Source_Adapter_Csv implements SeekableIterator
         if (is_string($config)) {
             $config = array('file' => $config);
         }
-        if (!isset($config['file']) && !is_string($config['file'])) {
-            Mage::throwException(Mage::helper('importexport')->__('File path must be a string'));
+
+        if (!is_string($config['file'])) {
+            Mage::throwException(Mage::helper('importexport')->__(
+                    'Source file path must be a string'));
         }
         if (!is_readable($config['file'])) {
             Mage::throwException(Mage::helper('importexport')->__(
                     "%s file does not exists or is not readable", $config['file']));
         }
+        if (!is_file($config['file'])) {
+            Mage::throwException(Mage::helper('importexport')->__(
+                    "%s isn't a file, probably a folder.", $config['file']));
+        }
+
+        Mage::helper('ho_import/log')->log(Mage::helper('ho_import')->__("Loading source file %s", $config['file']));
         $this->_source = $config['file'];
 
         if (isset($config['delimiter'])) {

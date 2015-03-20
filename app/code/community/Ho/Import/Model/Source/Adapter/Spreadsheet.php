@@ -49,6 +49,8 @@ class Ho_Import_Model_Source_Adapter_Spreadsheet extends SpreadsheetReader
             Mage::throwException(Mage::helper('importexport')->__(
                     "%s isn't a file, probably a folder.", $source));
         }
+
+        Mage::helper('ho_import/log')->log(Mage::helper('ho_import')->__("Loading source file %s", $source));
         $this->_source = $source;
         parent::__construct($this->_source);
 

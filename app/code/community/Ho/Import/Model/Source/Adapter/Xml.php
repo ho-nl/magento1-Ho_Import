@@ -132,6 +132,7 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
                     "%s isn't a file, probably a folder.", $source));
         }
 
+        Mage::helper('ho_import/log')->log(Mage::helper('ho_import')->__("Loading source file %s", $source));
         $this->_source = $source;
 
         if (is_array($data) && isset($data['rootNode'])) {
