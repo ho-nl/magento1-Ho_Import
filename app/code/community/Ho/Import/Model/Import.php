@@ -699,8 +699,8 @@ class Ho_Import_Model_Import extends Varien_Object
                 'Exception while running profile %s, ran for %s seconds',
                 $profile, $seconds
             ), Zend_Log::CRIT);
-            Mage::printException($e);
-            exit;
+            self::printException($e);
+            exit(1);
         }
 
         $seconds           = round(microtime(true) - $timer, 2);
@@ -713,6 +713,25 @@ class Ho_Import_Model_Import extends Varien_Object
 
         return $this->_fastSimpleImport->getErrors();
     }
+
+    /**
+     * Display exception
+     *
+     * @param Exception $e
+     * @see Mage::printException()
+     */
+    protected static function printException(Exception $e, $extra = '')
+    {
+        print '<pre>';
+
+        if (!empty($extra)) {
+            print $extra . "\n\n";
+        }
+
+        print $e->getMessage() . "\n\n";
+        print $e->getTraceAsString();
+        print '</pre>';
+    }    
 
     /**
      * @param null $data
