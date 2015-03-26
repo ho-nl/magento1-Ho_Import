@@ -92,7 +92,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
     {
         if (! $profile = $this->getArg('profile')) {
             echo $this->importActionHelp();
-            return;
+            exit(1);
         }
 
         try {
@@ -103,8 +103,10 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import->process();
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
+            exit(1);
         } catch (Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::WARN);
+            exit(1);
         }
 
            Mage::helper('ho_import/log')->log('Done');
@@ -128,7 +130,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
     {
         if (! $profile = $this->getArg('profile')) {
             echo $this->importActionHelp();
-            return;
+            exit(1);
         }
 
         try {
@@ -139,8 +141,10 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import->mapLines($this->getArg('line'));
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
+            exit(1);
         } catch (Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::WARN);
+            exit(1);
         }
     }
 
@@ -167,7 +171,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
     {
         if (! $profile = $this->getArg('profile')) {
             echo $this->importActionHelp();
-            return;
+            exit(1);
         }
 
         try {
@@ -178,8 +182,10 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import->importCsv();
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
+            exit(1);
         } catch (Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::WARN);
+            exit(1);
         }
 
            Mage::helper('ho_import/log')->log('Done');
