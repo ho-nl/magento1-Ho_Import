@@ -701,7 +701,7 @@ class Ho_Import_Model_Import extends Varien_Object
             ), Zend_Log::CRIT);
 
             $this->_getLog()->log($this->_getLog()->getExceptionTraceAsString($e), Zend_Log::CRIT);
-            exit(1);
+            throw $e;
         }
 
         $seconds           = round(microtime(true) - $timer, 2);

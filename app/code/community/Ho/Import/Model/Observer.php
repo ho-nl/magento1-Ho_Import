@@ -67,6 +67,10 @@ class Ho_Import_Model_Observer
         }
     }
 
+
+    /**
+     * Schedule imports
+     */
     public function schedule()
     {
         $importCollection = Mage::getResourceModel('ho_import/system_import_collection');
@@ -79,6 +83,11 @@ class Ho_Import_Model_Observer
         $importCollection->cleanupCron();
     }
 
+
+    /**
+     * Run an import through a cron job
+     * @param Aoe_Scheduler_Model_Schedule|Mage_Cron_Model_Schedule $cron
+     */
     public function process(Mage_Cron_Model_Schedule $cron)
     {
         //initialize the translations so that we are able to translate things.
@@ -89,6 +98,7 @@ class Ho_Import_Model_Observer
 
         $cronName = $cron->getJobCode();
         $profile = str_replace('ho_import_', '', $cronName);
+        $logHelper = Mage::helper('ho_import/log');
 
         try {
             /** @var Ho_Import_Model_Import $import */
@@ -96,13 +106,19 @@ class Ho_Import_Model_Observer
             $import->setProfile($profile);
             $import->process();
         } catch (Exception $e) {
-            Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
-            Mage::helper('ho_import/log')->log($e->getTraceAsString(), Zend_Log::CRIT);
+            $logHelper->log($logHelper->getExceptionTraceAsString($e), Zend_Log::CRIT);
+            $cron->setStatus($cron::STATUS_ERROR);
         }
 
-        Mage::helper('ho_import/log')->done();
+        $logHelper->done();
     }
 
+
+    /**
+     * We listen to several events and log it. This gives us more insight into the progress that has been made during
+     * the import.
+     * @param Varien_Event_Observer $event
+     */
     public function progressLog(Varien_Event_Observer $event)
     {
         $name = str_replace('fastsimpleimport_', '', $event->getEvent()->getName());
@@ -114,6 +130,7 @@ class Ho_Import_Model_Observer
 
     
     /**
+     * Lock product attributes
      * @event catalog_product_edit_action
      * @param Varien_Event_Observer $observer
      */
@@ -126,6 +143,7 @@ class Ho_Import_Model_Observer
 
 
     /**
+     * Lock category attributes
      * @param Varien_Event_Observer $observer
      */
     public function catalogCategoryEditAction(Varien_Event_Observer $observer)
@@ -144,6 +162,7 @@ class Ho_Import_Model_Observer
 
 
     /**
+     * Lock the attributes of a product/category so that it can not be overwritten using Magento's backend.
      * @param Mage_Catalog_Model_Abstract $model
      */
     protected function _lockAttributes(Mage_Catalog_Model_Abstract $model)
@@ -183,6 +202,13 @@ class Ho_Import_Model_Observer
         }
     }
 
+
+    /**
+     * Lock a specific category or product attribute so that it can not be editted through the interface.
+     * @param Mage_Eav_Model_Entity_Attribute $attribute
+     * @param Mage_Catalog_Model_Abstract     $model
+     * @param                                 $profile
+     */
     protected function _lockAttribute(
         Mage_Eav_Model_Entity_Attribute $attribute,
         Mage_Catalog_Model_Abstract $model,
