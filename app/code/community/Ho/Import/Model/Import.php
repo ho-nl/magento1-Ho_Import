@@ -78,8 +78,6 @@ class Ho_Import_Model_Import extends Varien_Object
         $this->_downloader();
         $this->_decompressor();
 
-        $entity = (string)$this->_getEntityType();
-
         $this->_getLog()->log($this->_getLog()->__(
                 'Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
 
@@ -141,13 +139,6 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $this->_applyImportOptions();
 
-        $entity = (string)$this->_getEntityType();
-        $method = '_import' . ucfirst(Mage::helper('ho_import')->underscoreToCamelCase($entity));
-
-        if (FALSE === method_exists($this, $method)) {
-            Mage::throwException($this->_getLog()->__("Entity %s not supported", $entity));
-        }
-
         $this->_getLog()->log($this->_getLog()->__(
             'Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
 
@@ -161,7 +152,7 @@ class Ho_Import_Model_Import extends Varien_Object
         } else {
             $this->_getLog()->log($this->_getLog()->__(
                 'Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
-            $errors = $this->$method();
+            $errors = $this->_importData();
         }
 
         $this->_runEvent('process_after');
