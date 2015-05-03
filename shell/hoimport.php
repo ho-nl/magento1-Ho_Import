@@ -86,7 +86,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 
 
     /**
-     *
+     * Importing data entities
      */
     public function importAction()
     {
