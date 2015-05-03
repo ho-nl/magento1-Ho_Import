@@ -250,6 +250,16 @@ Exampe config:
 </import_options>
 ```
 
+### Archive import files
+After starting a new import the old import file gets renamed so it wont get deleted, easy for later referencing and
+debugging.
+
+```
+<import_options>
+    <archive_import_files>1</archive_import_files>
+</import_options>
+```
+
 When importing the name of a product it shows the attribute is locked
 ![Lock Attributes](docs/images/lock_attributes.png)
 
