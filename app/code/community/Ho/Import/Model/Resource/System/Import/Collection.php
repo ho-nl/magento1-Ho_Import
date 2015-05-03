@@ -105,6 +105,9 @@ class Ho_Import_Model_Resource_System_Import_Collection extends Varien_Data_Coll
         }
 
         foreach ($jobsNode->children() as $cron => $data) {
+            if (strpos($cron, 'ho_import_') === false) {
+                continue;
+            }
             if (!in_array($cron, $availableConfigs)) {
                 /** @var Mage_Core_Model_Resource_Config $resource */
                 $resource = Mage::getConfig()->getResourceModel();
