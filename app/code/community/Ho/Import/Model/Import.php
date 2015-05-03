@@ -956,7 +956,11 @@ class Ho_Import_Model_Import extends Varien_Object
         /** @var Mage_Eav_Model_Entity_Type $entityType */
         $cleanMode = $this->_getCleanMode();
 
-        $skus = $adapter->fetchCol($this->_getCleanSelect());
+        $select = $this->_getCleanSelect();
+        if (! $select) {
+            return 0;
+        }
+        $skus = $adapter->fetchCol($select);
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
         $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getCleanFileName());
@@ -1030,7 +1034,8 @@ class Ho_Import_Model_Import extends Varien_Object
                 );
                 break;
             case 'customer':
-                Mage::throwException('Cleaning customers not yet implemented');
+                $this->_getLog()->log('Cleaning customers not yet implemented, skipping.');
+                return false;
                 break;
         }
 
