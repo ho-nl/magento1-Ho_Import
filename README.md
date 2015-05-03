@@ -298,7 +298,7 @@ If you have only one profile with `lock_attributes` enabled, this field gets fil
 ### Downloaders
 The supported downloaders are HTTP and FTP.
 
-#### HTTP Example (:white_check_mark: Low Memory)
+#### HTTP Example (Low Memory)
 ```XML
 <downloader model="ho_import/downloader_http">
     <url>http://google.nl/file.xml</url>
@@ -308,7 +308,7 @@ The supported downloaders are HTTP and FTP.
 </downloader>
 ```
 
-#### FTP Example (:white_check_mark: Low Memory)
+#### FTP Example (Low Memory)
 ```XML
 <downloader model="ho_import/downloader_ftp">
     <host>ftp.website.com</host>
@@ -333,7 +333,7 @@ The supported downloaders are HTTP and FTP.
 ### Decompressors
 Decompress a file that has just been downloaded.
 
-#### Zip Example (:white_check_mark: Low Memory)
+#### Zip Example (Low Memory)
 ```XML
 <decompressor model="ho_import/decompressor_zip">
     <source>var/import/Archief.zip</source>
@@ -346,7 +346,7 @@ A source is a source reader. The source allows us to read data from a certain so
 a file or it even could be a database.
 
 
-#### CSV Source (:white_check_mark: Low Memory)
+#### CSV Source (Low Memory)
 The CSV source is an implementation of PHP's [fgetcsv](http://php.net/manual/en/function.fgetcsv.php)
 
 
@@ -367,7 +367,7 @@ The CSV source is an implementation of PHP's [fgetcsv](http://php.net/manual/en/
 ```
 
 
-#### XML Source (:white_check_mark: Low Memory)
+#### XML Source (Low Memory)
 The XML source is loosely based on [XmlStreamer](https://github.com/prewk/XmlStreamer/blob/master/XmlStreamer.php).
 
 ```XML
@@ -428,7 +428,7 @@ This would result in the following configuration:
 ```
 
 
-#### Spreadsheet Source (:white_check_mark: Low Memory)
+#### Spreadsheet Source (Low Memory)
 The Spreadsheet Source is an implementation of [spreadsheet-reader](https://github.com/nuovo/spreadsheet-reader) and therefor supports
 
 > So far XLSX, ODS and text/CSV file parsing should be memory-efficient. XLS file parsing is done with php-excel-reader from http://code.google.com/p/php-excel-reader/ which, sadly, has memory issues with bigger spreadsheets, as it reads the data all at once and keeps it all in memory.
