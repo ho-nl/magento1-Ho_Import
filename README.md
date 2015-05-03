@@ -250,22 +250,38 @@ Exampe config:
 </import_options>
 ```
 
-### Archive import files
-After starting a new import the old import file gets renamed so it wont get deleted, easy for later referencing and
-debugging.
-
-```
-<import_options>
-    <archive_import_files>1</archive_import_files>
-</import_options>
-```
-
 When importing the name of a product it shows the attribute is locked
 ![Lock Attributes](docs/images/lock_attributes.png)
 
 
 If you switch to a store view you can override the field:
 ![Lock Attributes](docs/images/lock_attributes2.png)
+
+### Archive import files
+After starting a new import the old import file gets renamed so it wont get deleted, easy for later referencing and
+debugging.
+
+```XML
+<import_options>
+    <archive_import_files>1</archive_import_files>
+</import_options>
+```
+
+### Clean entities that are not in the source
+Be able to automatically delete, hide or disable products and categories after importing. When a enabled, if a product
+or category isn't in the source anymore it gets automatically deleted. Ho_Import tracks the entities from which profile
+they came from:
+
+![Profile information](docs/images/import_profile.png)
+
+If a product for example isn't in the source any more AND it is the only associated profile with the entity it can be
+cleaned up.
+
+```XML
+<clean>
+    <mode>hide</mode> <!-- options are delete, hide, disable -->
+</clean>
+```
 
 
 #### Multiple imports for the same product
