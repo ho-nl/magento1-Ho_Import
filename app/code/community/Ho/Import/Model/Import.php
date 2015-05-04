@@ -754,7 +754,11 @@ class Ho_Import_Model_Import extends Varien_Object
         if ($this->getSourceOptions() && is_array($this->getSourceOptions())) {
             foreach ($this->getSourceOptions() as $key => $value) {
                 /** @var Mage_Core_Model_Config_Element $value */
-                $arguments[$key] = $value->asArray();
+                if (is_string($value)) {
+                    $arguments[$key] = $value;
+                } else {
+                    $arguments[$key] = $value->asArray();
+                }
             }
         }
 
