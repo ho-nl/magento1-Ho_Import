@@ -240,8 +240,11 @@ class Ho_Import_Model_Import extends Varien_Object
                 $i = 0;
                 foreach ($transport->getItems() as $preparedItem) {
                     $results = $this->_fieldMapItem($preparedItem);
+                    $transport = $this->_getTransport()->setItems($results);
+                    $this->_runEvent('source_row_fieldmap_after', $transport);
+                    $this->_configurableExtractRow($transport, $preparedItem);
 
-                    foreach ($results as $result) {
+                    foreach ($transport->getItems() as $result) {
                         $i++;
 
                         $entities[]                    = $result;
@@ -408,6 +411,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 $result = $this->_fieldMapItem($preparedItem);
                 $transport = $this->_getTransport()->setItems($result);
                 $this->_runEvent('source_row_fieldmap_after', $transport);
+                $this->_configurableExtractRow($transport, $preparedItem);
                 foreach ($transport->getItems() as $row) {
                     $rowCount++;
                     $exportAdapter->writeRow(array_merge($fieldNames, $row));
@@ -417,12 +421,14 @@ class Ho_Import_Model_Import extends Varien_Object
         }
         $transport = $this->_getTransport();
         $this->_runEvent('source_fieldmap_after', $transport);
+        $this->_configurableGetConfigurables($transport);
         if ($transport->getItems()) {
             foreach ($transport->getItems() as $item) {
                 $rowCount++;
                 $exportAdapter->writeRow(array_merge($fieldNames, $item));
             }
         }
+
         $this->setRowCount($rowCount);
         $this->setEntityCount($entityCount);
         $seconds       = round(microtime(true) - $timer, 2);
@@ -549,22 +555,33 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _fieldMapItem(&$item)
     {
-        $itemRows = array();
-
         $mapper = $this->_getMapper();
         $mapper->setSymbolIgnoreFields($this->_fastSimpleImport->getSymbolIgnoreFields());
         $mapper->setItem($item);
+        $fieldConfig = $this->_getMapper()->getFieldConfig();
+        $itemRows    = $this->_fieldMapItemExtract($fieldConfig);
+        return $this->_fieldMapItemFlatten($itemRows, $fieldConfig);
+    }
+
+    /**
+     * @param $item
+     * @param $fieldConfig
+     *
+     * @return array
+     */
+    protected function _fieldMapItemExtract($fieldConfig)
+    {
+        $itemRows = array();
+
+        $mapper = $this->_getMapper();
         $symbolForClearField = $this->_fastSimpleImport->getSymbolEmptyFields();
-        $profile = $this->getProfile();
 
-
-        $allFieldConfig = $mapper->getFieldConfig();
         //Step 1: Get the values for the fields
-        foreach ($allFieldConfig as $storeCode => $fields) {
+        foreach ($fieldConfig as $storeCode => $fields) {
             $mapper->setStoreCode($storeCode);
             /** @var $column Mage_Core_Model_Config_Element */
             foreach ($fields as $fieldName => $fieldConfig) {
-                $result = $this->_getMapper()->map($fieldName, $storeCode);
+                $result = $this->_getMapper()->mapItem($fieldConfig);
 
                 //add the values to the itemRows
                 if (is_array($result)) {
@@ -584,13 +601,24 @@ class Ho_Import_Model_Import extends Varien_Object
                 }
             }
         }
+        return $itemRows;
+    }
+
+
+    /**
+     * @param $itemRows
+     * @param $fieldConfig
+     */
+    protected function _fieldMapItemFlatten(&$itemRows, $fieldConfig)
+    {
+        $profile = $this->getProfile();
 
         //Step 2: Flatten all the rows.
         $flattenedRows = array();
         foreach ($itemRows as $store => $storeData) {
             foreach ($storeData as $storeKey => $storeRow) {
                 $flatRow = array();
-                foreach ($allFieldConfig[$store] as $key => $column) {
+                foreach ($fieldConfig[$store] as $key => $column) {
                     if (isset($storeRow[$key]) && (strlen($storeRow[$key]))) {
                         $flatRow[$key] = (string)$storeRow[$key];
                     }
@@ -602,7 +630,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
                 if ($flatRow) {
                     //if a column is required we add it here.
-                    foreach ($allFieldConfig[$store] as $key => $column) {
+                    foreach ($fieldConfig[$store] as $key => $column) {
                         if (!isset($flatRow[$key]) && isset($column['@']) && isset($column['@']['required'])) {
                             $flatRow[$key] = '';
                         }
@@ -1109,5 +1137,97 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $adapter->deleteFromSelect($select, 'entity_profile');
+    }
+
+
+
+    const IMPORT_CONFIG_CB_SKU = 'global/ho_import/%s/configurable_builder/sku';
+    const IMPORT_CONFIG_CB_ATTRIBUTES = 'global/ho_import/%s/configurable_builder/attributes';
+    const IMPORT_CONFIG_CB_FIELDMAP = 'global/ho_import/%s/configurable_builder/fieldmap';
+
+    protected $_configurables = [];
+
+    protected function _configurableExtractRow(Ho_Import_Model_Import_Transport $transport, &$preparedItem)
+    {
+        if ($this->_getEntityType() != self::IMPORT_TYPE_PRODUCT) {
+            return $this;
+        }
+
+        $configurableSku = $this->_getConfigNode(self::IMPORT_CONFIG_CB_SKU);
+        $configurableAttributes = array_keys($this->_getConfigNode(self::IMPORT_CONFIG_CB_ATTRIBUTES)->asArray());
+        $sku = $this->_getMapper()->mapItem($configurableSku);
+
+        if (! isset($this->_configurables[$sku])) {
+            $this->_configurableInitProduct($sku, $preparedItem);
+        }
+
+        $rowNum = 0;
+        foreach ($this->_configurables[$sku]['admin'] as $row) {
+            if (isset($row['_super_products_sku'])) {
+                $rowNum++;
+            }
+        }
+
+        foreach ($transport->getItems() as $item) {
+            if (! isset($item['sku']) || isset($item['_custom_option_sku'])) {
+                continue;
+            }
+
+            foreach ($configurableAttributes as $attribute) {
+                $this->_configurables[$sku]['admin'][$rowNum]['_super_products_sku'] = $item['sku'];
+                $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_code'] = $attribute;
+                $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_option'] = $item[$attribute];
+                $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_price_corr'] = null;
+                $rowNum++;
+            }
+        }
+
+        return $this;
+    }
+
+
+    protected function _configurableInitProduct($sku, &$preparedItem)
+    {
+        $mapper = $this->_getMapper();
+        $mapper->setSymbolIgnoreFields($this->_fastSimpleImport->getSymbolIgnoreFields());
+        $mapper->setItem($preparedItem);
+        $this->_configurables[$sku] = $this->_fieldMapItemExtract($this->_configurableFieldConfig());
+
+        return $this;
+    }
+
+    protected function _configurableFieldConfig()
+    {
+        $fieldConfig = $this->_getMapper()->getFieldConfig();
+        $fieldConfigAdd = $this->_getMapper()->getFieldConfig(null, null, self::IMPORT_CONFIG_CB_FIELDMAP);
+
+        foreach ($fieldConfig as $store => &$config) {
+            if (! isset($fieldConfigAdd[$store])) {
+                continue;
+            }
+
+            $config = $fieldConfigAdd[$store] + $config;
+        }
+        $fieldConfig['admin']['sku'] = $this->_getConfigNode(self::IMPORT_CONFIG_CB_SKU);
+
+        return $fieldConfig;
+    }
+
+    protected function _configurableGetConfigurables(Ho_Import_Model_Import_Transport $transport)
+    {
+        $fieldConfig = $this->_configurableFieldConfig();
+        $fieldConfig['admin']['_super_products_sku'] = [];
+        $fieldConfig['admin']['_super_attribute_code'] = [];
+        $fieldConfig['admin']['_super_attribute_option'] = [];
+        $fieldConfig['admin']['_super_attribute_price_corr'] = [];
+
+        foreach ($this->_configurables as $configurable) {
+            $items = $this->_fieldMapItemFlatten($configurable, $fieldConfig);
+            foreach ($items as $item) {
+                $transport->addItem($item);
+            }
+        }
+
+        return $this;
     }
 }
