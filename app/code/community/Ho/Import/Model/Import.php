@@ -1184,7 +1184,11 @@ class Ho_Import_Model_Import extends Varien_Object
                 $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_code'] = $attribute;
                 $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_option'] = $item[$attribute];
                 $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_price_corr'] = null;
-                $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_price'] = $item['price'];
+                $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_price'] =
+                    !empty($item['special_price']) && is_numeric($item['special_price'])
+                        ? $item['special_price']
+                        : $item['price'];
+
                 $rowNum++;
             }
         }
