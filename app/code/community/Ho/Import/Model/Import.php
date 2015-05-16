@@ -1144,6 +1144,7 @@ class Ho_Import_Model_Import extends Varien_Object
     const IMPORT_CONFIG_CB_SKU = 'global/ho_import/%s/configurable_builder/sku';
     const IMPORT_CONFIG_CB_ATTRIBUTES = 'global/ho_import/%s/configurable_builder/attributes';
     const IMPORT_CONFIG_CB_FIELDMAP = 'global/ho_import/%s/configurable_builder/fieldmap';
+    const IMPORT_CONFIG_CB_CALCULATE_PRICE = 'global/ho_import/%s/configurable_builder/calculate_price';
 
     protected $_configurables = [];
 
@@ -1154,6 +1155,7 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $configurableSku = $this->_getConfigNode(self::IMPORT_CONFIG_CB_SKU);
+        $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
         $configurableAttributes = array_keys($this->_getConfigNode(self::IMPORT_CONFIG_CB_ATTRIBUTES)->asArray());
         $sku = $this->_getMapper()->mapItem($configurableSku);
 
@@ -1173,11 +1175,16 @@ class Ho_Import_Model_Import extends Varien_Object
                 continue;
             }
 
+            if ($calculatePrice && $item['price'] < $this->_configurables[$sku]['admin'][0]['price']) {
+                $this->_configurables[$sku]['admin']['price'] = $item['price'];
+            }
+
             foreach ($configurableAttributes as $attribute) {
                 $this->_configurables[$sku]['admin'][$rowNum]['_super_products_sku'] = $item['sku'];
                 $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_code'] = $attribute;
                 $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_option'] = $item[$attribute];
                 $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_price_corr'] = null;
+                $this->_configurables[$sku]['admin'][$rowNum]['_super_attribute_price'] = $item['price'];
                 $rowNum++;
             }
         }
@@ -1215,6 +1222,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
     protected function _configurableGetConfigurables(Ho_Import_Model_Import_Transport $transport)
     {
+        $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
         $fieldConfig = $this->_configurableFieldConfig();
         $fieldConfig['admin']['_super_products_sku'] = [];
         $fieldConfig['admin']['_super_attribute_code'] = [];
@@ -1222,6 +1230,20 @@ class Ho_Import_Model_Import extends Varien_Object
         $fieldConfig['admin']['_super_attribute_price_corr'] = [];
 
         foreach ($this->_configurables as $configurable) {
+            //recalculate the price
+            if ($calculatePrice) {
+                $minPrice = PHP_INT_MAX;
+                foreach ($configurable['admin'] as &$row) {
+                    if (($row['_super_attribute_price'] * 1) < $minPrice) {
+                        $minPrice = $row['_super_attribute_price'] * 1;
+                    }
+                }
+
+                foreach ($configurable['admin'] as &$row) {
+                    $row['_super_attribute_price_corr'] = ($row['_super_attribute_price'] * 1) - $minPrice;
+                }
+            }
+
             $items = $this->_fieldMapItemFlatten($configurable, $fieldConfig);
             foreach ($items as $item) {
                 $transport->addItem($item);
