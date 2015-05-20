@@ -519,7 +519,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         }
 
         foreach ($values as $key => $value) {
-            $datetime = new DateTime('@'.$value, $timezoneFrom);
+            $value = $value ?  '@'.$value : 'now';
+            $datetime = new DateTime($value, $timezoneFrom);
             $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
             if ($offset) {
