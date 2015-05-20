@@ -43,6 +43,33 @@ class Ho_Import_Model_Import_Transport extends Varien_Object
 
 
     /**
+     * @param array $items
+     *
+     * @return $this
+     */
+    public function addItems(array $items)
+    {
+        foreach ($items as $item)
+        {
+            $this->addItem($item);
+        }
+        return $this;
+    }
+
+
+    /**
+     * @param $item
+     *
+     * @return $this
+     */
+    public function addItem($item)
+    {
+        $this->_items[] = $item;
+        return $this;
+    }
+
+
+    /**
      * @return array
      */
     public function getItems()

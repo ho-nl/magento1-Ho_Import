@@ -383,6 +383,32 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     }
 
 
+    /** @var Ho_Import_Model_Template_Filter */
+    protected $_filter;
+
+
+    /**
+     * @param $line
+     * @param $template
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function templateEngine($line, $template)
+    {
+        if ($this->_filter === null) {
+            $this->_filter = Mage::getModel('ho_import/template_filter');
+            $this->_filter->setMapper($this->_getMapper());
+            $this->_filter->setVariables(['helper' => $this]);
+        }
+
+        $template = trim($template, "\n ");
+        $this->_filter->setLine($line);
+        $result = $this->_filter->filter($template);
+        return $result;
+    }
+
+
     /**
      * Count another field an give it or a list or a value.
      * @param      $line

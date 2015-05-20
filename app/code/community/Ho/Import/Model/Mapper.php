@@ -173,8 +173,6 @@ class Ho_Import_Model_Mapper
         // helper: get field value with a helper
         if (isset($attributes['helper'])) {
             //get the helper and method
-            //@todo add helper caching, usually there are about 3-4 helpers in total, which makes it
-            //a bit unnecessary to load them each time.
             $helperParts = explode('::', $attributes['helper']);
             $helper = Mage::helper($helperParts[0]);
             $method = $helperParts[1];
@@ -250,18 +248,25 @@ class Ho_Import_Model_Mapper
 
     /**
      * Get the config for a specific field or the config for all the fields.
-     * @param null $fieldName
-     * @param null $profile
+     *
+     * @param null   $fieldName
+     * @param null   $profile
+     *
+     * @param string $configPath
      *
      * @return mixed
+     * @throws Mage_Core_Exception
      */
-    public function getFieldConfig($fieldName = null, $profile = null)
-    {
+    public function getFieldConfig(
+        $fieldName  = null,
+        $profile    = null,
+        $configPath = self::IMPORT_FIELD_CONFIG_PATH
+    ) {
         if (is_null($profile)) {
             $profile = $this->getProfileName();
         }
 
-        $fieldMapPath = sprintf(self::IMPORT_FIELD_CONFIG_PATH, $profile);
+        $fieldMapPath = sprintf($configPath, $profile);
 
         if (! isset($this->_fieldConfig[$fieldMapPath])) {
             $fieldMapNode = Mage::getConfig()->getNode($fieldMapPath);
@@ -337,6 +342,12 @@ class Ho_Import_Model_Mapper
         foreach ($columns as $columnName => $columnData) {
             $columnNames[$columnName] = '';
         }
+
+        $columnNames['_super_products_sku'] = '';
+        $columnNames['_super_attribute_code'] = '';
+        $columnNames['_super_attribute_option'] = '';
+        $columnNames['_super_attribute_price_corr'] = '';
+
         return $columnNames;
     }
 }
