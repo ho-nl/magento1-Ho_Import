@@ -1141,6 +1141,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
 
 
+    const IMPORT_CONFIG_CB = 'global/ho_import/%s/configurable_builder';
     const IMPORT_CONFIG_CB_SKU = 'global/ho_import/%s/configurable_builder/sku';
     const IMPORT_CONFIG_CB_ATTRIBUTES = 'global/ho_import/%s/configurable_builder/attributes';
     const IMPORT_CONFIG_CB_FIELDMAP = 'global/ho_import/%s/configurable_builder/fieldmap';
@@ -1150,11 +1151,18 @@ class Ho_Import_Model_Import extends Varien_Object
 
     protected function _configurableExtractRow(Ho_Import_Model_Import_Transport $transport, &$preparedItem)
     {
+        if (! $this->_getConfigNode(self::IMPORT_CONFIG_CB)) {
+            return $this;
+        }
+
         if ($this->_getEntityType() != self::IMPORT_TYPE_PRODUCT) {
             return $this;
         }
 
         $configurableSku = $this->_getConfigNode(self::IMPORT_CONFIG_CB_SKU);
+        if (! $configurableSku) {
+            return;
+        }
         $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
         $configurableAttributes = array_keys($this->_getConfigNode(self::IMPORT_CONFIG_CB_ATTRIBUTES)->asArray());
         $sku = $this->_getMapper()->mapItem($configurableSku);
@@ -1226,6 +1234,9 @@ class Ho_Import_Model_Import extends Varien_Object
 
     protected function _configurableGetConfigurables(Ho_Import_Model_Import_Transport $transport)
     {
+        if (! $this->_getConfigNode(self::IMPORT_CONFIG_CB)) {
+            return $this;
+        }
         $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
         $fieldConfig = $this->_configurableFieldConfig();
         $fieldConfig['admin']['_super_products_sku'] = [];
