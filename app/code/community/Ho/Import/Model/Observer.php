@@ -172,6 +172,10 @@ class Ho_Import_Model_Observer
             return;
         }
 
+        if (is_string($profiles)) {
+            $profiles = [['profile' => $profiles]];
+        }
+
         foreach ($profiles as $profileData) {
             $profile = $profileData['profile'];
 
