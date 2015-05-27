@@ -34,7 +34,7 @@ class Ho_Import_Model_Source_Adapter_Spreadsheet extends SpreadsheetReader
      */
     protected $_colNames = array();
 
-    public function __construct(array $config)
+    public function __construct($config)
     {
         $source = is_string($config) ? $config : $config['file'];
         if (!is_string($source)) {
