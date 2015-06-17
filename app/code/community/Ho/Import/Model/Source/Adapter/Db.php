@@ -28,14 +28,19 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
     public function __construct(array $config)
     {
         $logHelper = Mage::helper('ho_import/log');
-        $model = $config['model'];
+
+        if (isset($config['connection'])) {
+            $db = Mage::getSingleton('core/resource')->getConnection($config['connection']);
+            unset($config['connection']);
+        } else {
+            $model = $config['model'];
+            unset($config['model']);
+
+            /** @var Zend_Db_Adapter_Abstract $db */
+            $db = new $model($config);
+        }
         $query = $config['query'];
-
-        unset($config['model']);
         unset($config['query']);
-
-        /** @var Zend_Db_Adapter_Abstract $db */
-        $db = new $model($config);
 
         if (isset($config['limit']) || isset($config['offset'])) {
             $limit  = (int) isset($config['limit']) ? $config['limit'] : 0;
