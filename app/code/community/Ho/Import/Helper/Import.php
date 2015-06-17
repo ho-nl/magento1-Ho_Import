@@ -374,7 +374,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             foreach ($mapping as $map) {
                 $from = html_entity_decode($map['@']['from']);
                 if ($from == $value) {
-                    $values[$key] = htmlspecialchars_decode($map['@']['to']);
+                    $values[$key] = html_entity_decode($map['@']['to']);
                 }
             }
         }
