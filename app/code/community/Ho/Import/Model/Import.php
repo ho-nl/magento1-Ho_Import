@@ -636,7 +636,9 @@ class Ho_Import_Model_Import extends Varien_Object
                         }
                     }
 
-                    $flatRow['_store'] = $store == 'admin' ? '' : $store;
+                    if ($this->_getEntityType() != 'customer') {
+                        $flatRow['_store'] = $store == 'admin' ? '' : $store;
+                    }
                     $flattenedRows[]   = $flatRow;
                 }
             }
