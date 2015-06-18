@@ -241,7 +241,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             return null;
         }
 
-        return implode($glue, $result);
+        return implode($glue, array_filter($result));
     }
 
 
