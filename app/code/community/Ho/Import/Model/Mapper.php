@@ -21,6 +21,7 @@
 class Ho_Import_Model_Mapper
 {
     const IMPORT_FIELD_CONFIG_PATH = 'global/ho_import/%s/fieldmap';
+    const ENTITY_TYPE_CONFIG_PATH = 'global/ho_import/%s/entity_type';
 
     /**
      * The fieldmap config for the current profile
@@ -343,10 +344,13 @@ class Ho_Import_Model_Mapper
             $columnNames[$columnName] = '';
         }
 
-        $columnNames['_super_products_sku'] = '';
-        $columnNames['_super_attribute_code'] = '';
-        $columnNames['_super_attribute_option'] = '';
-        $columnNames['_super_attribute_price_corr'] = '';
+        $entityType = (string) Mage::getConfig()->getNode(sprintf(self::ENTITY_TYPE_CONFIG_PATH, $profile));
+        if ($entityType == 'catalog_product') {
+            $columnNames['_super_products_sku'] = '';
+            $columnNames['_super_attribute_code'] = '';
+            $columnNames['_super_attribute_option'] = '';
+            $columnNames['_super_attribute_price_corr'] = '';
+        }
 
         return $columnNames;
     }
