@@ -246,6 +246,23 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
 
     /**
+     * @param $line
+     */
+    public function getFieldFallback($line)
+    {
+        $fields = func_get_args();
+        array_shift($fields);
+
+        $values = $this->getFieldMultiple($line, $fields);
+        foreach ($values as $value) {
+            if ($value) {
+                return $value;
+            }
+        }
+    }
+
+
+    /**
      * @param array $line
      * @param array $field
      * @param string $split
