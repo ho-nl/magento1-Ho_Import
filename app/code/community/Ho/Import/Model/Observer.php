@@ -32,6 +32,9 @@ class Ho_Import_Model_Observer
     {
         /** @var AvS_FastSimpleImport_Model_Import_Entity_Product $adapter */
         $adapter = $observer->getAdapter();
+        if (! $adapter instanceof AvS_FastSimpleImport_Model_Import_Entity_Product) {
+            return;
+        }
 
         /** @var $coreResource Mage_Core_Model_Resource */
         $coreResource = Mage::getSingleton('core/resource');
