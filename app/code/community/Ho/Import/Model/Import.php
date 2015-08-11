@@ -406,7 +406,11 @@ class Ho_Import_Model_Import extends Varien_Object
             }
             foreach ($transport->getItems() as $preparedItem) {
                 $result = $this->_fieldMapItem($preparedItem);
+                // get any data added to the transport object
+                $transportData = $transport->getData();
                 $transport = $this->_getTransport()->setItems($result);
+                // set data back to transport object
+                $transport->setData($transportData);
                 $this->_runEvent('source_row_fieldmap_after', $transport);
                 foreach ($transport->getItems() as $row) {
                     $rowCount++;
