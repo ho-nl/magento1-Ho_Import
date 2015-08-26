@@ -1251,12 +1251,18 @@ class Ho_Import_Model_Import extends Varien_Object
             if ($calculatePrice) {
                 $minPrice = PHP_INT_MAX;
                 foreach ($configurable['admin'] as &$row) {
+                    if (! isset($row['_super_attribute_price'])) {
+                        continue;
+                    }
                     if (($row['_super_attribute_price'] * 1) < $minPrice) {
                         $minPrice = $row['_super_attribute_price'] * 1;
                     }
                 }
 
                 foreach ($configurable['admin'] as &$row) {
+                    if (! isset($row['_super_attribute_price'])) {
+                        continue;
+                    }
                     $row['_super_attribute_price_corr'] = ($row['_super_attribute_price'] * 1) - $minPrice;
                 }
             }
