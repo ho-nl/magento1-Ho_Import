@@ -987,42 +987,30 @@ class Ho_Import_Model_Import extends Varien_Object
         /** @var Magento_Db_Adapter_Pdo_Mysql $adapter */
         $adapter = $resource->getConnection('write');
 
-        /** @var Mage_Eav_Model_Entity_Type $entityType */
-        $cleanMode = $this->_getCleanMode();
-
         $select = $this->_getCleanSelect();
         if (! $select) {
             return 0;
         }
-        $skus = $adapter->fetchCol($select);
+        $entities = $adapter->fetchAll($select);
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
         $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getCleanFileName());
 
         $rowCount = 0;
-        foreach ($skus as $sku) {
+        foreach ($entities as $entity) {
             $rowCount++;
-
-            $rowData = array('sku' => $sku);
-            switch($cleanMode) {
-                case 'hide':
-                    $rowData['visibility'] = Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE;
-                    break;
-
-                case 'disable':
-                    $rowData['status'] = Mage_Catalog_Model_Product_Status::STATUS_DISABLED;
-                    break;
-
-                case 'delete':
-                    break;
+            switch ($this->_getEntityType()) {
+                case 'catalog_category':
+                    $parts = explode('/', $entity['_root']);
+                    $entity['_root'] = $parts[1];
             }
-            $exportAdapter->writeRow($rowData);
+            $exportAdapter->writeRow($entity);
         }
 
         if ($rowCount) {
             $this->_getLog()->log($this->_getLog()->__(
                 'Prepared cleaning of %s entities with mode %s',
-                $rowCount, $cleanMode
+                $rowCount, $this->_getCleanMode()
             ));
         }
 
@@ -1043,6 +1031,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         /** @var Magento_Db_Adapter_Pdo_Mysql $adapter */
         $adapter = $resource->getConnection('write');
+        $cleanMode = $this->_getCleanMode();
         $select = $adapter
             ->select()
             ->from(
@@ -1058,7 +1047,31 @@ class Ho_Import_Model_Import extends Varien_Object
 
         switch ($this->_getEntityType()) {
             case 'catalog_category':
-                Mage::throwException('Cleaning categories not yet implemented');
+                $select->join(
+                    array('entity' => $resource->getTableName('catalog/category')),
+                    'entity.entity_id = entity_profile.entity_id',
+                    array('_category' => 'entity.entity_id', '_root' => 'entity.path')
+                );
+
+                switch($cleanMode) {
+                    case 'hide':
+                        $this->_getLog()->log('Hiding categories is not yet implemented yet, skipping.');
+                        return false;
+
+                        $notVisible = Mage::helper('catalog')->__('No');
+                        $select->columns(['include_in_menu' => new Zend_Db_Expr("'$notVisible'")]);
+                        $select->columns(['m_show_in_layered_navigation' => new Zend_Db_Expr("'$notVisible'")]);
+                        break;
+
+                    case 'disable':
+                        $this->_getLog()->log('Disabling categories is not yet implemented yet, skipping.');
+                        return false;
+
+                        $disabled = Mage::helper('catalog')->__('No');
+                        $select->columns(['is_active' => new Zend_Db_Expr("'$disabled'")]);
+                        break;
+                }
+
                 break;
             case 'catalog_product':
                 $select->join(
@@ -1066,6 +1079,19 @@ class Ho_Import_Model_Import extends Varien_Object
                     'entity.entity_id = entity_profile.entity_id',
                     array('sku')
                 );
+
+                switch($cleanMode) {
+                    case 'hide':
+                        $notVisible = Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE;
+                        $select->columns(['visibility' => new Zend_Db_Expr("'$notVisible'")]);
+                        break;
+
+                    case 'disable':
+                        $disabled = Mage_Catalog_Model_Product_Status::STATUS_DISABLED;
+                        $select->columns(['status' => new Zend_Db_Expr("'$disabled'")]);
+                        break;
+                }
+
                 break;
             case 'customer':
                 $this->_getLog()->log('Cleaning customers not yet implemented, skipping.');
@@ -1125,7 +1151,10 @@ class Ho_Import_Model_Import extends Varien_Object
 
         switch ($this->_getEntityType()) {
             case 'catalog_category':
-                $this->_getLog()->log('Cleaning category entities not yet implemented', Zend_Log::WARN);
+                $select->joinLeft(
+                    array('entity' => $resource->getTableName('catalog/category')),
+                    'entity.entity_id = entity_profile.entity_id'
+                );
                 break;
             case 'catalog_product':
                 $select->joinLeft(
@@ -1135,12 +1164,12 @@ class Ho_Import_Model_Import extends Varien_Object
                 break;
             case 'customer':
                 $this->_getLog()->log('Cleaning customer entities not yet implemented', Zend_Log::WARN);
+                return;
                 break;
         }
 
-        $adapter->deleteFromSelect($select, 'entity_profile');
+        $resource->getConnection('core_write')->query($adapter->deleteFromSelect($select, 'entity_profile'));
     }
-
 
 
     const IMPORT_CONFIG_CB = 'global/ho_import/%s/configurable_builder';

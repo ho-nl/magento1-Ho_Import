@@ -28,10 +28,7 @@ class Ho_Import_Block_Adminhtml_Catalog_Product_Helper_Form_Profile extends Vari
      */
     public function toHtml()
     {
-        if ($this->getValue()) {
-            return parent::toHtml();
-        }
-        return '';
+        return parent::toHtml();
     }
 
 
@@ -41,6 +38,10 @@ class Ho_Import_Block_Adminhtml_Catalog_Product_Helper_Form_Profile extends Vari
      */
     public function getElementHtml()
     {
+        if (! $this->getValue()) {
+            return '<em>None</em>';
+        }
+
         $value = $this->getValue();
         $html = '<div class="grid"><table cellspacing="0" class="data border">';
 

@@ -55,12 +55,11 @@ class Ho_Import_Model_Entity_Attribute_Backend_Profile
      */
     public function afterSave($object)
     {
-//        var_dump($object);exit;
         $hasChanges = $object->dataHasChangedFor($this->getAttribute()->getName());
         if (! $hasChanges) {
             return $this;
         }
-        $data = $object->getData($this->getAttribute()->getName());
+        $object->getData($this->getAttribute()->getName());
 
         return $this;
     }

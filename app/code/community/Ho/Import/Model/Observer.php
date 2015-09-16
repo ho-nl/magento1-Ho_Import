@@ -71,6 +71,52 @@ class Ho_Import_Model_Observer
     }
 
 
+    public function linkCategoriesToProfile(Varien_Event_Observer $observer)
+    {
+        /** @var AvS_FastSimpleImport_Model_Import_Entity_Category $adapter */
+        $adapter = $observer->getAdapter();
+        if (! $adapter instanceof AvS_FastSimpleImport_Model_Import_Entity_Category) {
+            return;
+        }
+
+        /** @var $coreResource Mage_Core_Model_Resource */
+        $coreResource = Mage::getSingleton('core/resource');
+        $entityProfileTable = $coreResource->getTableName('ho_import/entity');
+        $entityTypeId = $adapter->getEntityTypeId();
+        $now = Mage::helper('ho_import')->getCurrentDatetime();
+
+        while ($bunch = $adapter->getNextBunch()) {
+            $entityProfileData = array();
+            foreach ($bunch as $rowNum => $rowData) {
+                if ($adapter->getRowScope($rowData) !== AvS_FastSimpleImport_Model_Import_Entity_Category::SCOPE_DEFAULT) {
+                    continue;
+                }
+
+                if (! isset($rowData['ho_import_profile'])) {
+                    continue;
+                }
+
+                $entity = $adapter->getEntityByCategory($rowData[$adapter::COL_ROOT], $rowData[$adapter::COL_CATEGORY]);
+                if (! $entity) {
+                    var_dump($rowData[$adapter::COL_CATEGORY]);exit;
+                }
+
+                $entityProfileData[] = array(
+                    'profile' => $rowData['ho_import_profile'],
+                    'entity_type_id' => $entityTypeId,
+                    'entity_id' => $entity['entity_id'],
+                    'updated_at' => $now,
+                    'created_at' => $now
+                );
+            }
+
+            if ($entityProfileData) {
+                $adapter->getConnection()->insertOnDuplicate($entityProfileTable, $entityProfileData, array('updated_at'));
+            }
+        }
+    }
+
+
     /**
      * Schedule imports
      */

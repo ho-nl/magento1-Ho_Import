@@ -91,6 +91,15 @@
                     </ho_import>
                 </observers>
             </catalog_product_import_finish_before>
+            <catalog_category_import_finish_before>
+                <observers>
+                    <ho_import>
+                        <type>singleton</type>
+                        <class>ho_import/observer</class>
+                        <method>linkCategoriesToProfile</method>
+                    </ho_import>
+                </observers>
+            </catalog_category_import_finish_before>
             <fastsimpleimport_reindex_products_before>
                 <observers>
                     <ho_import>
