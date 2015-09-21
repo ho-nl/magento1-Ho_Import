@@ -68,8 +68,6 @@ class Ho_Import_Model_Resource_Attribute_Backend_Profile
 
 
     /**
-     * Delete Tier Prices for product
-     *
      * @param int $productId
      * @return int The number of affected rows
      */
@@ -81,13 +79,13 @@ class Ho_Import_Model_Resource_Attribute_Backend_Profile
             $adapter->quoteInto('entity_id = ?', $productId)
         );
 
-        if (!is_null($websiteId)) {
-            $conds[] = $adapter->quoteInto('website_id = ?', $websiteId);
-        }
-
-        if (!is_null($priceId)) {
-            $conds[] = $adapter->quoteInto($this->getIdFieldName() . ' = ?', $priceId);
-        }
+//        if (!is_null($websiteId)) {
+//            $conds[] = $adapter->quoteInto('website_id = ?', $websiteId);
+//        }
+//
+//        if (!is_null($priceId)) {
+//            $conds[] = $adapter->quoteInto($this->getIdFieldName() . ' = ?', $priceId);
+//        }
 
         $where = implode(' AND ', $conds);
 
