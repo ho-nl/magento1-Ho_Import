@@ -42,6 +42,11 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
         $query = $config['query'];
         unset($config['query']);
 
+        // run after initialization statements
+        if (!empty($config['initStatements'])) {
+            $db->query($config['initStatements']);
+        }
+
         if (isset($config['limit']) || isset($config['offset'])) {
             $limit  = (int) isset($config['limit']) ? $config['limit'] : 0;
             $offset = (int) isset($config['offset']) ? $config['offset'] : 0;
