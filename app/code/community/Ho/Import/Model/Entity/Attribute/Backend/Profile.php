@@ -41,8 +41,8 @@ class Ho_Import_Model_Entity_Attribute_Backend_Profile
     {
         $data = $this->_getResource()->loadProfileData($object->getId(), $object->getEntityTypeId());
 
-        $object->setData($this->getAttribute()->getName(), $data);
-        $object->setOrigData($this->getAttribute()->getName(), $data);
+        $object->setData($this->getAttribute()->getName(), count($data) ? $data : null);
+        $object->setOrigData($this->getAttribute()->getName(), count($data) ? $data : null);
 
         return $this;
     }
