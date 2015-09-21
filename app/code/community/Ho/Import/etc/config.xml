@@ -253,6 +253,15 @@
                     </ho_import>
                 </observers>
             </fastsimpleimport_reindex_category_enterprise_before>
+            <fastsimpleimport_reindex_product_enterprise_before>
+                <observers>
+                    <ho_import>
+                        <type>singleton</type>
+                        <class>Ho_Import_Model_Observer</class>
+                        <method>progressLog</method>
+                    </ho_import>
+                </observers>
+            </fastsimpleimport_reindex_product_enterprise_before>
 		</events>
 	</global>
 	<frontend>
