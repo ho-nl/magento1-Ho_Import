@@ -20,6 +20,12 @@
  */
 class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
 {
+    protected $_db;
+
+    public function getDb()
+    {
+        return $this->_db;
+    }
 
     /**
      * Constructor.
@@ -30,33 +36,33 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
         $logHelper = Mage::helper('ho_import/log');
 
         if (isset($config['connection'])) {
-            $db = Mage::getSingleton('core/resource')->getConnection($config['connection']);
+            $this->_db = Mage::getSingleton('core/resource')->getConnection($config['connection']);
             unset($config['connection']);
         } else {
             $model = $config['model'];
             unset($config['model']);
 
             /** @var Zend_Db_Adapter_Abstract $db */
-            $db = new $model($config);
+            $this->_db = new $model($config);
         }
         $query = $config['query'];
         unset($config['query']);
 
         // run after initialization statements
         if (!empty($config['initStatements'])) {
-            $db->query($config['initStatements']);
+            $this->_db->query($config['initStatements']);
         }
 
         if (isset($config['limit']) || isset($config['offset'])) {
             $limit  = (int) isset($config['limit']) ? $config['limit'] : 0;
             $offset = (int) isset($config['offset']) ? $config['offset'] : 0;
             $logHelper->log($logHelper->__('Setting limit to %s and offset to %s', $limit, $offset), Zend_Log::NOTICE);
-            $query = $db->limit($query, $config['limit'], $offset);
+            $query = $this->_db->limit($query, $config['limit'], $offset);
         }
         $logHelper->log($query, Zend_Log::DEBUG);
 
         $logHelper->log('Fetching data...');
-        $result = $db->fetchAll($query);
+        $result = $this->_db->fetchAll($query);
         $logHelper->log('Done');
         $config['data'] = &$result;
 

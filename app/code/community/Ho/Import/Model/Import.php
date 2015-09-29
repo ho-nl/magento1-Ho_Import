@@ -656,7 +656,7 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _getMapper()
     {
-        return Mage::getSingleton('ho_import/mapper');
+        return Mage::getSingleton('ho_import/mapper')->setImporter($this);
     }
 
 
@@ -766,9 +766,14 @@ class Ho_Import_Model_Import extends Varien_Object
     /**
      * @return SeekableIterator
      */
+    protected $_sourceAdapter = null;
     public function getSourceAdapter()
     {
         $source = $this->_getConfigNode(self::IMPORT_CONFIG_MODEL);
+
+        if ($this->_sourceAdapter !== null) {
+            return $this->_sourceAdapter;
+        }
 
         if (!$source) {
             Mage::throwException($this->_getLog()->__('<source> not found for profile %s', $this->getProfile()));
@@ -809,16 +814,16 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $this->_getLog()->log($this->_getLog()->__('Getting source adapter %s', $source->getAttribute('model')));
-        $importModel = Mage::getModel($source->getAttribute('model'), $arguments);
+        $this->_sourceAdapter = Mage::getModel($source->getAttribute('model'), $arguments);
 
-        if (!$importModel) {
+        if (!$this->_sourceAdapter) {
             Mage::throwException($this->_getLog()->__(
                 'Import model (%s) not found for profile %s',
                 $source->getAttribute('model'), $this->getProfile()
             ));
         }
 
-        return $importModel;
+        return $this->_sourceAdapter;
     }
 
     /**

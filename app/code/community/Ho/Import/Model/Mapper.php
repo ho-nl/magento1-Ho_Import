@@ -41,6 +41,8 @@ class Ho_Import_Model_Mapper
     /** @var bool|string */
     protected $_symbolIgnoreFields = false;
 
+    protected $_importer = null;
+
 
     /**
      * Set the item, array of xml-config.
@@ -128,6 +130,22 @@ class Ho_Import_Model_Mapper
     public function setSymbolIgnoreFields($value) {
         $this->_symbolIgnoreFields = $value;
         return $this;
+    }
+
+    public function setImporter(Ho_Import_Model_Import $importer)
+    {
+        $this->_importer = $importer;
+        return $this;
+    }
+
+
+    /**
+     * Get the item, which is the xml-config array
+     * @return Ho_Import_Model_Import
+     */
+    public function getImporter()
+    {
+        return $this->_importer;
     }
 
     /**
