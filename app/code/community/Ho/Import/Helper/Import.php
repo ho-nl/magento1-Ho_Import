@@ -636,7 +636,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     protected function _getUploader()
     {
         if (is_null($this->_fileUploader)) {
-            $this->_fileUploader    = new Mage_ImportExport_Model_Import_Uploader();
+            $this->_fileUploader = Mage::getModel('importexport/import_uploader');
 
             $this->_fileUploader->init();
 
