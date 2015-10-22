@@ -171,7 +171,7 @@ class Ho_Import_Model_Mapper
         //iffieldvalue
         if (isset($attributes['iffieldvalue'])) {
             $field = $attributes['iffieldvalue'];
-            if (! isset($item[$field]) || empty($item[$field])) {
+            if (! isset($item[$field]) || (empty($item[$field]) && !is_numeric($item[$field]))) {
                 return isset($attributes['ignoreifempty']) ? $this->_symbolIgnoreFields : null;
             }
         }
@@ -179,7 +179,7 @@ class Ho_Import_Model_Mapper
         //unlessfieldvalue
         if (isset($attributes['unlessfieldvalue'])) {
             $field = $attributes['unlessfieldvalue'];
-            if (isset($item[$field]) && !empty($item[$field])) {
+            if (isset($item[$field]) && (!empty($item[$field]) || is_numeric($item[$field]))) {
                 return isset($attributes['ignoreifempty']) ? $this->_symbolIgnoreFields : null;
             }
         }
@@ -252,12 +252,12 @@ class Ho_Import_Model_Mapper
         }
 
         // defaultvalue
-        if (isset($attributes['defaultvalue']) && empty($result)) {
+        if (isset($attributes['defaultvalue']) && (empty($result) && !is_numeric($result))) {
             $result = $attributes['defaultvalue'];
         }
 
         //ignoreifempty
-        if (isset($attributes['ignoreifempty']) && empty($result)) {
+        if (isset($attributes['ignoreifempty']) && (empty($result) && !is_numeric($result))) {
             $result = $this->_symbolIgnoreFields;
         }
 
