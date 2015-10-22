@@ -222,7 +222,7 @@ class Ho_Import_Model_Observer
         }
 
         if (is_string($profiles)) {
-            $profiles = array('profile' => $profiles);
+            $profiles = [['profile' => $profiles]];
         }
 
         foreach ($profiles as $profileData) {
