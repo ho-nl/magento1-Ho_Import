@@ -240,7 +240,12 @@ class Ho_Import_Model_Import extends Varien_Object
                 $i = 0;
                 foreach ($transport->getItems() as $preparedItem) {
                     $results = $this->_fieldMapItem($preparedItem);
-                    $transport = $this->_getTransport()->setItems($results);
+
+                    $transportData = $transport->getData();
+                    $transport = $this->_getTransport()
+                        ->setItems($results)
+                        ->setData($transportData);
+
                     $this->_runEvent('source_row_fieldmap_after', $transport);
                     $this->_configurableExtractRow($transport, $preparedItem);
 
@@ -408,8 +413,13 @@ class Ho_Import_Model_Import extends Varien_Object
                 continue;
             }
             foreach ($transport->getItems() as $preparedItem) {
-                $result = $this->_fieldMapItem($preparedItem);
-                $transport = $this->_getTransport()->setItems($result);
+                $results = $this->_fieldMapItem($preparedItem);
+
+                $transportData = $transport->getData();
+                $transport = $this->_getTransport()
+                    ->setItems($results)
+                    ->setData($transportData);
+
                 $this->_runEvent('source_row_fieldmap_after', $transport);
                 $this->_configurableExtractRow($transport, $preparedItem);
                 foreach ($transport->getItems() as $row) {

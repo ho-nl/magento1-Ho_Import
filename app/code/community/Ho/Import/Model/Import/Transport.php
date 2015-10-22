@@ -23,8 +23,9 @@
 
 /**
  * Class Ho_Import_Model_Import_Transport
- * @method $this setSkip(bool $skip)
+ * @method Ho_Import_Model_Import_Transport setSkip(bool $skip)
  * @method bool getSkip()
+ * @method Ho_Import_Model_Import_Transport setData()
  */
 class Ho_Import_Model_Import_Transport extends Varien_Object
 {
