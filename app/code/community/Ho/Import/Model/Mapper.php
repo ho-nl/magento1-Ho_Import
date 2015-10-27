@@ -303,11 +303,18 @@ class Ho_Import_Model_Mapper
 
             if ($usePath = $fieldMapNode->getAttribute('use')) {
                 $fieldMapPath = sprintf(self::IMPORT_FIELD_CONFIG_PATH, $usePath);
-                $fieldMapNode = Mage::getConfig()->getNode($fieldMapPath);
+                $useFieldMapNode = Mage::getConfig()->getNode($fieldMapPath);
 
-                if (! $fieldMapNode) {
+                if (! $useFieldMapNode) {
                     Mage::throwException(sprintf("Incorrect 'use' in <fieldmap use=\"%s\" />", $usePath));
                 }
+            }
+            
+            // If the user has specified a "use" attribute then we will merge the two XML trees
+            // Only merge if both tress have children.
+            if ($useFieldMapNode && $useFieldMapNode->count()>0 && $fieldMapNode->count()>0) {
+                $useFieldMapNode->extend($fieldMapNode, true);
+                $fieldMapNode = $useFieldMapNode;
             }
 
             $columns = $fieldMapNode->children();
@@ -343,7 +350,7 @@ class Ho_Import_Model_Mapper
 
         return $this->_fieldConfig[$fieldMapPath];
     }
-
+    
 
     /**
      * Get an array of all the fields including the store view specific fields
