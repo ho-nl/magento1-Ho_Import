@@ -654,4 +654,22 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         }
         return $this->_fileUploader;
     }
+
+
+    /**
+     * @param $line
+     * @param array $key Key to search
+     * @param array $sourceModel Source model to search key in
+     * @return bool|string
+     */
+    public function getOptionValue($line, $key, $sourceModel)
+    {
+        $key = $this->_getMapper()->mapItem($key);
+        $sourceModel = $this->_getMapper()->mapItem($sourceModel);
+
+        /** @var Mage_Eav_Model_Entity_Attribute_Source_Abstract $sourceModel */
+        $sourceModel = Mage::getSingleton($sourceModel);
+
+        return $sourceModel->getOptionText($key);
+    }
 }
