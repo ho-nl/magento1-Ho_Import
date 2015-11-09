@@ -175,11 +175,18 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
         }
 
         try {
+            Mage::helper('ho_import/xhprof')->start(
+                XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY + XHPROF_FLAGS_NO_BUILTINS,
+                '/usr/local/Cellar/php56-xhprof/254eb24/xhprof_lib/utils/'
+            );
+
             /** @var Ho_Import_Model_Import $import */
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
             $import->importCsv();
+
+            Mage::helper('ho_import/xhprof')->stop($profile);
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
             exit(1);
