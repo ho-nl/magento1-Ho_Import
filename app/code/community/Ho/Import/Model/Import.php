@@ -963,7 +963,7 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _archiveOldCsv()
     {
-        $allowArchive = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_IMPORT_OPTIONS.'/archive_import_files');
+        $allowArchive = (bool) ((string)$this->_getConfigNode(self::IMPORT_CONFIG_IMPORT_OPTIONS.'/archive_import_files'));
 
         $fileName = $this->_getFileName();
         if (!$allowArchive || !file_exists($fileName)) {
