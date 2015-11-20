@@ -304,7 +304,7 @@ class Ho_Import_Model_Mapper
             
             // If the user has specified a "use" attribute then we will merge the two XML trees
             // Only merge if both tress have children.
-            if ($useFieldMapNode && $useFieldMapNode->count()>0 && $fieldMapNode->count()>0) {
+            if (isset($useFieldMapNode) && $useFieldMapNode->count()>0 && $fieldMapNode->count()>0) {
                 $useFieldMapNode->extend($fieldMapNode, true);
                 $fieldMapNode = $useFieldMapNode;
             }
