@@ -1210,7 +1210,7 @@ class Ho_Import_Model_Import extends Varien_Object
             return;
         }
         $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
-        $configurableAttributes = array_keys($this->_getConfigNode(self::IMPORT_CONFIG_CB_ATTRIBUTES)->asArray());
+        $configurableAttributes = $this->_getMapper()->mapItem($this->_getConfigNode(self::IMPORT_CONFIG_CB_ATTRIBUTES));
         $sku = $this->_getMapper()->mapItem($configurableSku);
 
         if (! isset($this->_configurables[$sku])) {
