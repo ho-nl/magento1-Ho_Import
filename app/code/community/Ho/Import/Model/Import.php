@@ -823,6 +823,7 @@ class Ho_Import_Model_Import extends Varien_Object
             $arguments = $arguments['file'];
         }
 
+        $this->_runEvent('source_adapter_before', $this->getProfile());
         $this->_getLog()->log($this->_getLog()->__('Getting source adapter %s', $source->getAttribute('model')));
         $this->_sourceAdapter = Mage::getModel($source->getAttribute('model'), $arguments);
 
