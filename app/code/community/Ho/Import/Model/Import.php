@@ -1151,6 +1151,14 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     protected function _cleanEntityLinkTable()
     {
+        /**
+         * Skip this procedure if entity type is catalog_category_product.
+         * Magento does not recognise such type(\Ho_Import_Model_Import::_getEntityTypeId() fails) neither needed in this method at all.
+         */
+        if ($this->_getEntityType() == self::IMPORT_TYPE_CATEGORY_PRODUCT) {
+            return;
+        }
+
         $resource = Mage::getSingleton('core/resource');
 
         /** @var Magento_Db_Adapter_Pdo_Mysql $adapter */
