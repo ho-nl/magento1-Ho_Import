@@ -59,6 +59,16 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
             $logHelper->log($logHelper->__('Setting limit to %s and offset to %s', $limit, $offset), Zend_Log::NOTICE);
             $query = $this->_db->limit($query, $config['limit'], $offset);
         }
+
+        // Replace variables in query
+        preg_match_all("/\{{([^\]]*)\}}/", $query, $matches);
+        foreach ($matches[0] as $key => $match) {
+            if (! isset($config[$matches[1][$key]])) {
+                throw new Exception(sprintf('Query parameter "%s" is required, add to shell command (-%s <value>)', $matches[1][$key], $matches[1][$key]));
+            }
+            $query = str_replace($match, $config[$matches[1][$key]], $query);
+        }
+
         $logHelper->log($query, Zend_Log::DEBUG);
 
         $logHelper->log('Fetching data...');
