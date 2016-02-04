@@ -61,7 +61,7 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
         }
 
         // Replace variables in query
-        preg_match_all("/\{{([^\]]*)\}}/", $query, $matches);
+        preg_match_all("/\{{(.*?)\}}/", $query, $matches);
         foreach ($matches[0] as $key => $match) {
             if (! isset($config[$matches[1][$key]])) {
                 throw new Exception(sprintf('Query parameter "%s" is required, add to shell command (-%s <value>)', $matches[1][$key], $matches[1][$key]));
