@@ -66,7 +66,8 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
             if (! isset($config[$matches[1][$key]])) {
                 throw new Exception(sprintf('Query parameter "%s" is required, add to shell command (-%s <value>)', $matches[1][$key], $matches[1][$key]));
             }
-            $query = str_replace($match, $config[$matches[1][$key]], $query);
+            $query = str_replace($match, '?', $query);
+            $query = $this->_db->quoteInto($query, explode(',', $config[$matches[1][$key]]));
         }
 
         $logHelper->log($query, Zend_Log::DEBUG);
