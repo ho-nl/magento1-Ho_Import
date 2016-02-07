@@ -19,7 +19,7 @@
  * @license   H&O Commercial License (http://www.h-o.nl/license)
  */
 
-class Ho_Import_Block_Adminhtml_Catalog_Product_Helper_Form_Profile extends Varien_Data_Form_Element_Abstract
+class Varien_Data_Form_Element_Ho_Import_Profile extends Varien_Data_Form_Element_Abstract
 {
 
     /**
