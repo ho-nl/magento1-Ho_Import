@@ -53,6 +53,11 @@
                     </entity>
                 </entities>
             </ho_import_resource>
+            <eav>
+                <rewrite>
+                    <attribute_data_ho_import_profile>Ho_Import_Model_Eav_Attribute_Data_Ho_Import_Profile</attribute_data_ho_import_profile>
+                </rewrite>
+            </eav>
 		</models>
         <resources>
             <ho_import_setup>
