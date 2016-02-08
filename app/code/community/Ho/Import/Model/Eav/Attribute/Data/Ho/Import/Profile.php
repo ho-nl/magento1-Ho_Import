@@ -21,7 +21,72 @@
  *
  */
 
-class Ho_Import_Model_Eav_Attribute_Data_Ho_Import_Profile extends Mage_Eav_Model_Attribute_Data_Text
+class Ho_Import_Model_Eav_Attribute_Data_Ho_Import_Profile extends Mage_Eav_Model_Attribute_Data_Abstract
 {
+    /**
+     * Extract data from request and return value
+     *
+     * @param Zend_Controller_Request_Http $request
+     *
+     * @return array|string
+     */
+    public function extractValue(Zend_Controller_Request_Http $request)
+    {
+        $value = $this->_getRequestValue($request);
+        return $value;
+    }
 
+    /**
+     * Validate data
+     *
+     * @param array|string $value
+     *
+     * @throws Mage_Core_Exception
+     * @return boolean
+     */
+    public function validateValue($value)
+    {
+        return true;
+    }
+
+    /**
+     * Export attribute value to entity model
+     *
+     * @param array|string $value
+     *
+     * @return Mage_Eav_Model_Attribute_Data_Abstract
+     */
+    public function compactValue($value)
+    {
+        if ($value !== false) {
+            $this->getEntity()->setDataUsingMethod($this->getAttribute()->getAttributeCode(), $value);
+        }
+        return $this;
+    }
+
+    /**
+     * Restore attribute value from SESSION to entity model
+     *
+     * @param array|string $value
+     *
+     * @return Mage_Eav_Model_Attribute_Data_Abstract
+     */
+    public function restoreValue($value)
+    {
+        return $this->compactValue($value);
+    }
+
+    /**
+     * Return formated attribute value from entity model
+     *
+     * @param string $format
+     *
+     * @return string|array
+     */
+    public function outputValue($format = Mage_Eav_Model_Attribute_Data::OUTPUT_FORMAT_TEXT)
+    {
+        $value = $this->getEntity()->getData($this->getAttribute()->getAttributeCode());
+
+        return $value;
+    }
 }
