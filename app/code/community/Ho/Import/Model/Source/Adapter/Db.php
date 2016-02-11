@@ -35,6 +35,9 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
     {
         $logHelper = Mage::helper('ho_import/log');
 
+        $query = $config['query'];
+        unset($config['query']);
+
         if (isset($config['connection'])) {
             $this->_db = Mage::getSingleton('core/resource')->getConnection($config['connection']);
             unset($config['connection']);
@@ -45,8 +48,6 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
             /** @var Zend_Db_Adapter_Abstract $db */
             $this->_db = new $model($config);
         }
-        $query = $config['query'];
-        unset($config['query']);
 
         // run after initialization statements
         if (!empty($config['initStatements'])) {
