@@ -589,6 +589,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
     /**
      * Download given file to ImportExport Tmp Dir (usually media/import)
+     * Files can be downloaded through FTP by passing the FTP credentials in the url:
+     * ftp://username:password@hostname
      * @param string $url
      */
     protected $_fileCache = array();
@@ -599,6 +601,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         }
 
         try {
+            $parsedUrl = parse_url($url);
             $this->_fileCache[$url] = true;
             $dir = $this->_getUploader()->getTmpDir();
             if (!is_dir($dir)) {
@@ -607,7 +610,40 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
             $fileName = $dir . DS . (! is_null($filename) ? $filename : basename($url));
             $fileHandle = fopen($fileName, 'w+');
-            $ch = curl_init($url);
+            $ch = curl_init();
+            /* todo reuse curl handle to increase performance
+             * http://stackoverflow.com/questions/3787002/reusing-the-same-curl-handle-big-performance-increase
+             * $this->_curlHandles = []
+             * $this->_curlHandles[{url_without_file}] = {curlHandle}
+             * if (isset($this->_curlHandles[{url_without_file}]) use curl handle
+             * else create new curl handle
+             */
+
+            $statusOk = -1;
+            if (isset($parsedUrl['scheme'])) {
+                switch ($parsedUrl['scheme']) {
+                    case 'ftp':
+                        $statusOk = 226;
+                        if (!isset($parsedUrl['user'], $parsedUrl['pass'])) {
+                            Mage::helper('ho_import/log')->log($this->__(
+                                    'Invalid URL scheme detected, please enter FTP credentials'), Zend_Log::ERR);
+                        }
+                        $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . $parsedUrl['path'];
+                        curl_setopt($ch, CURLOPT_USERPWD, $parsedUrl['user'] . ':' . $parsedUrl['pass']);
+                        curl_setopt($ch, CURLOPT_URL, $url);
+                        break;
+                    case 'http':
+                    case 'https':
+                        $statusOk = 200;
+                        curl_setopt($ch, CURLOPT_URL, $url);
+                        break;
+                    default:
+                        Mage::helper('ho_import/log')->log($this->__(
+                            $this->__('Invalid URL scheme detected')), Zend_Log::ERR);
+                }
+            } else {
+                Mage::helper('ho_import/log')->log($this->__($this->__('No URL scheme detected')), Zend_Log::ERR);
+            }
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             curl_setopt($ch, CURLOPT_FILE, $fileHandle);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -617,7 +653,7 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
             curl_close($ch);
             fclose($fileHandle);
 
-            if ($code !== 200) {
+            if ($code !== $statusOk) {
                 $this->_fileCache[$url] = $code;
                 Mage::helper('ho_import/log')->log($this->__(
                         "Returned status code %s while downloading image %s", $code, $url), Zend_Log::ERR);
