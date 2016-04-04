@@ -800,13 +800,18 @@ Download the image from a remote URL and place it in the `media/import` folder.
 
 ```XML
 <image helper="ho_import/import::getMediaImage">
-    <imagefield field="cImagePad"/>
+    <imagefield field="cImagePad"/> <!-- URL to image -->
     <limit>1</limit>
     <filename use="sku"/> <!-- optional, when the server doesn't give back readable image names -->
     <extension value="jpg"/> <!-- optional, when the URL doesn't end in a filename -->
 </image>
 ```
 
+Download images from FTP:
+
+```
+ftp://username:password@ftp.domain.com/path/on/ftp/image.png
+```
 
 #### timestampToDate
 Parse a timestamp and output in the Magento running format, just specify in which timezone the  current date is. Add an offset with one of the [Relative Formats](http://am1.php.net/manual/en/datetime.formats.relative.php).
