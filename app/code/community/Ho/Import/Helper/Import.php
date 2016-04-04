@@ -620,30 +620,35 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
              */
 
             $statusOk = -1;
-            if (isset($parsedUrl['scheme'])) {
-                switch ($parsedUrl['scheme']) {
-                    case 'ftp':
-                        $statusOk = 226;
-                        if (!isset($parsedUrl['user'], $parsedUrl['pass'])) {
-                            Mage::helper('ho_import/log')->log($this->__(
-                                    'Invalid URL scheme detected, please enter FTP credentials'), Zend_Log::ERR);
-                        }
-                        $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . $parsedUrl['path'];
-                        curl_setopt($ch, CURLOPT_USERPWD, $parsedUrl['user'] . ':' . $parsedUrl['pass']);
-                        curl_setopt($ch, CURLOPT_URL, $url);
-                        break;
-                    case 'http':
-                    case 'https':
-                        $statusOk = 200;
-                        curl_setopt($ch, CURLOPT_URL, $url);
-                        break;
-                    default:
-                        Mage::helper('ho_import/log')->log($this->__(
-                            $this->__('Invalid URL scheme detected')), Zend_Log::ERR);
-                }
-            } else {
-                Mage::helper('ho_import/log')->log($this->__($this->__('No URL scheme detected')), Zend_Log::ERR);
+            if (! isset($parsedUrl['path'])) {
+                Mage::throwException('No Path detected for URL');
             }
+
+            if (! isset($parsedUrl['scheme'])) {
+                Mage::throwException('No URL scheme detected ftp://, http://, etc.');
+            }
+
+            switch ($parsedUrl['scheme']) {
+                case 'ftp':
+                    $statusOk = 226;
+                    if (!isset($parsedUrl['user'], $parsedUrl['pass'])) {
+                        Mage::helper('ho_import/log')->log($this->__(
+                                'Invalid URL scheme detected, please enter FTP credentials'), Zend_Log::ERR);
+                    }
+                    $url = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . $parsedUrl['path'];
+                    curl_setopt($ch, CURLOPT_USERPWD, $parsedUrl['user'] . ':' . $parsedUrl['pass']);
+                    curl_setopt($ch, CURLOPT_URL, $url);
+                    break;
+                case 'http':
+                case 'https':
+                    $statusOk = 200;
+                    curl_setopt($ch, CURLOPT_URL, $url);
+                    break;
+                default:
+                    Mage::helper('ho_import/log')->log($this->__(
+                        $this->__('Invalid URL scheme detected')), Zend_Log::ERR);
+            }
+
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             curl_setopt($ch, CURLOPT_FILE, $fileHandle);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
