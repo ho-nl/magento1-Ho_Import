@@ -78,8 +78,6 @@ class Ho_Import_Model_Import extends Varien_Object
         $this->_downloader();
         $this->_decompressor();
 
-        $entity = (string)$this->_getEntityType();
-
         $this->_getLog()->log($this->_getLog()->__(
                 'Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
 
@@ -141,13 +139,6 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $this->_applyImportOptions();
 
-        $entity = (string)$this->_getEntityType();
-        $method = '_import' . ucfirst(Mage::helper('ho_import')->underscoreToCamelCase($entity));
-
-        if (FALSE === method_exists($this, $method)) {
-            Mage::throwException($this->_getLog()->__("Entity %s not supported", $entity));
-        }
-
         $this->_getLog()->log($this->_getLog()->__(
             'Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
 
@@ -161,7 +152,7 @@ class Ho_Import_Model_Import extends Varien_Object
         } else {
             $this->_getLog()->log($this->_getLog()->__(
                 'Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
-            $errors = $this->$method();
+            $errors = $this->_importData();
         }
 
         $this->_runEvent('process_after');
@@ -699,8 +690,9 @@ class Ho_Import_Model_Import extends Varien_Object
                 'Exception while running profile %s, ran for %s seconds',
                 $profile, $seconds
             ), Zend_Log::CRIT);
-            Mage::printException($e);
-            exit;
+
+            $this->_getLog()->log($this->_getLog()->getExceptionTraceAsString($e), Zend_Log::CRIT);
+            throw $e;
         }
 
         $seconds           = round(microtime(true) - $timer, 2);
@@ -762,7 +754,11 @@ class Ho_Import_Model_Import extends Varien_Object
         if ($this->getSourceOptions() && is_array($this->getSourceOptions())) {
             foreach ($this->getSourceOptions() as $key => $value) {
                 /** @var Mage_Core_Model_Config_Element $value */
-                $arguments[$key] = $value->asArray();
+                if (is_string($value)) {
+                    $arguments[$key] = $value;
+                } else {
+                    $arguments[$key] = $value->asArray();
+                }
             }
         }
 
@@ -964,7 +960,11 @@ class Ho_Import_Model_Import extends Varien_Object
         /** @var Mage_Eav_Model_Entity_Type $entityType */
         $cleanMode = $this->_getCleanMode();
 
-        $skus = $adapter->fetchCol($this->_getCleanSelect());
+        $select = $this->_getCleanSelect();
+        if (! $select) {
+            return 0;
+        }
+        $skus = $adapter->fetchCol($select);
 
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
         $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getCleanFileName());
@@ -1038,7 +1038,8 @@ class Ho_Import_Model_Import extends Varien_Object
                 );
                 break;
             case 'customer':
-                Mage::throwException('Cleaning customers not yet implemented');
+                $this->_getLog()->log('Cleaning customers not yet implemented, skipping.');
+                return false;
                 break;
         }
 

@@ -63,4 +63,8 @@ class Ho_Import_Adminhtml_Ho_ImportController extends Mage_Adminhtml_Controller_
         $this->_initAction();
         $this->renderLayout();
     }
+    function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('system/config/ho_import');
+    }
 }
