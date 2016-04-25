@@ -508,11 +508,12 @@ class Ho_Import_Model_Source_Adapter_Xml implements SeekableIterator
 
     protected function _readNextChunk()
     {
+        $isFirstRead = ($this->_readBytes === 0);
         $this->_chunk .= fread($this->_fileHandler, $this->_chunkSize);
         $this->_readBytes += $this->_chunkSize;
         if ($this->_readBytes >= $this->_totalBytes) {
             $this->_readBytes = $this->_totalBytes;
-            return false;
+            return $isFirstRead;
         }
         return true;
     }
