@@ -973,11 +973,11 @@ It is possible to create configurable products using `Ho_Import`.
 ```XML
 <fieldmap...>
 <configurable_builder>
-    <sku helper="ho_intersteelimport/import_configurable::getSku">
+    <sku helper="ho_intersteelimport/import_configurable::getSku"> 
         <simpleSku field="artikelnummer"/>
         <titel field="titel_product"/>
     </sku>
-    <attributes helper="ho_intersteelimport/import_configurable::getAttributes">
+    <attributes helper="ho_intersteelimport/import_configurable::getAttributes"> <!-- returns an array of the attributes used to create the configurable -->
         <simpleName field="titel_product"/>
     </attributes>
     <calculate_price>1</calculate_price>
@@ -991,15 +991,8 @@ It is possible to create configurable products using `Ho_Import`.
             <ident use="sku"/>
             <url_key helper="ho_import/import::getFieldCombine">
                 <fields>
-                    <sku helper="ho_intersteelimport/import_configurable::getSku">
-                        <simpleSku field="artikelnummer"/>
-                        <titel field="titel_product"/>
-                    </sku>
-                    <productgroep field="productgroep"/>
-                    <name helper="ho_intersteelimport/import_configurable::getName">
-                        <simpleName field="titel_product"/>
-                        <pcmaat use="pcmaat"/>
-                    </name>
+                    <sku use="sku"/>
+                    <productgroup field="productgroup"/>
                 </fields>
                 <glue> </glue>
             </url_key>
