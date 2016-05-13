@@ -1203,6 +1203,7 @@ class Ho_Import_Model_Import extends Varien_Object
     const IMPORT_CONFIG_CB_ATTRIBUTES = 'global/ho_import/%s/configurable_builder/attributes';
     const IMPORT_CONFIG_CB_FIELDMAP = 'global/ho_import/%s/configurable_builder/fieldmap';
     const IMPORT_CONFIG_CB_CALCULATE_PRICE = 'global/ho_import/%s/configurable_builder/calculate_price';
+    const IMPORT_CONFIG_CB_CALCULATE_PRICE_IN_STOCK = 'global/ho_import/%s/configurable_builder/calculate_price_in_stock';
 
     protected $_configurables = [];
 
@@ -1221,8 +1222,14 @@ class Ho_Import_Model_Import extends Varien_Object
             return;
         }
         $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
-        $configurableAttributes = $this->_getMapper()->mapItem($this->_getConfigNode(self::IMPORT_CONFIG_CB_ATTRIBUTES));
+        $calculatePriceInStock = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE_IN_STOCK);
         $sku = $this->_getMapper()->mapItem($configurableSku);
+
+        // Force array if single attribute is given with the 'value' parameter.
+        $configurableAttributes = $this->_getMapper()->mapItem($this->_getConfigNode(self::IMPORT_CONFIG_CB_ATTRIBUTES));
+        if (! is_array($configurableAttributes)) {
+            $configurableAttributes = [$configurableAttributes];
+        }
 
         if (! isset($this->_configurables[$sku])) {
             $this->_configurableInitProduct($sku, $preparedItem);
@@ -1240,8 +1247,17 @@ class Ho_Import_Model_Import extends Varien_Object
                 continue;
             }
 
-            if ($calculatePrice && $item['price'] < $this->_configurables[$sku]['admin'][0]['price']) {
-                $this->_configurables[$sku]['admin']['price'] = $item['price'];
+            // Get the lowest price for the configurable product from the products that are in stock.
+            if ($calculatePrice
+                && (!$calculatePriceInStock || $item['is_in_stock'])
+                && $item['price'] < $this->_configurables[$sku]['admin'][0]['price']) {
+                $this->_configurables[$sku]['admin'][0]['price'] = $item['price'];
+            }
+
+            // If none of the products are in stock, calculate the price including those products.
+            if ($calculatePrice
+                && $item['price'] < $this->_configurables[$sku]['admin'][0]['min_price']) {
+                $this->_configurables[$sku]['admin'][0]['min_price'] = $item['price'];
             }
 
             foreach ($configurableAttributes as $attribute) {
@@ -1268,6 +1284,12 @@ class Ho_Import_Model_Import extends Varien_Object
         $mapper->setSymbolIgnoreFields($this->_fastSimpleImport->getSymbolIgnoreFields());
         $mapper->setItem($preparedItem);
         $this->_configurables[$sku] = $this->_fieldMapItemExtract($this->_configurableFieldConfig());
+
+        $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
+        if ($calculatePrice) {
+            $this->_configurables[$sku]['admin'][0]['price'] = PHP_INT_MAX;
+            $this->_configurables[$sku]['admin'][0]['min_price'] = PHP_INT_MAX;
+        }
 
         return $this;
     }
@@ -1302,22 +1324,19 @@ class Ho_Import_Model_Import extends Varien_Object
         $fieldConfig['admin']['_super_attribute_price_corr'] = [];
 
         foreach ($this->_configurables as $configurable) {
-            //recalculate the price
+            // Recalculate price.
             if ($calculatePrice) {
-                $minPrice = PHP_INT_MAX;
-                foreach ($configurable['admin'] as &$row) {
-                    if (! isset($row['_super_attribute_price'])) {
-                        continue;
-                    }
-                    if (($row['_super_attribute_price'] * 1) < $minPrice) {
-                        $minPrice = $row['_super_attribute_price'] * 1;
-                    }
+                if ($configurable['admin'][0]['price'] == PHP_INT_MAX) {
+                    $configurable['admin'][0]['price'] = $configurable['admin'][0]['min_price'];
                 }
+
+                $minPrice = $configurable['admin'][0]['price'];
 
                 foreach ($configurable['admin'] as &$row) {
                     if (! isset($row['_super_attribute_price'])) {
                         continue;
                     }
+
                     $row['_super_attribute_price_corr'] = ($row['_super_attribute_price'] * 1) - $minPrice;
                 }
             }
