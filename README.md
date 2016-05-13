@@ -981,6 +981,7 @@ It is possible to create configurable products using `Ho_Import`.
         <simpleName field="titel_product"/>
     </attributes>
     <calculate_price>1</calculate_price>
+    <calculate_price_in_stock>1</calculate_price_in_stock>
     <fieldmap>
         <name helper="ho_intersteelimport/import_configurable::getName">
             <simpleName field="titel_product"/>
@@ -1017,6 +1018,11 @@ Multiple attributes are allowed.
 
 ### calculate_price
 Set this option to `1` and Ho_Import will try and determine the lowest price for your configurable product.
+
+### calculate_price_in_stock
+> Note: The `calculate_price` option has to be enabled in order to use this.
+
+Set this option to `1` and Ho_Import will try and determine the lowest price based on products in stock for your configurable product.
 
 ## CLI / Shell Utility
 The importer comes with a shell utility where you'll be spending most of your time.
