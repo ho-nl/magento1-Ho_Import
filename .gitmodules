@@ -1,3 +1,3 @@
 [submodule "lib/spreadsheet-reader"]
 	path = lib/spreadsheet-reader
-	url = git@github.com:ho-nl/spreadsheet-reader.git
+	url = git@github.com:ho-nl-fork/spreadsheet-reader.git
