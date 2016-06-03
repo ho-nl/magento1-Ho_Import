@@ -1265,10 +1265,6 @@ class Ho_Import_Model_Import extends Varien_Object
                 continue;
             }
 
-            if ((float) $item['special_price'] > 0) {
-                var_dump((float) $item['price'], (float) $item['special_price']);
-            }
-
             $price = (float) $item['price'];
             $specialPrice = (float) (isset($item['special_price']) ? $item['special_price'] : 0);
 
