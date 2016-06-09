@@ -319,7 +319,7 @@ The supported downloaders are HTTP and FTP.
     <timeout>10</timeout> <!-- Optional: How long should we wait to connect -->
     <passive>0</passive> <!-- Optional: FTP transfer mode, by default it is set to passive, usually correct -->
     <ssl>1</ssl> <!-- Optional: For FTP with implicit SSL, this is NOT SFTP, which is FTP over SSH -->
-    <file_mode>1</file_mode><!-- Optional: For FTP_ASCII or FTP_TEXT set value to 1, for FTP_BINARY or FTP_IMAGE leave empty.
+    <file_mode>1</file_mode><!-- Optional: For FTP_ASCII or FTP_TEXT set value to 1, for FTP_BINARY or FTP_IMAGE leave empty. -->
 </downloader>
 ```
 
@@ -474,7 +474,7 @@ with the information set.
 	<process_before helper="ho_import/import_product::prepareSomeData"/>
 	<import_before helper="ho_import/import_product::callWifeIfItIsOk"/>
 	<source_row_fieldmap_before helper="ho_import/import_product::checkIfValid"/>
-	<source_row_fieldmap_after helper="ho_import/import_product::extractData"/
+	<source_row_fieldmap_after helper="ho_import/import_product::extractData"/>
 	<source_fieldmap_after helper="ho_import/import_product::appendExtraData"/>
 	<import_after helper="ho_import/import_product::reindexStuff"/>
 	<process_after helper="ho_import/import_product::cleanupSomeData"/>
@@ -828,7 +828,7 @@ Parse a timestamp and output in the Magento running format, just specify in whic
 Returns the current date
 
 ```XML
-<news_from_date helper="ho_import/import::getCurrentDate">
+<news_from_date helper="ho_import/import::getCurrentDate"/>
 ```
 
 #### Product: getUrlKey
@@ -838,6 +838,21 @@ Returns the current date
         <name field="Titel"/>
     </fields>
     <glue>-</glue>
+</url_key>
+```
+
+
+#### Product: getAvailableUrlKey
+Get an URL key that does not exist. The first 2 parameters will always be used. Every parameter after the second one is optional.
+On the first attempt, the first 2 parameters will be combined, if this url key isn't available anymore, it will try a second attempt with the third parameter.
+This process will continue until all parameters have been used or an available url key has been found.
+
+```XML
+<url_key helper="ho_import/import_product::getAvailableUrlKey"> 
+    <ident use="sku"/> 
+    <name use="name"/> 
+    <!-- additional fields --> 
+    <ean field="ean"/> 
 </url_key>
 ```
 
@@ -958,8 +973,64 @@ class Ho_ImportJanselijn_Helper_Import_Customer extends Mage_Core_Helper_Abstrac
 
 As you can see it sometimes returns an array of values and sometimes just returns a value. If you helper method returns an array of values Ho_Imports [internally rewrites those multiple values to multiple import rows](https://github.com/ho-nl/Ho_Import/blob/master/app/code/local/Ho/Import/Model/Import.php#L470).
 
+## Configurable products
+It is possible to create configurable products using `Ho_Import`.
+```XML
+<fieldmap...>
+<configurable_builder>
+    <sku helper="ho_intersteelimport/import_configurable::getSku"> 
+        <simpleSku field="artikelnummer"/>
+        <titel field="titel_product"/>
+    </sku>
+    <attributes helper="ho_intersteelimport/import_configurable::getAttributes"> <!-- returns an array of the attributes used to create the configurable -->
+        <simpleName field="titel_product"/>
+    </attributes>
+    <calculate_price>1</calculate_price>
+    <calculate_price_in_stock>1</calculate_price_in_stock>
+    <fieldmap>
+        <name helper="ho_intersteelimport/import_configurable::getName">
+            <simpleName field="titel_product"/>
+            <pcmaat use="pcmaat"/>
+        </name>
+        <description use="description"/>
+        <url_key helper="ho_import/import_product::getAvailableUrlKey">
+            <ident use="sku"/>
+            <url_key helper="ho_import/import::getFieldCombine">
+                <fields>
+                    <sku use="sku"/>
+                    <productgroup field="productgroup"/>
+                </fields>
+                <glue> </glue>
+            </url_key>
+            <!-- additional fields -->
+            <ean field="ean_nummer"/>
+        </url_key>
+        <_type value="configurable"/>
+        <visibility value="4"/>
+        <is_in_stock value="1"/>
+    </fieldmap>
+</configurable_builder>
+```
+You might have noticed that we used the `use` attribute here as well. The `use` attribute will use the value from your fieldmapping, not the the value from the configurable builder.
+
+### sku
+This will determine the SKU value for the configurable product
+
+### attributes
+This option will combine the simple products into a configurable products. The value of this attribute will be configurable.
+<br>
+Multiple attributes are allowed.
+
+### calculate_price
+Set this option to `1` and Ho_Import will try and determine the lowest price for your configurable product.
+
+### calculate_price_in_stock
+> Note: The `calculate_price` option has to be enabled in order to use this.
+
+Set this option to `1` and Ho_Import will try and determine the lowest price based on products in stock for your configurable product.
+
 ## CLI / Shell Utility
-The importer comes with a shell utiliy where you'll be spending most of your time.
+The importer comes with a shell utility where you'll be spending most of your time.
 
 ### line
 ```
