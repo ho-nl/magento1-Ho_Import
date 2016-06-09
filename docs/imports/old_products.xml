@@ -67,7 +67,7 @@ Importing products from an old database with image downloading
                     </sku>
                     <!--<_store/> field is never required, store configuration is per field -->
                     <_attribute_set helper="ho_import/import::getFieldMap">
-                        <field>A_WA</field>
+                        <field field="A_WA"/>
                         <mapping>
                             <artikelen from="A" to="Default"/>
                             <bladmuziek from="B" to="Bladmuziek"/>
@@ -80,9 +80,9 @@ Importing products from an old database with image downloading
 
                 <!-- GENERAL PRODUCT INFORMATION -->
                     <name field="A_Titel"/>
-                    <short_description helper="ho_import/import::getFieldDefault"><field>A_Beschrijving</field><default><![CDATA[<!--empty-->]]></default></short_description>
+                    <short_description helper="ho_import/import::getFieldDefault"><field field="A_Beschrijving"/><default><![CDATA[<!--empty-->]]></default></short_description>
                     <description helper="ho_import/import::stripHtmlTags">
-                        <field>A_Xtratxt</field>
+                        <field field="A_Xtratxt"/>
                         <allowed><![CDATA[<p><a><br>]]></allowed>
                     </description>
                     <status value="1"/>
@@ -94,7 +94,7 @@ Importing products from an old database with image downloading
                     </url_key>
                     <!--<url_path /> not required-->
                     <visibility value="4"/>
-                    <weight helper="ho_import/import::getFieldDefault"><field>weight</field><default>0</default></weight>
+                    <weight helper="ho_import/import::getFieldDefault"><field field="weight"/><default>0</default></weight>
 
                     <!--<news_from_date />-->
                     <!--<news_to_date />-->
@@ -119,7 +119,7 @@ Importing products from an old database with image downloading
                     <!--<msrp_display_actual_price_type/>-->
                     <!--<msrp_enabled/>-->
                     <tax_class_id helper="ho_import/import::getFieldMap">
-                        <field>A_BTW</field>
+                        <field field="A_BTW"/>
                         <mapping>
                             <particulier from="H" to="2"/>
                             <zakelijk from="L" to="5"/>
@@ -148,7 +148,7 @@ Importing products from an old database with image downloading
                     <!--<use_config_min_sale_qty value="1"/>-->
                     <!--<max_sale_qty value="10000"/>-->
                     <!--<use_config_max_sale_qty value="1"/>-->
-                    <!--<is_in_stock helper="ho_import/import::getFieldBoolean"><field>stock</field></is_in_stock>-->
+                    <!--<is_in_stock helper="ho_import/import::getFieldBoolean"><field field="stock"/></is_in_stock>-->
                     <!--<notify_stock_qty value=""/>-->
                     <!--<use_config_notify_stock_qty value="1"/>-->
                     <!--<manage_stock value="1"/>-->
