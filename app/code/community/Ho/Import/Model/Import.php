@@ -1237,12 +1237,12 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $configurableSku = $this->_getConfigNode(self::IMPORT_CONFIG_CB_SKU);
-        if (! $configurableSku) {
-            return;
-        }
         $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
         $calculatePriceInStock = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE_IN_STOCK);
         $sku = $this->_getMapper()->mapItem($configurableSku);
+        if (! $sku) {
+            return $this;
+        }
 
         // Force array if single attribute is given with the 'value' parameter.
         $configurableAttributes = (array) $this->_getMapper()->mapItem(
