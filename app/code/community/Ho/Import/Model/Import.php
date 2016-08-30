@@ -1355,7 +1355,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 $configurable['admin'][0]['special_price'] =
                     $configurable['admin'][0][$specialPriceKey] != PHP_INT_MAX && $configurable['admin'][0][$specialPriceKey] > 0
                         ? $configurable['admin'][0][$specialPriceKey]
-                        : null;
+                        : $this->_fastSimpleImport->getSymbolEmptyFields();
 
                 foreach ($configurable['admin'] as &$row) {
                     if (! isset($row['_super_attribute_final_price'])) {
