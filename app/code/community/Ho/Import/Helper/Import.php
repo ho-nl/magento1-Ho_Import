@@ -170,7 +170,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     public function truncate($line, $field, $length = 80, $etc = '…', $breakWords = true)
     {
         $string = $this->_getMapper()->mapItem($field);
-        return Mage::helper('core/string')->truncate($string, $length, $etc, $remainder = '', $breakWords);
+        $remainder = '';
+        return Mage::helper('core/string')->truncate($string, $length, $etc, $remainder, $breakWords);
     }
 
 
