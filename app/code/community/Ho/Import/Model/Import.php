@@ -47,6 +47,7 @@ class Ho_Import_Model_Import extends Varien_Object
     const IMPORT_CONFIG_IMPORT_OPTIONS = 'global/ho_import/%s/import_options';
     const IMPORT_CONFIG_CLEAN          = 'global/ho_import/%s/clean';
     const IMPORT_CONFIG_LOG_LEVEL      = 'global/ho_import/%s/log_level';
+    const IMPORT_CONFIG_MEMORY_LIMIT   = 'global/ho_import/%s/memory_limit';
 
     /**
      * @var AvS_FastSimpleImport_Model_Import
@@ -56,7 +57,6 @@ class Ho_Import_Model_Import extends Varien_Object
     protected function _construct()
     {
         parent::_construct();
-        ini_set('memory_limit', '2048M');
         $this->_fastSimpleImport = Mage::getModel('fastsimpleimport/import');
     }
 
@@ -69,6 +69,8 @@ class Ho_Import_Model_Import extends Varien_Object
         if ($level = $this->getLogLevel()) {
             $this->_getLog()->setMinLogLevel($level);
         }
+
+        ini_set('memory_limit', $this->getMemoryLimit());
 
         if (!array_key_exists($this->getProfile(), $this->getProfiles())) {
             Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
@@ -866,6 +868,17 @@ class Ho_Import_Model_Import extends Varien_Object
             return $level;
         }
         return Ho_Import_Helper_Log::LOG_SUCCESS;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMemoryLimit()
+    {
+        if ($limit = $this->_getConfigNode(self::IMPORT_CONFIG_MEMORY_LIMIT)) {
+            return $limit;
+        }
+        return '2048M';
     }
 
     /**
