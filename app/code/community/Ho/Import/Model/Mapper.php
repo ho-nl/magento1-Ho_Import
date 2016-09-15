@@ -261,9 +261,15 @@ class Ho_Import_Model_Mapper
             $result = $this->_symbolIgnoreFields;
         }
 
-        return is_array($result) ? array_values($result) : $result;
+        if (is_array($result)) {
+            array_walk_recursive($result, function(&$value) {
+                $value = rtrim($value, '\\"');
+            });
+            return array_values($result);
+        } else {
+            return rtrim($result, '\\"');
+        }
     }
-
 
     /**
      * Get the config for a specific field or the config for all the fields.
