@@ -47,6 +47,7 @@ class Ho_Import_Model_Import extends Varien_Object
     const IMPORT_CONFIG_IMPORT_OPTIONS = 'global/ho_import/%s/import_options';
     const IMPORT_CONFIG_CLEAN          = 'global/ho_import/%s/clean';
     const IMPORT_CONFIG_LOG_LEVEL      = 'global/ho_import/%s/log_level';
+    const IMPORT_CONFIG_MEMORY_LIMIT   = 'global/ho_import/%s/memory_limit';
 
     /**
      * @var AvS_FastSimpleImport_Model_Import
@@ -56,7 +57,6 @@ class Ho_Import_Model_Import extends Varien_Object
     protected function _construct()
     {
         parent::_construct();
-        ini_set('memory_limit', '2048M');
         $this->_fastSimpleImport = Mage::getModel('fastsimpleimport/import');
     }
 
@@ -69,6 +69,8 @@ class Ho_Import_Model_Import extends Varien_Object
         if ($level = $this->getLogLevel()) {
             $this->_getLog()->setMinLogLevel($level);
         }
+
+        ini_set('memory_limit', $this->getMemoryLimit());
 
         if (!array_key_exists($this->getProfile(), $this->getProfiles())) {
             Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
@@ -869,6 +871,17 @@ class Ho_Import_Model_Import extends Varien_Object
     }
 
     /**
+     * @return string
+     */
+    protected function getMemoryLimit()
+    {
+        if ($limit = $this->_getConfigNode(self::IMPORT_CONFIG_MEMORY_LIMIT)) {
+            return $limit;
+        }
+        return '2048M';
+    }
+
+    /**
      * Format the errors and pass them to the logger
      *
      * @param $errors
@@ -1237,12 +1250,12 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $configurableSku = $this->_getConfigNode(self::IMPORT_CONFIG_CB_SKU);
-        if (! $configurableSku) {
-            return;
-        }
         $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
         $calculatePriceInStock = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE_IN_STOCK);
         $sku = $this->_getMapper()->mapItem($configurableSku);
+        if (! $sku) {
+            return $this;
+        }
 
         // Force array if single attribute is given with the 'value' parameter.
         $configurableAttributes = (array) $this->_getMapper()->mapItem(
@@ -1355,7 +1368,7 @@ class Ho_Import_Model_Import extends Varien_Object
                 $configurable['admin'][0]['special_price'] =
                     $configurable['admin'][0][$specialPriceKey] != PHP_INT_MAX && $configurable['admin'][0][$specialPriceKey] > 0
                         ? $configurable['admin'][0][$specialPriceKey]
-                        : null;
+                        : $this->_fastSimpleImport->getSymbolEmptyFields();
 
                 foreach ($configurable['admin'] as &$row) {
                     if (! isset($row['_super_attribute_final_price'])) {
