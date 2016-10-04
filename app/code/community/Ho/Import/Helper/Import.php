@@ -440,8 +440,8 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
         $count = count($this->_getMapper()->mapItem($countConfig));
         $value = $this->_getMapper()->mapItem($valueConfig);
         $values = array();
-        for ($i = 1; $i <= $count; $i++) {
-            $values[] = is_null($value) ? $i : $value;
+        for ($i = 0; $i < $count; $i++) {
+            $values[] = is_null($value) ? $i + 1 : (is_array($value) ? $value[$i] : $value);
         }
         return $values;
     }

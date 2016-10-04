@@ -74,7 +74,7 @@ Example config for a customer import (this is added to the `<config><global><ho_
 
 You can install the module via modman:
 ```bash
-modman clone git@github.com:ho-nl/Ho_Import.git
+modman clone git@github.com:ho-nl/magento1-Ho_Import.git
 ```
 
 Or you can [download the latest release](https://github.com/ho-nl/Ho_Import/archive/master.zip) it and place it in you Magento root.
