@@ -8,6 +8,7 @@
         "magento-hackathon/magento-composer-installer": "*",
         "avstudnitz/fast-simple-import": "*"
     },
+    "version": "1.7.1",
     "authors":[
         {
             "name":"Paul Hachmang - H&O",
