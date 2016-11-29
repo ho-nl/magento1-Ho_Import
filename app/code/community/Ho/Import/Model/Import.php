@@ -737,12 +737,12 @@ class Ho_Import_Model_Import extends Varien_Object
             throw $e;
         }
 
-        $seconds           = round(microtime(true) - $timer, 2);
+        $seconds           = microtime(true) - $timer;
         $rowsPerSecond     = round($this->getRowCount() / $seconds, 2);
         $entitiesPerSecond = round($this->getEntityCount() / $seconds, 2);
         $this->_getLog()->log($this->_getLog()->__(
             'Profile %s done in %s seconds, %s entities/s, %s rows/s.',
-            $profile, $seconds, $entitiesPerSecond, $rowsPerSecond
+            $profile, round($seconds, 4), $entitiesPerSecond, $rowsPerSecond
         ));
 
         return $this->_fastSimpleImport->getErrors();
