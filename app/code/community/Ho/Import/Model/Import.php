@@ -53,7 +53,6 @@ class Ho_Import_Model_Import extends Varien_Object
      * @var AvS_FastSimpleImport_Model_Import
      */
     protected $_fastSimpleImport = NULL;
-    protected $_finalConfig = null;
 
     protected function _construct()
     {
