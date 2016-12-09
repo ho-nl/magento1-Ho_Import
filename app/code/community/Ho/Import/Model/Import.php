@@ -53,6 +53,7 @@ class Ho_Import_Model_Import extends Varien_Object
      * @var AvS_FastSimpleImport_Model_Import
      */
     protected $_fastSimpleImport = NULL;
+    protected $_finalConfig = null;
 
     protected function _construct()
     {
@@ -581,7 +582,7 @@ class Ho_Import_Model_Import extends Varien_Object
      *
      * @return array
      */
-    protected function _fieldMapItemExtract($fieldConfig)
+    protected function _fieldMapItemExtract($fieldConfigs)
     {
         $itemRows = array();
 
@@ -589,7 +590,7 @@ class Ho_Import_Model_Import extends Varien_Object
         $symbolForClearField = $this->_fastSimpleImport->getSymbolEmptyFields();
 
         //Step 1: Get the values for the fields
-        foreach ($fieldConfig as $storeCode => $fields) {
+        foreach ($fieldConfigs as $storeCode => $fields) {
             $mapper->setStoreCode($storeCode);
             /** @var $column Mage_Core_Model_Config_Element */
             foreach ($fields as $fieldName => $fieldConfig) {

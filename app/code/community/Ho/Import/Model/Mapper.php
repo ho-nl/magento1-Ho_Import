@@ -300,8 +300,8 @@ class Ho_Import_Model_Mapper
             }
 
             if ($usePath = $fieldMapNode->getAttribute('use')) {
-                $fieldMapPath = sprintf(self::IMPORT_FIELD_CONFIG_PATH, $usePath);
-                $useFieldMapNode = Mage::getConfig()->getNode($fieldMapPath);
+                $fieldMapPathExtend = sprintf(self::IMPORT_FIELD_CONFIG_PATH, $usePath);
+                $useFieldMapNode = Mage::getConfig()->getNode($fieldMapPathExtend);
 
                 if (! $useFieldMapNode) {
                     Mage::throwException(sprintf("Incorrect 'use' in <fieldmap use=\"%s\" />", $usePath));
