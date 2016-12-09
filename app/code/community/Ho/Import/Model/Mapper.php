@@ -341,6 +341,9 @@ class Ho_Import_Model_Mapper
 
         if (! is_null($fieldName)) {
             if (! isset($this->_fieldConfig[$fieldMapPath][$this->getStoreCode()][$fieldName])) {
+                if (isset($this->_fieldConfig[$fieldMapPath]['admin'][$fieldName])) {
+                    return $this->_fieldConfig[$fieldMapPath]['admin'][$fieldName];
+                }
                 return null;
             }
             return $this->_fieldConfig[$fieldMapPath][$this->getStoreCode()][$fieldName];
