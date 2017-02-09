@@ -819,6 +819,25 @@ class Ho_Import_Model_Import extends Varien_Object
                 Mage::throwException(Mage::helper('importexport')->__(
                         "%s file does not exists or is not readable", $source->file));
             }
+        } elseif (isset($arguments['glob'])) {
+            /** @noinspection PhpUndefinedFieldInspection */
+            $files = glob(Mage::getBaseDir() . DS . (string) $source->glob);
+
+            if (!is_array($files) || !count($files)) {
+                /** @noinspection PhpUndefinedFieldInspection */
+                Mage::throwException(Mage::helper('importexport')->__(
+                    "The glob \"%s\" does not match any files", $source->glob));
+            }
+            sort($files);
+
+            $arguments['file'] = array_shift($files);
+
+            if (!is_readable($arguments['file'])) {
+
+                /** @noinspection PhpUndefinedFieldInspection */
+                Mage::throwException(Mage::helper('importexport')->__(
+                    "The glob \"%s\" does not match a readable file", (string) $source->glob));
+            }
         }
 
         if (count($arguments) == 1 && isset($arguments['file'])) {
