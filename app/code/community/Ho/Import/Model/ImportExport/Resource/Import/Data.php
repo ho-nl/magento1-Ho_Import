@@ -15,8 +15,11 @@ class Ho_Import_Model_ImportExport_Resource_Import_Data extends Mage_ImportExpor
             $adapter->select()
                 ->from($this->getMainTable(), array('behavior'))
         ));
-        if (count($behaviors) != 1) {
+        if (count($behaviors) > 1) {
             Mage::throwException(Mage::helper('importexport')->__('Error in data structure: behaviors are mixed'));
+        }
+        elseif (count($behaviors) == 0) {
+            return 'unknown';
         }
         return $behaviors[0];
     }
@@ -34,8 +37,11 @@ class Ho_Import_Model_ImportExport_Resource_Import_Data extends Mage_ImportExpor
             $adapter->select()
                 ->from($this->getMainTable(), array('entity'))
         ));
-        if (count($entityCodes) != 1) {
+        if (count($entityCodes) > 1) {
             Mage::throwException(Mage::helper('importexport')->__('Error in data structure: entity codes are mixed'));
+        }
+        elseif (count($entityCodes) == 0) {
+            return 'unknown';
         }
         return $entityCodes[0];
     }
