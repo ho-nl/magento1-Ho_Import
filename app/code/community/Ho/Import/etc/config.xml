@@ -40,11 +40,11 @@
 				<class>Ho_Import_Helper</class>
 			</ho_import>
 		</helpers>
-		<models>
-			<ho_import>
-				<class>Ho_Import_Model</class>
+        <models>
+            <ho_import>
+                <class>Ho_Import_Model</class>
                 <resourceModel>ho_import_resource</resourceModel>
-			</ho_import>
+            </ho_import>
             <ho_import_resource>
                 <class>Ho_Import_Model_Resource</class>
                 <entities>
@@ -53,7 +53,12 @@
                     </entity>
                 </entities>
             </ho_import_resource>
-		</models>
+            <importexport_resource>
+                <rewrite>
+                    <import_data>Ho_Import_Model_ImportExport_Resource_Import_Data</import_data>
+                </rewrite>
+            </importexport_resource>
+        </models>
         <resources>
             <ho_import_setup>
                 <setup>
