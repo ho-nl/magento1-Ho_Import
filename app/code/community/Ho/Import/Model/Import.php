@@ -828,7 +828,7 @@ class Ho_Import_Model_Import extends Varien_Object
 
         if (isset($arguments['glob'])) {
             /** @noinspection PhpUndefinedFieldInspection */
-            $files = glob(Mage::getBaseDir() . DS . (string) $source->glob);
+            $files = glob(Mage::getBaseDir() . DS . (string) $source->glob, GLOB_BRACE);
 
             if (!is_array($files) || !count($files)) {
                 /** @noinspection PhpUndefinedFieldInspection */
