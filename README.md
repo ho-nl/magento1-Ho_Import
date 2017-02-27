@@ -971,7 +971,7 @@ class Ho_ImportJanselijn_Helper_Import_Customer extends Mage_Core_Helper_Abstrac
 }
 ```
 
-As you can see it sometimes returns an array of values and sometimes just returns a value. If you helper method returns an array of values Ho_Imports [internally rewrites those multiple values to multiple import rows](https://github.com/ho-nl/Ho_Import/blob/master/app/code/local/Ho/Import/Model/Import.php#L470).
+As you can see it sometimes returns an array of values and sometimes just returns a value. If you helper method returns an array of values Ho_Imports [internally rewrites those multiple values to multiple import rows](https://github.com/ho-nl/Ho_Import/tree/master/app/code/community/Ho/Import/Model/Import.php#L470).
 
 ## Configurable products
 It is possible to create configurable products using `Ho_Import`.

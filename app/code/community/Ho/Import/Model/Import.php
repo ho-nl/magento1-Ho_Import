@@ -66,6 +66,7 @@ class Ho_Import_Model_Import extends Varien_Object
      */
     public function process()
     {
+        $logger = $this->_getLog();
         if ($level = $this->getLogLevel()) {
             $this->_getLog()->setMinLogLevel($level);
         }
@@ -73,15 +74,14 @@ class Ho_Import_Model_Import extends Varien_Object
         ini_set('memory_limit', $this->getMemoryLimit());
 
         if (!array_key_exists($this->getProfile(), $this->getProfiles())) {
-            Mage::throwException($this->_getLog()->__("Profile %s not found", $this->getProfile()));
+            Mage::throwException($logger->__("Profile %s not found", $this->getProfile()));
         }
 
         $this->_applyImportOptions();
         $this->_downloader();
         $this->_decompressor();
 
-        $this->_getLog()->log($this->_getLog()->__(
-                'Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
+        $logger->log($logger->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
 
         $this->_archiveOldCsv();
         $hasRows = $this->_createImportCsv();
@@ -92,12 +92,12 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $importData = $this->getImportData();
         if (isset($importData['dryrun']) && $importData['dryrun'] == 1) {
-            $this->_getLog()->log($this->_getLog()->__(
+            $logger->log($logger->__(
                 'Dry run %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
 
             $errors = $this->_dryRun();
         } else {
-            $this->_getLog()->log($this->_getLog()->__(
+            $logger->log($logger->__(
                 'Processing %s rows from temp csv file (%s)', $this->getRowCount(), $this->_getFileName()));
 
             $errors = $this->_importMain();
@@ -111,17 +111,32 @@ class Ho_Import_Model_Import extends Varien_Object
 
         if ($cleanRowCount) {
             if (isset($importData['dryrun']) && $importData['dryrun'] == 1) {
-                $this->_getLog()->log($this->_getLog()->__(
+                $logger->log($logger->__(
                     'Dry run cleaning %s rows from temp csv file (%s)', $cleanRowCount, $this->_getCleanFileName()));
                 $errors = $this->_dryRunEntityCleanCsv();
             } else {
-                $this->_getLog()->log($this->_getLog()->__(
+                $logger->log($logger->__(
                     'Clean %s rows from temp csv file (%s)', $cleanRowCount, $this->_getCleanFileName()));
                 $errors = $this->_processEntityCleanCsv();
             }
 
             $this->_logErrors($errors);
             $this->_debugErrors($errors);
+        }
+
+        if (!is_null($this->_sourceFile) && !is_null($this->_sourceProcessedPath)) {
+            if (!file_exists($this->_sourceProcessedPath)) {
+                $this->_sourceProcessedPath = Mage::getBaseDir() . DS . (string) $this->_sourceProcessedPath;
+            }
+            if (is_dir_writeable($this->_sourceProcessedPath)) {
+                if (!rename($this->_sourceFile, $this->_sourceProcessedPath . DS . basename($this->_sourceFile))) {
+                    $logger->log($logger->__('Failed to move source file (%s) to archive directory (%s)',
+                        $this->_sourceFile, $this->_sourceProcessedPath), Zend_Log::WARN);
+                }
+            } else {
+                $logger->log($logger->__('Failed to move source file, archive directory (%s) non-existant or not writable',
+                    $this->_sourceProcessedPath), Zend_Log::WARN);
+            }
         }
 
         $this->_getLog()->log($this->_getLog()->__('Clean entity link table'));
@@ -779,6 +794,8 @@ class Ho_Import_Model_Import extends Varien_Object
      * @return SeekableIterator
      */
     protected $_sourceAdapter = null;
+    protected $_sourceFile = null;
+    protected $_sourceProcessedPath = null;
     public function getSourceAdapter()
     {
         $source = $this->_getConfigNode(self::IMPORT_CONFIG_MODEL);
@@ -809,15 +826,36 @@ class Ho_Import_Model_Import extends Varien_Object
             }
         }
 
-        if (isset($arguments['file']) && !is_readable($arguments['file'])) {
+        if (isset($arguments['glob'])) {
+            /** @noinspection PhpUndefinedFieldInspection */
+            $files = glob(Mage::getBaseDir() . DS . (string) $source->glob, GLOB_BRACE);
+
+            if (!is_array($files) || !count($files)) {
+                /** @noinspection PhpUndefinedFieldInspection */
+                Mage::throwException(Mage::helper('importexport')->__(
+                    "The glob \"%s\" does not match any files", $source->glob));
+            }
+            sort($files);
+
+            $arguments['file'] = array_shift($files);
+        } elseif (isset($arguments['file']) && !is_readable($arguments['file'])) {
 
             /** @noinspection PhpUndefinedFieldInspection */
-            $arguments['file'] = Mage::getBaseDir() . DS . (string)$source->file;
+            $arguments['file'] = Mage::getBaseDir() . DS . (string) $source->file;
+        }
+
+        if (isset($arguments['file'])) {
             if (!is_readable($arguments['file'])) {
 
                 /** @noinspection PhpUndefinedFieldInspection */
                 Mage::throwException(Mage::helper('importexport')->__(
-                        "%s file does not exists or is not readable", $source->file));
+                    "%s file does not exists or is not readable", $source->file));
+            }
+
+            $this->_sourceFile = $arguments['file'];
+
+            if (isset($arguments['archive_path'])) {
+                $this->_sourceProcessedPath = $arguments['archive_path'];
             }
         }
 

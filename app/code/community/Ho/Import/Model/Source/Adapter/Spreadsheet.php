@@ -69,6 +69,7 @@ class Ho_Import_Model_Source_Adapter_Spreadsheet extends SpreadsheetReader
         if ($this->_hasHeaders) {
             $current = $this->current();
             $this->_colNames = $current;
+            $this->next();
         }
     }
 
