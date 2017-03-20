@@ -444,10 +444,10 @@ class Ho_Import_Model_Import extends Varien_Object
                     $exportAdapter->writeRow(array_merge($fieldNames, $row));
                 }
             }
+            $this->_runEvent('source_fieldmap_after', $transport);
             $sourceAdapter->next();
         }
         $transport = $this->_getTransport();
-        $this->_runEvent('source_fieldmap_after', $transport);
         $this->_configurableGetConfigurables($transport);
         if ($transport->getItems()) {
             foreach ($transport->getItems() as $item) {
