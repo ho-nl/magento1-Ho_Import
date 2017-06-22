@@ -877,9 +877,6 @@ Give the price and the special_price and it returns the special_price if the spe
 </special_price>
 ```
 
-
-#### getSpecialPrice
-
 #### Category: getUrlKey
 ```XML
 <url_key helper="ho_import/import_category::getUrlKey">
@@ -973,6 +970,30 @@ class Ho_ImportJanselijn_Helper_Import_Customer extends Mage_Core_Helper_Abstrac
 ```
 
 As you can see it sometimes returns an array of values and sometimes just returns a value. If you helper method returns an array of values Ho_Imports [internally rewrites those multiple values to multiple import rows](https://github.com/ho-nl/Ho_Import/tree/master/app/code/community/Ho/Import/Model/Import.php#L470).
+
+## Pricing
+### Group pricing
+Simple example of how to add group pricing to your product. Helpers can be used to calculate different prices for different websites.
+```XML
+<_group_price_website helper="ho_import/import::getFieldMultiple">
+    <fields>
+        <eu value="all"/>
+        <int value="all"/>
+    </fields>
+</_group_price_website>
+<_group_price_customer_group helper="ho_import/import::getFieldMultiple">
+    <fields>
+        <eu value="2"/>
+        <int value="3"/>
+    </fields>
+</_group_price_customer_group>
+<_group_price_price helper="ho_import/import::getFieldMultiple">
+    <fields>
+        <eu field="price"/>
+        <int field="price"/>
+    </fields>
+</_group_price_price>
+```
 
 ## Configurable products
 It is possible to create configurable products using `Ho_Import`.
