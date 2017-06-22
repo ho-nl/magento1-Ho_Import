@@ -1032,6 +1032,11 @@ Set this option to `1` and Ho_Import will try and determine the lowest price bas
 
 ## CLI / Shell Utility
 The importer comes with a shell utility where you'll be spending most of your time.
+You may want to access the individual configuration settings to disable custom helpers (useful when dryrun is active).
+This can be done by using:
+```
+Mage::helper('ho_import/import')->getConfig();
+```
 
 ### line
 ```

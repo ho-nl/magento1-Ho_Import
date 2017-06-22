@@ -102,6 +102,11 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
+
+            /** @var Ho_Import_Model_Config $importConfig */
+            $importConfig = Mage::getSingleton('ho_import/config');
+            $importConfig->setConfig($this->_args);
+
             $import->process();
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
@@ -141,6 +146,11 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
+
+            /** @var Ho_Import_Model_Config $importConfig */
+            $importConfig = Mage::getSingleton('ho_import/config');
+            $importConfig->setConfig($this->_args);
+
             $import->mapLines($this->getArg('line'));
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
@@ -178,6 +188,11 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
+
+            /** @var Ho_Import_Model_Config $importConfig */
+            $importConfig = Mage::getSingleton('ho_import/config');
+            $importConfig->setConfig($this->_args);
+
             $import->importCsv();
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
