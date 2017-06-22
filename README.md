@@ -134,6 +134,7 @@ Add something like the following to your profile (see chapters below for detaile
     <!--<ignore_duplicates>1</ignore_duplicates>-->
     <partial_indexing>1</partial_indexing>
 </import_options>
+<!--<memory_limit>4096M</memory_limit> Optional, default is 2048M--> 
 ```
 
 ### 3. Run the line shell utility
