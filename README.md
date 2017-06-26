@@ -313,6 +313,7 @@ The supported downloaders are HTTP and FTP.
 ```XML
 <downloader model="ho_import/downloader_ftp">
     <host>ftp.website.com</host>
+    <port>2121</port> <!-- Optional: Default setting is 21 -->
     <username>userr</username>
     <password>supersecurepassword</password>
     <file>httpdocs/file.xml</file> <!-- Relative path on the server, relative from the login -->

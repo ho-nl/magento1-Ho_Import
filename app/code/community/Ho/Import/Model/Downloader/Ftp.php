@@ -1,29 +1,11 @@
 <?php
 /**
- * Ho_Import
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
- *
- * @category    Ho
- * @package     Ho_Import
- * @copyright   Copyright © 2014 H&O (http://www.h-o.nl/)
- * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- * @author      Paul Hachmang – H&O <info@h-o.nl>
- *
- * 
+ * Copyright © 2017 H&O E-commerce specialisten B.V. (http://www.h-o.nl/)
+ * See LICENSE.txt for license details.
  */
- 
+
 class Ho_Import_Model_Downloader_Ftp extends Ho_Import_Model_Downloader_Abstract
 {
-
     public function download(Varien_Object $connectionInfo, $target)
     {
         $file = $connectionInfo->getFile();
@@ -33,6 +15,7 @@ class Ho_Import_Model_Downloader_Ftp extends Ho_Import_Model_Downloader_Abstract
         $ftp = new Varien_Io_Ftp();
         $ftp->open(array(
             'host'      => $connectionInfo->getHost(),
+            'port'      => $connectionInfo->getPort() ? $connectionInfo->getPort() : 21,
             'user'      => $connectionInfo->getUsername(),
             'password'  => $connectionInfo->getPassword(),
             'timeout'   => $connectionInfo->hasTimeout() ? $connectionInfo->getTimeout() : 10,
@@ -41,7 +24,7 @@ class Ho_Import_Model_Downloader_Ftp extends Ho_Import_Model_Downloader_Abstract
             'file_mode' => $connectionInfo->hasFileMode() ? $connectionInfo->getFileMode() : null,
         ));
 
-        if (!is_writable(Mage::getBaseDir().DS.$target)) {
+        if (! is_writable(Mage::getBaseDir().DS.$target)) {
             Mage::throwException($this->_getLog()->__(
                 "Can not write file %s to %s, folder not writable (doesn't exist?)",
                 $connectionInfo->getFile(), $target
@@ -52,6 +35,7 @@ class Ho_Import_Model_Downloader_Ftp extends Ho_Import_Model_Downloader_Abstract
             "Downloading file %s from %s, to %s",
             $connectionInfo->getFile(), $connectionInfo->getHost(), $target
         ));
+
         $targetPath = $this->_getTargetPath($target, basename($file));
         $ftp->read($file, $targetPath);
         $ftp->close();
