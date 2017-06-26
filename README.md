@@ -269,8 +269,8 @@ debugging.
 ```
 
 ### Clean entities that are not in the source
-Be able to automatically delete, hide or disable products and categories after importing. When a enabled, if a product
-or category isn't in the source anymore it gets automatically deleted. Ho_Import tracks the entities from which profile
+Be able to automatically delete, hide or disable products and categories after importing. When enabled, if a product
+or category isn't in the source anymore it gets automatically deleted. `Ho_Import` tracks the entities from which profile
 they came from:
 
 ![Profile information](docs/images/import_profile.png)
@@ -284,6 +284,14 @@ cleaned up.
 </clean>
 ```
 
+#### Cleaning `catalog_category_product` entity
+A `catalog_category_product` entity isn't supported by Magento and therefore cleaning this entity works different then stated above. 
+`AvS_FastSimpleImport` supports three different types of import behaviours: 
+- Append Complex Data
+- Replace Existing Complex Data (default)
+- Delete Entities
+
+Using the default value it will replace all the products in your category.
 
 #### Multiple imports for the same product
 If you have multiple imports for the same product (product information and stock information for
