@@ -425,7 +425,6 @@ class Ho_Import_Model_Import extends Varien_Object
             $transport = $this->_getTransport()->setItems(array($sourceAdapter->current()));
             $this->_runEvent('source_row_fieldmap_before', $transport);
             if ($transport->getSkip()) {
-                $rowCount++;
                 $sourceAdapter->next();
                 continue;
             }
