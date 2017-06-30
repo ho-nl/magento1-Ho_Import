@@ -28,7 +28,7 @@ class Ho_Import_Model_ImportExport_Import_Entity_Product extends Mage_ImportExpo
                     $value = is_array($option['value']) ? $option['value'] : array($option);
                     foreach ($value as $innerOption) {
                         if (strlen($innerOption['value'])) { // skip ' -- Please Select -- ' option
-                            $options[mb_strtolower($innerOption[$index], mb_detect_encoding($innerOption[$index]))] = $innerOption['value'];
+                            $options[strtolower($innerOption[$index])] = $innerOption['value'];
                         }
                     }
                 }
