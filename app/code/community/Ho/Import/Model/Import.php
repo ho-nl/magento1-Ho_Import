@@ -1383,6 +1383,7 @@ class Ho_Import_Model_Import extends Varien_Object
         if (! $this->_getConfigNode(self::IMPORT_CONFIG_CB)) {
             return $this;
         }
+
         $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
         $fieldConfig = $this->_configurableFieldConfig();
         $fieldConfig['admin']['_super_products_sku'] = [];
@@ -1405,7 +1406,9 @@ class Ho_Import_Model_Import extends Varien_Object
                 $minPrice = $configurable['admin'][0][$finalPriceKey];
                 $configurable['admin'][0]['price'] = $configurable['admin'][0][$priceKey];
                 $configurable['admin'][0]['special_price'] =
-                    $configurable['admin'][0][$specialPriceKey] != PHP_INT_MAX && $configurable['admin'][0][$specialPriceKey] > 0
+                    $configurable['admin'][0][$specialPriceKey] != PHP_INT_MAX
+                    && $configurable['admin'][0][$specialPriceKey] > 0
+                    && $configurable['admin'][0][$specialPriceKey] < $configurable['admin'][0][$priceKey]
                         ? $configurable['admin'][0][$specialPriceKey]
                         : $this->_fastSimpleImport->getSymbolEmptyFields();
 
