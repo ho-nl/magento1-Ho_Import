@@ -284,15 +284,6 @@ cleaned up.
 </clean>
 ```
 
-#### Cleaning `catalog_category_product` entity
-A `catalog_category_product` entity isn't supported by Magento and therefore cleaning this entity works different then stated above. 
-`AvS_FastSimpleImport` supports three different types of import behaviours: 
-- Append Complex Data
-- Replace Existing Complex Data (default)
-- Delete Entities
-
-Using the default value it will replace all the products in your category.
-
 #### Multiple imports for the same product
 If you have multiple imports for the same product (product information and stock information for
 example), you have to define the profile associated with the product manually.
