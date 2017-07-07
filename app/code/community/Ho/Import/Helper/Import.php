@@ -1,25 +1,9 @@
 <?php
 /**
- * Ho_Import
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
- *
- * @category    Ho
- * @package     Ho_Import
- * @copyright   Copyright © 2012 H&O (http://www.h-o.nl/)
- * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- * @author      Paul Hachmang – H&O <info@h-o.nl>
- *
- *
+ * Copyright © 2017 H&O E-commerce specialisten B.V. (http://www.h-o.nl/)
+ * See LICENSE.txt for license details.
  */
+
 class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 {
     protected $_today = null;
@@ -30,6 +14,15 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
     /** @var null */
     protected $_fileUploader = null;
 
+    /**
+     * Return import configuration.
+     *
+     * @return Ho_Import_Model_Config
+     */
+    public function getConfig()
+    {
+        return Mage::getSingleton('ho_import/config');
+    }
 
     /**
      * @param array $line
@@ -53,7 +46,6 @@ class Ho_Import_Helper_Import extends Mage_Core_Helper_Abstract
 
         return $this->_websiteIds;
     }
-
 
     /**
      * @param       $line

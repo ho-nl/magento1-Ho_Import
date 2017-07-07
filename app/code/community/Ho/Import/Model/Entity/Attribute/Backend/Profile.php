@@ -1,29 +1,14 @@
 <?php
 /**
- * Ho_Import
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the H&O Commercial License
- * that is bundled with this package in the file LICENSE_HO.txt.
- * It is also available through the world-wide-web at this URL:
- * http://www.h-o.nl/license
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to info@h-o.com so we can send you a copy immediately.
- *
- * @category  Ho
- * @package   Ho_Import
- * @author    Paul Hachmang – H&O <info@h-o.nl>
- * @copyright 2014 Copyright © H&O (http://www.h-o.nl/)
- * @license   H&O Commercial License (http://www.h-o.nl/license)
+ * Copyright © 2017 H&O E-commerce specialisten B.V. (http://www.h-o.nl/)
+ * See LICENSE.txt for license details.
  */
  
-class Ho_Import_Model_Entity_Attribute_Backend_Profile
-    extends Mage_Eav_Model_Entity_Attribute_Backend_Abstract
+class Ho_Import_Model_Entity_Attribute_Backend_Profile extends Mage_Eav_Model_Entity_Attribute_Backend_Abstract
 {
     /**
-     * Retrieve resource instance
+     * Retrieve resource instance.
+     *
      * @return Ho_Import_Model_Resource_Attribute_Backend_Profile
      */
     protected function _getResource()
@@ -32,13 +17,18 @@ class Ho_Import_Model_Entity_Attribute_Backend_Profile
     }
 
     /**
-     * Assign group prices to product data
+     * Assign group prices to product data.
      *
      * @param Mage_Catalog_Model_Abstract $object
-     * @return $this
+     *
+     * @return Ho_Import_Model_Entity_Attribute_Backend_Profile
      */
     public function afterLoad($object)
     {
+        if (! Mage::helper('ho_import')->isAdmin()) {
+            return $this;
+        }
+
         $data = $this->_getResource()->loadProfileData($object->getId(), $object->getEntityTypeId());
 
         $object->setData($this->getAttribute()->getName(), count($data) ? $data : null);
@@ -48,10 +38,11 @@ class Ho_Import_Model_Entity_Attribute_Backend_Profile
     }
 
     /**
-     * After Save Attribute manipulation
+     * After save attribute manipulation.
      *
      * @param Mage_Catalog_Model_Abstract $object
-     * @return $this
+     *
+     * @return Ho_Import_Model_Entity_Attribute_Backend_Profile
      */
     public function afterSave($object)
     {
@@ -59,6 +50,7 @@ class Ho_Import_Model_Entity_Attribute_Backend_Profile
         if (! $hasChanges) {
             return $this;
         }
+
         $object->getData($this->getAttribute()->getName());
 
         return $this;

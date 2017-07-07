@@ -134,6 +134,7 @@ Add something like the following to your profile (see chapters below for detaile
     <!--<ignore_duplicates>1</ignore_duplicates>-->
     <partial_indexing>1</partial_indexing>
 </import_options>
+<!--<memory_limit>4096M</memory_limit> Optional, default is 2048M--> 
 ```
 
 ### 3. Run the line shell utility
@@ -268,8 +269,8 @@ debugging.
 ```
 
 ### Clean entities that are not in the source
-Be able to automatically delete, hide or disable products and categories after importing. When a enabled, if a product
-or category isn't in the source anymore it gets automatically deleted. Ho_Import tracks the entities from which profile
+Be able to automatically delete, hide or disable products and categories after importing. When enabled, if a product
+or category isn't in the source anymore it gets automatically deleted. `Ho_Import` tracks the entities from which profile
 they came from:
 
 ![Profile information](docs/images/import_profile.png)
@@ -282,7 +283,6 @@ cleaned up.
     <mode>hide</mode> <!-- options are delete, hide, disable -->
 </clean>
 ```
-
 
 #### Multiple imports for the same product
 If you have multiple imports for the same product (product information and stock information for
@@ -312,6 +312,7 @@ The supported downloaders are HTTP and FTP.
 ```XML
 <downloader model="ho_import/downloader_ftp">
     <host>ftp.website.com</host>
+    <port>2121</port> <!-- Optional: Default setting is 21 -->
     <username>userr</username>
     <password>supersecurepassword</password>
     <file>httpdocs/file.xml</file> <!-- Relative path on the server, relative from the login -->
@@ -876,9 +877,6 @@ Give the price and the special_price and it returns the special_price if the spe
 </special_price>
 ```
 
-
-#### getSpecialPrice
-
 #### Category: getUrlKey
 ```XML
 <url_key helper="ho_import/import_category::getUrlKey">
@@ -973,6 +971,30 @@ class Ho_ImportJanselijn_Helper_Import_Customer extends Mage_Core_Helper_Abstrac
 
 As you can see it sometimes returns an array of values and sometimes just returns a value. If you helper method returns an array of values Ho_Imports [internally rewrites those multiple values to multiple import rows](https://github.com/ho-nl/Ho_Import/tree/master/app/code/community/Ho/Import/Model/Import.php#L470).
 
+## Pricing
+### Group pricing
+Simple example of how to add group pricing to your product. Helpers can be used to calculate different prices for different websites.
+```XML
+<_group_price_website helper="ho_import/import::getFieldMultiple">
+    <fields>
+        <eu value="all"/>
+        <int value="all"/>
+    </fields>
+</_group_price_website>
+<_group_price_customer_group helper="ho_import/import::getFieldMultiple">
+    <fields>
+        <eu value="2"/>
+        <int value="3"/>
+    </fields>
+</_group_price_customer_group>
+<_group_price_price helper="ho_import/import::getFieldMultiple">
+    <fields>
+        <eu field="price"/>
+        <int field="price"/>
+    </fields>
+</_group_price_price>
+```
+
 ## Configurable products
 It is possible to create configurable products using `Ho_Import`.
 ```XML
@@ -1031,6 +1053,11 @@ Set this option to `1` and Ho_Import will try and determine the lowest price bas
 
 ## CLI / Shell Utility
 The importer comes with a shell utility where you'll be spending most of your time.
+You may want to access the individual configuration settings to disable custom helpers (useful when dryrun is active).
+This can be done by using:
+```
+Mage::helper('ho_import/import')->getConfig();
+```
 
 ### line
 ```

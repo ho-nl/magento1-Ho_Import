@@ -1,10 +1,13 @@
 <?php
+/**
+ * Copyright © 2017 H&O E-commerce specialisten B.V. (http://www.h-o.nl/)
+ * See LICENSE.txt for license details.
+ */
 
 require_once 'abstract.php';
 
 class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -23,19 +26,19 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
      */
     public function run()
     {
-
         Mage::helper('ho_import/log')->setMode('cli');
 
         $action = $this->getArg('action');
+
         if (empty($action)) {
             echo $this->usageHelp();
         } else {
             Varien_Profiler::start("shell-productimport".$this->getArg('action'));
 
-            //disable the inline translator for the cli, breaks the import if it is enabled.
+            // Disable the inline translator for the cli, breaks the import if it is enabled.
             Mage::getConfig()->setNode('stores/admin/dev/translate_inline/active', 0);
 
-            //initialize the translations so that we are able to translate things.
+            // Initialize the translations so that we are able to translate things.
             Mage::app()->loadAreaPart(
                 Mage_Core_Model_App_Area::AREA_ADMINHTML,
                 Mage_Core_Model_App_Area::PART_TRANSLATE
@@ -49,9 +52,10 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
                 echo $this->usageHelp();
                 exit(1);
             }
+
             Varien_Profiler::stop("shell-productimport-".$this->getArg('action'));
 
-            /** @var $profiler Aoe_Profiler_Helper_Data */
+            /** @var Aoe_Profiler_Helper_Data $profiler */
             if (Mage::helper('core')->isModuleEnabled('aoe_profiler')
                 && $profiler = Mage::helper('aoe_profiler')
                 && $this->getArg('profiler') == '1') {
@@ -59,8 +63,6 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             }
         }
     }
-
-
 
     /**
      * Retrieve Usage Help Message
@@ -81,9 +83,9 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
                 $help .= "\n";
             }
         }
+
         return $help;
     }
-
 
     /**
      * Importing data entities
@@ -100,6 +102,11 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
+
+            /** @var Ho_Import_Model_Config $importConfig */
+            $importConfig = Mage::getSingleton('ho_import/config');
+            $importConfig->setConfig($this->_args);
+
             $import->process();
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
@@ -109,7 +116,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             exit(1);
         }
 
-           Mage::helper('ho_import/log')->log('Done');
+        Mage::helper('ho_import/log')->log('Done');
     }
 
 
@@ -118,6 +125,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
         /** @var Ho_Import_Model_Import $import */
         $import   = Mage::getModel('ho_import/import');
         $profiles = implode(", ", array_keys($import->getProfiles()));
+
         return
             "\n\t-profile profile_name   Available profiles:    {$profiles}"
           . "\n\t-skip_download 1        Skip the download"
@@ -138,6 +146,11 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
+
+            /** @var Ho_Import_Model_Config $importConfig */
+            $importConfig = Mage::getSingleton('ho_import/config');
+            $importConfig->setConfig($this->_args);
+
             $import->mapLines($this->getArg('line'));
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
@@ -163,10 +176,6 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
            ."\n";
     }
 
-
-    /**
-     *
-     */
     public function csvAction()
     {
         if (! $profile = $this->getArg('profile')) {
@@ -175,18 +184,16 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
         }
 
         try {
-            Mage::helper('ho_import/xhprof')->start(
-                XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY + XHPROF_FLAGS_NO_BUILTINS,
-                '/usr/local/Cellar/php56-xhprof/254eb24/xhprof_lib/utils/'
-            );
-
             /** @var Ho_Import_Model_Import $import */
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->setImportData($this->_args);
-            $import->importCsv();
 
-            Mage::helper('ho_import/xhprof')->stop($profile);
+            /** @var Ho_Import_Model_Config $importConfig */
+            $importConfig = Mage::getSingleton('ho_import/config');
+            $importConfig->setConfig($this->_args);
+
+            $import->importCsv();
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
             exit(1);
@@ -195,7 +202,7 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             exit(1);
         }
 
-           Mage::helper('ho_import/log')->log('Done');
+        Mage::helper('ho_import/log')->log('Done');
     }
 
     public function csvActionHelp()

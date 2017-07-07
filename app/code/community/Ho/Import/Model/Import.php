@@ -425,7 +425,6 @@ class Ho_Import_Model_Import extends Varien_Object
             $transport = $this->_getTransport()->setItems(array($sourceAdapter->current()));
             $this->_runEvent('source_row_fieldmap_before', $transport);
             if ($transport->getSkip()) {
-                $rowCount++;
                 $sourceAdapter->next();
                 continue;
             }
@@ -1164,15 +1163,13 @@ class Ho_Import_Model_Import extends Varien_Object
                 }
 
                 break;
-            case 'customer':
-                $this->_getLog()->log('Cleaning customers not yet implemented, skipping.');
+            default:
+                $this->_getLog()->log(sprintf("Cleaning '%s' entities not yet implemented, skipping.", $this->_getEntityType()), Zend_Log::WARN);
                 return false;
-                break;
         }
 
         return $select;
     }
-
 
     /**
      * @return Ho_Import_Model_Import
@@ -1181,6 +1178,7 @@ class Ho_Import_Model_Import extends Varien_Object
     {
         $cleanMode = $this->_getCleanMode();
         $this->_applyImportOptions();
+
         if ($cleanMode == 'delete') {
             $this->_fastSimpleImport->setBehavior(Mage_ImportExport_Model_Import::BEHAVIOR_DELETE);
         } else {
@@ -1188,18 +1186,14 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         $errors = $this->_importData($this->_getCleanFileName(), $this->getProfile().'_clean');
+
         return $errors;
     }
 
-
-    /**
-     *
-     */
     protected function _dryRunEntityCleanCsv()
     {
-
+        // -
     }
-
 
     /**
      * @throws Mage_Core_Exception
@@ -1211,6 +1205,13 @@ class Ho_Import_Model_Import extends Varien_Object
          * Magento does not recognise such type(\Ho_Import_Model_Import::_getEntityTypeId() fails) neither needed in this method at all.
          */
         if ($this->_getEntityType() == self::IMPORT_TYPE_CATEGORY_PRODUCT) {
+            $this->_getLog()->log(
+                $this->_getLog()->__("Entity %s cleaned with mode %s",
+                    self::IMPORT_TYPE_CATEGORY_PRODUCT,
+                    $this->_fastSimpleImport->getBehavior()
+                )
+            );
+
             return;
         }
 
@@ -1223,7 +1224,7 @@ class Ho_Import_Model_Import extends Varien_Object
             ->from(
                 array('entity_profile' => $resource->getTableName('ho_import/entity'))
             )->where(
-                'entity_profile.entity_type_id=?', $this->_getEntityTypeId()
+                'entity_profile.entity_type_id = ?', $this->_getEntityTypeId()
             )->where(
                 'entity.entity_id IS NULL'
             );
@@ -1241,15 +1242,13 @@ class Ho_Import_Model_Import extends Varien_Object
                     'entity.entity_id = entity_profile.entity_id'
                 );
                 break;
-            case 'customer':
-                $this->_getLog()->log('Cleaning customer entities not yet implemented', Zend_Log::WARN);
+            default:
+                $this->_getLog()->log(sprintf("Cleaning '%s' entities not yet implemented.", $this->_getEntityType()), Zend_Log::WARN);
                 return;
-                break;
         }
 
         $resource->getConnection('core_write')->query($adapter->deleteFromSelect($select, 'entity_profile'));
     }
-
 
     const IMPORT_CONFIG_CB = 'global/ho_import/%s/configurable_builder';
     const IMPORT_CONFIG_CB_SKU = 'global/ho_import/%s/configurable_builder/sku';
@@ -1384,6 +1383,7 @@ class Ho_Import_Model_Import extends Varien_Object
         if (! $this->_getConfigNode(self::IMPORT_CONFIG_CB)) {
             return $this;
         }
+
         $calculatePrice = (bool) $this->_getConfigNode(self::IMPORT_CONFIG_CB_CALCULATE_PRICE);
         $fieldConfig = $this->_configurableFieldConfig();
         $fieldConfig['admin']['_super_products_sku'] = [];
@@ -1406,7 +1406,9 @@ class Ho_Import_Model_Import extends Varien_Object
                 $minPrice = $configurable['admin'][0][$finalPriceKey];
                 $configurable['admin'][0]['price'] = $configurable['admin'][0][$priceKey];
                 $configurable['admin'][0]['special_price'] =
-                    $configurable['admin'][0][$specialPriceKey] != PHP_INT_MAX && $configurable['admin'][0][$specialPriceKey] > 0
+                    $configurable['admin'][0][$specialPriceKey] != PHP_INT_MAX
+                    && $configurable['admin'][0][$specialPriceKey] > 0
+                    && $configurable['admin'][0][$specialPriceKey] < $configurable['admin'][0][$priceKey]
                         ? $configurable['admin'][0][$specialPriceKey]
                         : $this->_fastSimpleImport->getSymbolEmptyFields();
 
