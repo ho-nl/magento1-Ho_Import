@@ -132,7 +132,6 @@ class Ho_Import_Model_Observer
         $importCollection->cleanupCron();
     }
 
-
     /**
      * Run an import through a cron job
      * @param Aoe_Scheduler_Model_Schedule|Mage_Cron_Model_Schedule $cron
@@ -154,6 +153,8 @@ class Ho_Import_Model_Observer
             $import = Mage::getModel('ho_import/import');
             $import->setProfile($profile);
             $import->process();
+        } catch (Ho_Import_Glob_Exception $e) {
+            $logHelper->log($e->getMessage(), Zend_Log::NOTICE);
         } catch (Exception $e) {
             $logHelper->log($logHelper->getExceptionTraceAsString($e), Zend_Log::CRIT);
             $cron->setStatus($cron::STATUS_ERROR);
@@ -161,7 +162,6 @@ class Ho_Import_Model_Observer
 
         $logHelper->done();
     }
-
 
     /**
      * We listen to several events and log it. This gives us more insight into the progress that has been made during

@@ -829,10 +829,11 @@ class Ho_Import_Model_Import extends Varien_Object
             /** @noinspection PhpUndefinedFieldInspection */
             $files = glob(Mage::getBaseDir() . DS . (string) $source->glob, GLOB_BRACE);
 
-            if (!is_array($files) || !count($files)) {
+            if (! is_array($files) || ! count($files)) {
                 /** @noinspection PhpUndefinedFieldInspection */
-                Mage::throwException(Mage::helper('importexport')->__(
-                    "The glob \"%s\" does not match any files", $source->glob));
+                throw new Ho_Import_Glob_Exception(
+                    Mage::helper('importexport')->__('The glob "%s" does not match any files', $source->glob)
+                );
             }
             sort($files);
 

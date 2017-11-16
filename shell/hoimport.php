@@ -108,6 +108,8 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $importConfig->setConfig($this->_args);
 
             $import->process();
+        } catch (Ho_Import_Glob_Exception $e) {
+            Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::NOTICE);
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
             exit(1);
@@ -118,7 +120,6 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
 
         Mage::helper('ho_import/log')->log('Done');
     }
-
 
     public function importActionHelp()
     {
@@ -152,6 +153,8 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $importConfig->setConfig($this->_args);
 
             $import->mapLines($this->getArg('line'));
+        } catch (Ho_Import_Glob_Exception $e) {
+            Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::NOTICE);
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
             exit(1);
@@ -194,6 +197,8 @@ class Ho_Import_Shell_Productimport extends Mage_Shell_Abstract
             $importConfig->setConfig($this->_args);
 
             $import->importCsv();
+        } catch (Ho_Import_Glob_Exception $e) {
+            Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::NOTICE);
         } catch (Mage_Core_Exception $e) {
             Mage::helper('ho_import/log')->log($e->getMessage(), Zend_Log::CRIT);
             exit(1);
