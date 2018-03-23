@@ -27,8 +27,8 @@
         </reference>
     </adminhtml_ho_import_index>
 
-    <adminhtml_inventoryupdates_grid>
+    <adminhtml_ho_import_grid>
         <update handle="formkey"/>
         <block type="ho_import/adminhtml_ho_import_grid" name="adminhtml_ho_import.grid" output="toHtml"/>
-    </adminhtml_inventoryupdates_grid>
+    </adminhtml_ho_import_grid>
 </layout>
