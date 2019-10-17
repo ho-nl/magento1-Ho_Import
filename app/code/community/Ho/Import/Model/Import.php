@@ -83,11 +83,43 @@ class Ho_Import_Model_Import extends Varien_Object
 
         $logger->log($logger->__('Mapping source fields and saving to temp csv file (%s)', $this->_getFileName()));
 
-        $this->_archiveOldCsv();
-        $hasRows = $this->_createImportCsv();
-        if (! $hasRows) {
-            $this->_runEvent('process_after');
-            return;
+        // Check if the previous import failed, if so we are going to skip the mapping
+        $collection = Mage::getModel('cron/schedule')->getCollection()
+            ->addFieldToFilter('job_code', ['eq' => 'ho_import_' . $this->getProfile()])
+            ->setOrder('executed_at', 'DESC')
+            ->setPageSize(2);
+
+        $latestImport = $collection->getFirstItem();
+
+        $foundSuccess = false;
+        if ($latestImport->getStatus() !== 'success') {
+            foreach ($collection as $row) {
+                if ($row->getStatus() == 'success') {
+                    $foundSuccess = true;
+                    break;
+                }
+            }
+        }
+
+        // Only the last import needs to have failed. If the one before that also failed then something is wrong.
+        if ($foundSuccess && $latestImport->getStatus() !== 'success' && file_exists($this->_getCsvMappingFileName()) && in_array($this->getProfile(), explode(',', Mage::getStoreConfig('ho_import/settings/reuse_mapping_on_failure')))) {
+            // Change the at runtime Magento Config so it changes to a csv import for this profile
+            $this->_changeMagentoConfigProfileSettings();
+
+            $hasRows = $this->_createImportCsv();
+            if (! $hasRows) {
+                $this->_runEvent('process_after');
+                return;
+            }
+        } else {
+            $this->_archiveOldCsv();
+            $this->_clearCsvMapping();
+            $hasRows = $this->_createImportCsv();
+            if (! $hasRows) {
+                $this->_runEvent('process_after');
+                return;
+            }
+            $this->_saveCsvMapping();
         }
 
         $importData = $this->getImportData();
@@ -1036,6 +1068,32 @@ class Ho_Import_Model_Import extends Varien_Object
         return $this;
     }
 
+    /**
+     * Archive the old file.
+     * @return $this
+     */
+    protected function _saveCsvMapping()
+    {
+        $fileName = $this->_getFileName();
+        $newFileName = $this->_getCsvMappingFileName();
+        copy($fileName, $newFileName);
+        return $this;
+    }
+
+    protected function _clearCsvMapping()
+    {
+        if (file_exists($this->_getCsvMappingFileName())) {
+            unlink($this->_getCsvMappingFileName());
+        }
+        return $this;
+    }
+
+    protected function _getCsvMappingFileName()
+    {
+        $pathInfo = pathinfo($this->_getFileName());
+        $newFileName = $pathInfo['dirname'].DS.$pathInfo['filename'] .'-'.'map'.'.'.$pathInfo['extension'];
+        return $newFileName;
+    }
 
     protected function _getCleanMode()
     {
@@ -1428,5 +1486,69 @@ class Ho_Import_Model_Import extends Varien_Object
         }
 
         return $this;
+    }
+
+    protected function _changeMagentoConfigProfileSettings()
+    {
+        // Set the child to null to remove it
+        Mage::getConfig()->setNode(sprintf(self::IMPORT_CONFIG_MODEL, $this->getProfile()), null, true);
+
+        // First we need an xml without child nodes to be apply to replace the attribute
+        $newCsvProfile = new Mage_Core_Model_Config_Base();
+        $newCsvProfile->loadString('
+                                    <config>
+                                        <global>
+                                            <ho_import>
+                                                <' . $this->getProfile() . '>
+                                                    <source model="ho_import/source_adapter_csv"></source>
+                                                </' . $this->getProfile() . '>
+                                            </ho_import>
+                                        </global>
+                                    </config>');
+        Mage::getConfig()->extend($newCsvProfile, true);
+
+        // Next we add the child nodes
+        $newCsvProfile = new Mage_Core_Model_Config_Base();
+        $newCsvProfile->loadString('
+                                    <config>
+                                        <global>
+                                            <ho_import>
+                                                <' . $this->getProfile() . '>
+                                                    <source model="ho_import/source_adapter_csv">
+                                                        <file>var/import/' . $this->getProfile() . '-map.csv</file>
+                                                        <delimiter>,</delimiter>
+                                                    </source>
+                                                </' . $this->getProfile() . '>
+                                            </ho_import>
+                                        </global>
+                                    </config>');
+        Mage::getConfig()->extend($newCsvProfile, true);
+
+        // Next we need to replace the fieldmap
+        $fieldNames = $this->_getMapper()->getFieldNames();
+        $fieldmapXmlStr = '';
+        foreach ($fieldNames as $fieldName => $value) {
+            $fieldmapXmlStr .= '<' . $fieldName . ' field="' . $fieldName . '" />';
+        }
+
+        // Set the child to null to remove it
+        Mage::getConfig()->setNode(sprintf('global/ho_import/%s/fieldmap', $this->getProfile()), null, true);
+
+        // Add the node
+        $newCsvProfile = new Mage_Core_Model_Config_Base();
+        $newCsvProfile->loadString('
+                                    <config>
+                                        <global>
+                                            <ho_import>
+                                                <' . $this->getProfile() . '>
+                                                    <fieldmap>
+                                                        ' . $fieldmapXmlStr . '
+                                                        <ho_import_profile field="ho_import_profile"/>
+                                                    </fieldmap>
+                                                </' . $this->getProfile() . '>
+                                            </ho_import>
+                                        </global>
+                                    </config>');
+        Mage::getConfig()->extend($newCsvProfile, true);
     }
 }
