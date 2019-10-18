@@ -111,6 +111,11 @@ class Ho_Import_Model_Import extends Varien_Object
                 $this->_runEvent('process_after');
                 return;
             }
+
+            // Set the last import cron schedule to success
+            $latestImport->setStatus('success');
+            $latestImport->save();
+            $this->_clearCsvMapping();
         } else {
             $this->_archiveOldCsv();
             $this->_clearCsvMapping();
