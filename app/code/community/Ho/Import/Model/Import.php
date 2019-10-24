@@ -86,6 +86,7 @@ class Ho_Import_Model_Import extends Varien_Object
         // Check if the previous import failed, if so we are going to skip the mapping
         $collection = Mage::getModel('cron/schedule')->getCollection()
             ->addFieldToFilter('job_code', ['eq' => 'ho_import_' . $this->getProfile()])
+            ->addFieldToFilter('status', ['nin' => ['pending', 'running']])
             ->setOrder('executed_at', 'DESC')
             ->setPageSize(2);
 
@@ -105,6 +106,8 @@ class Ho_Import_Model_Import extends Varien_Object
         if ($foundSuccess && $latestImport->getStatus() !== 'success' && file_exists($this->_getCsvMappingFileName()) && in_array($this->getProfile(), explode(',', Mage::getStoreConfig('ho_import/settings/reuse_mapping_on_failure')))) {
             // Change the at runtime Magento Config so it changes to a csv import for this profile
             $this->_changeMagentoConfigProfileSettings();
+
+            // @todo: check if the csv file has all the required records and wasn't killed halfway?
 
             $hasRows = $this->_createImportCsv();
             if (! $hasRows) {
