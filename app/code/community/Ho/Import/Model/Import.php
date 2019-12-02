@@ -477,6 +477,10 @@ class Ho_Import_Model_Import extends Varien_Object
                     ->setData($transportData);
 
                 $this->_runEvent('source_row_fieldmap_after', $transport);
+                if ($transport->getSkip()) {
+                    $sourceAdapter->next();
+                    continue;
+                }
                 $this->_configurableExtractRow($transport, $preparedItem);
                 foreach ($transport->getItems() as $row) {
                     $rowCount++;
