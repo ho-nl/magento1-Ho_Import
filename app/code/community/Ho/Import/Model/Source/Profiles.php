@@ -6,7 +6,7 @@ class Ho_Import_Model_Source_Profiles
     {
         $profiles = Mage::getModel('ho_import/import')->getProfiles();
         if (count($profiles) > 0) {
-            $options = [];
+            $options = ['' => ['value' => '', 'label' => 'none']];
             foreach ($profiles as $key => $value) {
                 $options[$key] = [
                     'value' =>  $key,
