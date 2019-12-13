@@ -458,18 +458,83 @@ class Ho_Import_Model_Import extends Varien_Object
         /** @var Mage_ImportExport_Model_Export_Adapter_Abstract $exportAdapter */
         $exportAdapter = Mage::getModel('importexport/export_adapter_csv', $this->_getFileName());
         $fieldNames    = $this->_getMapper()->getFieldNames();
+        $entityType = (string)$this->_getMapper()->getImporter()->_getEntityType();
+        $symbolIgnoreField = Mage::getStoreConfig('fastsimpleimport/general/symbol_for_ignore_field');
+
+        switch($entityType) {
+            case 'catalog_category':
+                $identityCol = '_category';
+                break;
+            case 'catalog_product':
+                $identityCol = 'sku';
+                break;
+            case 'customer':
+                $identityCol = 'email';
+                break;
+        }
+
+        $fieldNames['ho_import_profile'] = '';
+        foreach ($fieldNames as $key => $value) {
+            if ($key == $identityCol)  {
+                // identity column must remain empty to make sure rowSope is evaluated correctly
+                continue;
+            }
+            // Set default value to IGNORE so we can distinguish between fields that are set to an empty string on purpose
+            $fieldNames[$key] = $symbolIgnoreField;
+        }
+
         $rowCount    = 0;
         $entityCount = 0;
         while ($sourceAdapter->valid()) {
             $entityCount++;
             $transport = $this->_getTransport()->setItems(array($sourceAdapter->current()));
+
+            $source = Mage::getConfig()->getNode(sprintf(self::IMPORT_CONFIG_MODEL, $this->getProfile()));
+            if ($source->getAttribute('model') == 'ho_import/source_adapter_csv') {
+                $items = $transport->getItems();
+
+                foreach ($items[0] as $key => $value) {
+                    if ($value == $symbolIgnoreField) {
+                        unset($items[0][$key]);
+                    }
+                }
+
+                $skuFound = false;
+                while($skuFound == false) {
+                    $sourceAdapter->next();
+                    if (!$sourceAdapter->valid()) {
+                        // EOF
+                        break;
+                    }
+                    $row = $sourceAdapter->current();
+                    // if _category, email or sku field is empty this means the csv line is for another storeview
+                    if ($row[$identityCol] == '' || $row[$identityCol] == $symbolIgnoreField) {
+                        foreach ($row as $key => $value) {
+                            if ($value == $symbolIgnoreField || ($key == $identityCol && $value == '')) {
+                                unset($row[$key]);
+                            }
+                        }
+                        $items[] = $row;
+                    } else {
+                        $skuFound = true;
+                        // Fixup next() call by setting it one back using seek() because we have no previous() function
+                        $sourceAdapter->seek($sourceAdapter->key() - 1);
+                    }
+                }
+                $transport->setItems(array($items));
+            }
+
             $this->_runEvent('source_row_fieldmap_before', $transport);
             if ($transport->getSkip()) {
                 $sourceAdapter->next();
                 continue;
             }
             foreach ($transport->getItems() as $preparedItem) {
-                $results = $this->_fieldMapItem($preparedItem);
+                if ($source->getAttribute('model') != 'ho_import/source_adapter_csv') {
+                    $results = $this->_fieldMapItem($preparedItem);
+                } else {
+                    $results = $preparedItem;
+                }
 
                 $transportData = $transport->getData();
                 $transport = $this->_getTransport()
