@@ -30,6 +30,7 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
     /**
      * Constructor.
      * @param array $config
+     * @throws \Exception
      */
     public function __construct(array $config)
     {
@@ -78,7 +79,7 @@ class Ho_Import_Model_Source_Adapter_Db extends Zend_Db_Table_Rowset
         $logHelper->log('Done');
         $config['data'] = &$result;
 
-        return parent::__construct($config);
+        parent::__construct($config);
     }
 
     protected function _loadAndReturnRow($position)
