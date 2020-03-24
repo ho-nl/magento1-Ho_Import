@@ -149,6 +149,8 @@ You'll see something like:
 
 The first table shows the first line from the source file and the second table shows the results how they would be imported into Magento. It shows the error on each line where they are represented.
 
+Note that it is not safe to run multiple imports simulteneously. When manually running an import via the command shell, ensure that there is no other import running via (for example) a cron job. 
+
 ### 4. Expand all the fieldmaps to your liking
 Grab an example that is most to your liking from the docs/imports folder and copy those fields to your config.
 
